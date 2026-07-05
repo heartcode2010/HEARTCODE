@@ -81,6 +81,18 @@ export class ScanService {
       formattedUrl = 'https://' + formattedUrl;
     }
 
+    const lowerUrl = formattedUrl.toLowerCase();
+    if (
+      lowerUrl.includes('heartcode') ||
+      lowerUrl.includes('technova') ||
+      lowerUrl.includes('localhost') ||
+      lowerUrl.includes('127.0.0.1') ||
+      lowerUrl.includes('192.168.') ||
+      lowerUrl.includes('10.')
+    ) {
+      throw new Error("Security Restriction: Can't scan internal system node. Access Denied.");
+    }
+
     const response = await axios.get(formattedUrl, {
       headers: {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',

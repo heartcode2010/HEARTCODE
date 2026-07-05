@@ -13,6 +13,7 @@ import settingsRoutes from './routes/settings.routes';
 import intelligenceRoutes from './routes/intelligence.routes';
 import academyRoutes from './routes/academy.routes';
 import { errorHandler } from './middleware/error.middleware';
+import { crawlerFilterMiddleware } from './middleware/crawlerFilter.middleware';
 
 dotenv.config();
 
@@ -20,6 +21,7 @@ const app = express();
 
 // Security configuration
 app.use(helmet());
+app.use(crawlerFilterMiddleware);
 
 // CORS setup
 const corsOptions = {
