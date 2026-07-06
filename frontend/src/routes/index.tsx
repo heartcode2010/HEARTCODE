@@ -26,6 +26,8 @@ const LearningDashboard = lazy(() => import('../pages/LearningDashboard'));
 const CoursePage = lazy(() => import('../pages/CoursePage'));
 const FocusMode = lazy(() => import('../pages/FocusMode'));
 const WalletPage = lazy(() => import('../pages/WalletPage'));
+const AffiliatePage = lazy(() => import('../pages/AffiliatePage'));
+const QuizVersePage = lazy(() => import('../pages/QuizVersePage'));
 const MarketplacePage = lazy(() => import('../pages/MarketplacePage'));
 const OpportunitiesPage = lazy(() => import('../pages/OpportunitiesPage'));
 const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
@@ -159,6 +161,22 @@ const AppRouter: React.FC = () => (
           element={
             <ProtectedRoute>
               <WalletPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/affiliate"
+          element={
+            <ProtectedRoute>
+              <AffiliatePage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/quizverse"
+          element={
+            <ProtectedRoute>
+              <QuizVersePage />
             </ProtectedRoute>
           }
         />

@@ -80,18 +80,341 @@ Ambassador Heartcode actively maintains TECHNOVA OS:
 
 ---
 
-## 🚀 Dev Setup & Deployment
+## 🚀 Local Development Setup
 
-1.  **Install dependencies concurrently:**
-    ```bash
-    npm run install:all
-    ```
-2.  **Add environment variables:** Customize public and secret checkout keys inside `.env`.
-3.  **Start concurrent dev servers:**
-    ```bash
-    npm run dev
-    ```
-4.  **Production build verification:**
-    ```bash
-    npm run build --prefix frontend
-    ```
+### 1. Prerequisites
+Make sure you have the following installed:
+- Node.js 18+ or 20+
+- npm
+- MongoDB (local or Atlas)
+- Git
+
+### 2. Clone and install
+```bash
+git clone https://github.com/your-username/HEARTCODE.git
+cd HEARTCODE
+npm install
+cd frontend && npm install && cd ..
+cd backend && npm install && cd ..
+```
+
+### 3. Configure environment variables
+Create a `.env` file in the project root and configure the required variables:
+
+```env
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/heartcode
+JWT_SECRET=your_jwt_secret
+JWT_REFRESH_SECRET=your_refresh_secret
+VITE_URL=http://localhost:5173
+```
+
+You can also copy the example file if present:
+```bash
+cp .env.example .env
+```
+
+### 4. Start the backend
+```bash
+cd backend
+npm run dev
+```
+
+### 5. Start the frontend
+In a separate terminal:
+```bash
+cd frontend
+npm run dev
+```
+
+The frontend will run at:
+- http://localhost:5173
+
+The backend will run at:
+- http://localhost:5000
+
+### 6. Verify the app
+Open the frontend in your browser and confirm the app loads correctly.
+
+### 7. Production build check
+```bash
+cd frontend
+npm run build
+```
+
+---
+
+## ☁️ Deployment on Vercel
+
+The frontend is Vite-based and is well suited for deployment on Vercel.
+
+### Vercel steps
+1. Push the project to GitHub.
+2. Create a new Vercel project.
+3. Import the repository.
+4. Set the project root to the `frontend` folder.
+5. Set the build command:
+   ```bash
+   npm run build
+   ```
+6. Set the output directory:
+   ```bash
+   dist
+   ```
+7. Add environment variables in Vercel if needed:
+   - `VITE_URL`
+   - any public frontend variables
+
+### Notes
+- Vercel hosts the frontend only.
+- The backend must still be deployed separately.
+
+---
+
+## 🚂 Deployment on Railway
+
+The backend can be deployed on Railway as a Node.js service.
+
+### Railway steps
+1. Create a Railway account.
+2. Create a new project in Railway.
+3. Connect the GitHub repository.
+4. Select the backend service.
+5. Set the root directory to `backend`.
+6. Use the start command:
+   ```bash
+   npm run start
+   ```
+7. Add environment variables in Railway:
+   - `PORT`
+   - `MONGODB_URI`
+   - `JWT_SECRET`
+   - `JWT_REFRESH_SECRET`
+   - `VITE_URL`
+
+### Important deployment note
+- Railway should host the backend and its MongoDB connection.
+- If you use MongoDB Atlas, set `MONGODB_URI` to your Atlas connection string.
+
+---
+
+## 💸 Affiliate System & AI Credit Economy
+
+### Overview
+The affiliate system is intended to become one of the primary growth and monetization engines of the platform.
+
+Every user should be able to:
+- earn recurring commissions by inviting others
+- purchase AI Credits for premium services
+- access premium AI-powered experiences
+- grow a referral network over time
+
+### AI Credit System
+TECHNOVA OS uses an AI Credit economy for premium AI tools.
+
+AI Credits can be used for:
+- AI Security Copilot
+- AI Assignment Inspector
+- AI Research Assistant
+- AI Medical Report Analyzer
+- AI Blockchain Mentor
+- AI Tech Mentor
+- AI Resume Analyzer
+- AI Business Partner
+- AI Startup Validator
+- Future AI-powered services
+
+Users should be able to purchase credit packages such as:
+- Starter Pack
+- Standard Pack
+- Professional Pack
+- Enterprise Pack
+
+The pricing and amounts should be configurable by the administrator.
+
+### Affiliate Commission Model
+Every user automatically becomes an affiliate after creating an account.
+
+Each affiliate receives:
+- Unique Referral Link
+- Referral Code
+- QR Code
+
+When someone joins HEARTCODE through an affiliate link, that person becomes that affiliate’s referral.
+
+### Recurring Commission
+When a referred user purchases any eligible product or service, the affiliate earns a commission.
+
+Eligible purchases may include:
+- AI Credits
+- Premium Membership
+- Courses
+- Quizzes
+- Digital Products
+- Certifications
+- Marketplace Products
+- Other eligible services
+
+Default commission rate:
+- 20%
+
+The rate should be configurable from the admin dashboard.
+
+### Example
+If John refers Sarah and Sarah buys AI Credits worth $50 at a 20% commission rate:
+- Sarah receives the credits
+- John earns $10
+- HEARTCODE keeps $40
+
+### Lifetime Referral Model
+Once a user signs up using a referral link, they remain linked to that affiliate unless changed by an administrator.
+
+Future eligible purchases by that referred user continue to generate commissions.
+
+### Affiliate Wallet & Dashboard
+Each affiliate should have access to:
+- Available Balance
+- Pending Earnings
+- Lifetime Earnings
+- Monthly Earnings
+- Commission History
+- Withdrawal History
+- Referral Count
+- Conversion Rate
+
+The affiliate dashboard should include:
+- Referral Link
+- Referral QR Code
+- Total Clicks
+- Registered Referrals
+- Active Referrals
+- Premium Referrals
+- AI Credit Purchases
+- Marketplace Purchases
+- Course Purchases
+- Quiz Purchases
+- Certification Purchases
+- Commission Earned
+- Pending Earnings
+- Available Balance
+- Withdrawal Requests
+- Leaderboard Position
+
+### Withdrawal & Admin Controls
+Affiliates should be able to request withdrawals once they meet the minimum threshold configured by the administrator.
+
+Admin controls should include:
+- Configure commission percentages
+- Enable or disable recurring commissions
+- Set minimum withdrawal amounts
+- Approve or reject withdrawals
+- Monitor affiliate fraud alerts
+- View transaction history
+- Generate affiliate reports
+- Export commission reports
+
+### Anti-Fraud Protection
+The system should protect itself against:
+- self-referrals
+- duplicate accounts
+- fake registrations
+- bot traffic
+- artificial purchases
+- suspicious referral patterns
+
+Administrators should be able to suspend or investigate affiliate accounts when unusual activity is detected.
+
+---
+
+## 🧠 QuizVerse Ecosystem
+
+The app should also support a complete QuizVerse ecosystem for educational assessment and monetization.
+
+### Quiz Creator Tools
+Creators should be able to:
+- create quizzes
+- publish quizzes
+- share quizzes
+- monetize quizzes
+- sell assessments
+
+### Quiz Builder Features
+The quiz builder should support:
+- Multiple Choice
+- True/False
+- Fill in the Blank
+- Essay
+- Code Challenges
+- Image Questions
+- Video Questions
+- Audio Questions
+- Drag and Drop Questions
+
+### Question Bank
+Creators should be able to build reusable question libraries organized by:
+- subject
+- difficulty
+- topic
+- language
+- tags
+
+### AI Quiz Generator
+Users should be able to generate quizzes from:
+- PDF files
+- Text
+- PowerPoint files
+- Word Documents
+- Web Pages
+- Topics
+- Books
+- Lecture Notes
+
+### Quiz Store
+Buyers should be able to browse quizzes by:
+- category
+- price
+- popularity
+- ratings
+- newest
+- difficulty
+
+### Live Quizzes
+The platform should support real-time competition features such as:
+- countdown timer
+- live scoreboard
+- leaderboards
+- prizes
+- certificates
+
+### Monetization & Institutions
+Creators should be able to choose access modes such as:
+- free
+- paid
+- subscription only
+- institution only
+
+Schools and organizations should be able to:
+- create private exams
+- assign quizzes
+- monitor performance
+- export results
+- generate reports
+
+### Community Features
+The ecosystem should also support:
+- quiz ratings
+- quiz reviews
+- creator following
+- sharing
+- bookmarking
+- challenge friends
+
+---
+
+## 📞 Creator Profile & Support Details
+
+Ambassador Heartcode actively maintains TECHNOVA OS:
+*   **Lead Architect:** Ambassador Heartcode
+*   **WhatsApp Contact:** [+234 814 047 3040](https://wa.me/2348140473040)
+*   **Primary Email:** [aniebietabasienobong@gmail.com](mailto:aniebietabasienobong@gmail.com)
+*   **Public Repository:** `c:/Users/user/Desktop/HEARTCODE`

@@ -42,6 +42,8 @@ export const Header = () => {
 
   const tools = [
     { name: 'Marketplace', path: '/marketplace' },
+    { name: 'Affiliate Hub', path: '/affiliate' },
+    { name: 'QuizVerse', path: '/quizverse' },
     { name: 'Opportunity Engine', path: '/opportunities' },
     { name: 'News Feed', path: '/feed' },
     { name: 'Discussions', path: '/messages' },
@@ -123,6 +125,12 @@ export const Header = () => {
           </div>
           <button onClick={() => navigate('/wallet')} className="btn-secondary hidden h-10 px-3 text-sm sm:flex">
             <Wallet size={15} /> Wallet
+          </button>
+          <button onClick={() => navigate('/affiliate')} className="btn-secondary hidden h-10 px-3 text-sm sm:flex">
+            <Sparkles size={15} /> Affiliates
+          </button>
+          <button onClick={() => navigate('/quizverse')} className="btn-secondary hidden h-10 px-3 text-sm sm:flex">
+            <Trophy size={15} /> QuizVerse
           </button>
           <button onClick={() => navigate('/hallmark')} className="btn-secondary h-10 px-3 text-sm">
             <Trophy size={15} /> Lvl {overallLevel}

@@ -210,6 +210,12 @@ export const Dashboard: React.FC = () => {
     { id: 'wp4', title: 'Synthwave Skyline Sunset Grid', isPremium: true, url: '🌅' },
   ];
 
+  const featuredModules = [
+    { title: 'Affiliate Engine', description: 'Track referrals, manage commissions, and request payouts.', action: () => navigate('/affiliate') },
+    { title: 'QuizVerse Studio', description: 'Create and publish educational quizzes with flexible access.', action: () => navigate('/quizverse') },
+    { title: 'AI Credit Wallet', description: 'Manage premium credits and monetization flows.', action: () => navigate('/wallet') },
+  ];
+
   const handleDownloadWallpaper = (wp: typeof wallpapers[0]) => {
     if (wp.isPremium && tier === 'free') {
       alert('This ultra-cool cyberpunk wallpaper is exclusive to Pro and Premium members.');
@@ -278,6 +284,18 @@ export const Dashboard: React.FC = () => {
                   );
                 })}
               </div>
+            </section>
+
+            <section className="grid gap-4 md:grid-cols-3">
+              {featuredModules.map((module) => (
+                <button key={module.title} onClick={module.action} className="rounded-[24px] border border-white/10 bg-white/5 p-5 text-left shadow-lg shadow-black/20 transition hover:border-indigo-400/40 hover:bg-white/10">
+                  <div className="text-sm font-semibold text-white">{module.title}</div>
+                  <div className="mt-2 text-sm text-slate-400">{module.description}</div>
+                  <div className="mt-4 inline-flex items-center gap-2 text-sm text-indigo-200">
+                    Open module <ArrowUpRight size={14} />
+                  </div>
+                </button>
+              ))}
             </section>
 
             <section className="grid gap-6 xl:grid-cols-[1.2fr_0.8fr]">
