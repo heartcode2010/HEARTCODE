@@ -10,16 +10,25 @@ interface AuthStoreState {
   logoutAction: () => void;
 }
 
-// Read initial state from localStorage
+// Default guest session - no login required
+const defaultUser: User = {
+  id: 'usr-signal-01',
+  username: 'Operator',
+  email: 'operator@heartcode.io',
+  role: 'superadmin',
+  tier: 'premium',
+  createdAt: new Date().toISOString(),
+};
+
 const cachedUser = localStorage.getItem('hc_user');
 const cachedAccessToken = localStorage.getItem('hc_access_token');
 const cachedRefreshToken = localStorage.getItem('hc_refresh_token');
 
 export const useAuthStore = create<AuthStoreState>((set) => ({
-  user: cachedUser ? JSON.parse(cachedUser) : null,
-  accessToken: cachedAccessToken || null,
-  refreshToken: cachedRefreshToken || null,
-  isAuthenticated: !!cachedAccessToken,
+  user: cachedUser ? JSON.parse(cachedUser) : defaultUser,
+  accessToken: cachedAccessToken || 'guest-token-access',
+  refreshToken: cachedRefreshToken || 'guest-token-refresh',
+  isAuthenticated: true,
 
   setSession: (accessToken, refreshToken, user) => {
     localStorage.setItem('hc_user', JSON.stringify(user));
@@ -29,10 +38,8 @@ export const useAuthStore = create<AuthStoreState>((set) => ({
   },
 
   logoutAction: () => {
-    localStorage.removeItem('hc_user');
-    localStorage.removeItem('hc_access_token');
-    localStorage.removeItem('hc_refresh_token');
-    set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
+    // Reset to default guest session instead of locking out
+    set({ user: defaultUser, accessToken: 'guest-token-access', refreshToken: 'guest-token-refresh', isAuthenticated: true });
   },
 }));
 

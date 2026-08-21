@@ -46,14 +46,12 @@ const PageLoader: React.FC = () => (
   </div>
 );
 
-// ── Protected Route Guard ─────────────────────────────────────────────────────
+// ── Direct Route Access (No Login Requirement) ──────────────────────────────
 interface ProtectedRouteProps {
   children: React.ReactNode;
 }
 
 const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-  if (!isAuthenticated) return <Navigate to="/login" replace />;
   return <>{children}</>;
 };
 
@@ -62,18 +60,11 @@ const AppRouter: React.FC = () => (
   <BrowserRouter>
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
+        {/* Redirect login directly to dashboard */}
+        <Route path="/login" element={<Navigate to="/" replace />} />
 
-        {/* Protected routes */}
-        <Route
-          path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
-        />
+        {/* Core routes */}
+        <Route path="/" element={<Dashboard />} />
 
         {/* Megastructure routes */}
         <Route
