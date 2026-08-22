@@ -51,7 +51,7 @@ export const AIChatPage: React.FC = () => {
         <div className="w-full md:w-72 bg-[#111114] border border-[#2a2a2e] p-4 rounded-2xl flex flex-col h-[600px] justify-between">
           <div className="space-y-4 overflow-hidden flex flex-col flex-1">
             <div className="flex justify-between items-center">
-              <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider">AI SESSIONS</h3>
+              <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider">ASSISTANT SESSIONS</h3>
               <button
                 onClick={() => createConversation()}
                 className="p-1.5 bg-white/5 border border-white/5 hover:bg-white/10 rounded-lg text-white transition-colors cursor-pointer"
@@ -95,7 +95,7 @@ export const AIChatPage: React.FC = () => {
         <div className="flex-1 bg-[#111114] border border-[#2a2a2e] rounded-2xl flex flex-col overflow-hidden h-[600px] relative">
           <div className="p-4 bg-[#0c0c0e] border-b border-[#2a2a2e] flex flex-wrap justify-between items-center gap-4">
             <div className="flex items-center gap-2">
-              <span className="text-[0.55rem] font-mono text-[#6e6868] uppercase">Provider:</span>
+              <span className="text-[0.55rem] font-mono text-[#6e6868] uppercase">Engine:</span>
               <div className="bg-[#111114] p-0.5 rounded-lg border border-[#2a2a2e] flex">
                 {AI_PROVIDERS.map(p => (
                   <button
@@ -103,7 +103,7 @@ export const AIChatPage: React.FC = () => {
                     onClick={() => setProvider(p.id)}
                     className={`px-2.5 py-1 rounded-md text-[0.58rem] font-extrabold uppercase transition-all cursor-pointer ${activeProvider === p.id ? 'bg-[#1a1a20] text-white border border-white/5' : 'text-[#6e6868] hover:text-white'}`}
                   >
-                    {p.name.split(' ')[0]}
+                    {p.name}
                   </button>
                 ))}
               </div>
@@ -113,7 +113,7 @@ export const AIChatPage: React.FC = () => {
               <button
                 onClick={() => setIsMuted(!isMuted)}
                 className="p-2 bg-[#111114] border border-[#2a2a2e] rounded-xl text-gray-400 hover:text-white cursor-pointer"
-                title={isMuted ? 'Unmute AI' : 'Mute AI'}
+                title={isMuted ? 'Unmute Audio' : 'Mute Audio'}
               >
                 {isMuted ? <VolumeX size={14} /> : <Volume2 size={14} />}
               </button>

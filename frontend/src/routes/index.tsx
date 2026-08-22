@@ -42,7 +42,7 @@ const TechLabsHome = lazy(() => import('../pages/techlabs/TechLabsHome'));
 // ── Fallback while lazy chunk loads ──────────────────────────────────────────
 const PageLoader: React.FC = () => (
   <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center">
-    <div className="font-mono text-[#6e6868] text-sm animate-pulse">LOADING TECHNOVA OS SECURE ENDPOINT…</div>
+    <div className="font-mono text-[#6e6868] text-sm animate-pulse">Loading workspace…</div>
   </div>
 );
 

@@ -29,9 +29,9 @@ export interface BotWorkflow {
 const mockBots: Bot[] = [
   {
     id: 'bot_tutor',
-    name: 'Technova AI Tutor',
-    username: '@TechnovaTutorBot',
-    description: 'Personal AI tutor for coding, cybersecurity, and school subjects. Ask questions and get interactive explanations, mini-quizzes, and custom learning maps.',
+    name: 'Technova Code Mentor',
+    username: '@TechnovaMentorBot',
+    description: 'Personal learning companion and coding mentor for cybersecurity and software development. Interactive explanations, quizzes, and custom learning roadmaps.',
     avatarUrl: '💎',
     category: 'education',
     developer: 'Technova Official',

@@ -12,9 +12,9 @@ export interface AIProviderConfig {
 }
 
 export const AI_PROVIDERS: AIProviderConfig[] = [
-  { id: 'openai', name: 'OpenAI GPT-4', model: 'gpt-4o', icon: '🤖', color: '#10a37f', available: true },
-  { id: 'gemini', name: 'Google Gemini', model: 'gemini-2.0-flash', icon: '💎', color: '#4285f4', available: true },
-  { id: 'claude', name: 'Anthropic Claude', model: 'claude-sonnet-4-20250514', icon: '🧠', color: '#cc785c', available: true },
+  { id: 'openai', name: 'Technova Deep Engine', model: 'v4-deep', icon: '⚡', color: '#10a37f', available: true },
+  { id: 'gemini', name: 'Technova Flash Core', model: 'v2-flash', icon: '💎', color: '#4285f4', available: true },
+  { id: 'claude', name: 'Technova Sonnet Logic', model: 'v4-sonnet', icon: '🛡️', color: '#cc785c', available: true },
 ];
 
 export interface AIPersonality {
@@ -27,7 +27,7 @@ export interface AIPersonality {
 }
 
 export const AI_PERSONALITIES: AIPersonality[] = [
-  { id: 'ambassador', name: 'Ambassador Heartcode', role: 'Cyber Security Mastermind', icon: '👑', color: '#e02840', systemPrompt: 'You are Ambassador Heartcode, the visionary creator of Technova OS. You are a cybersecurity mastermind. Speak with authority.' },
+  { id: 'ambassador', name: 'Ambassador Heartcode', role: 'Lead Platform Architect', icon: '👑', color: '#e02840', systemPrompt: 'You are Ambassador Heartcode, founder and lead architect of Technova OS. Provide direct, highly technical, and practical software & security engineering advice.' },
 ];
 
 export interface AIMessage {
@@ -61,7 +61,7 @@ export interface AITool {
 }
 
 export const AI_TOOLS: AITool[] = [
-  { id: 'quiz', name: 'Quiz Generator', description: 'Generate quizzes on any topic', icon: '❓', prompt: 'Generate a quiz with 5 multiple-choice questions about:', category: 'study' },
+  { id: 'quiz', name: 'Assessment Generator', description: 'Create custom skill checks', icon: '📝', prompt: 'Generate 5 practical assessment review questions on:', category: 'study' },
 ];
 
 interface AIStoreState {
@@ -99,7 +99,7 @@ export const useAIStore = create<AIStoreState>((set, get) => ({
       messages: [{
         id: `sys-${Date.now()}`,
         role: 'assistant',
-        content: `Connected to AI Assistant. How can I help you today?`,
+        content: `Connected to Technova Assistant. How can I assist you with your security or development workflow today?`,
         timestamp: Date.now(),
         personality,
       }],
@@ -140,7 +140,7 @@ export const useAIStore = create<AIStoreState>((set, get) => ({
       const aiMsg: AIMessage = {
         id: `ai-${Date.now()}`,
         role: 'assistant',
-        content: `Response to: ${content}. Custom models are ready.`,
+        content: `Analyzing parameters for: "${content}". System architecture recommendations have been generated based on current best practices.`,
         timestamp: Date.now(),
         provider: get().activeProvider,
         personality: get().activePersonality,

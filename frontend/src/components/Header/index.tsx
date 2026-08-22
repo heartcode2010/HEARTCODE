@@ -47,7 +47,7 @@ export const Header = () => {
     { name: 'Opportunity Engine', path: '/opportunities' },
     { name: 'News Feed', path: '/feed' },
     { name: 'Discussions', path: '/messages' },
-    { name: 'AI Assistant', path: '/ai-chat' },
+    { name: 'Smart Assistant', path: '/ai-chat' },
     { name: 'Focus Mode', path: '/focus-mode' },
   ];
 
@@ -141,16 +141,10 @@ export const Header = () => {
           <button onClick={() => navigate('/admin')} className="btn-secondary h-10 px-3 text-sm">
             <Cpu size={15} />
           </button>
-          {user && (
-            <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-2.5 py-2">
-              <div className="flex h-8 w-8 items-center justify-center rounded-full bg-gradient-to-br from-fuchsia-500 to-indigo-500 text-sm font-semibold text-white">
-                {user.username?.[0]?.toUpperCase() || 'U'}
-              </div>
-              <button onClick={logoutAction} className="hidden text-sm text-slate-300 transition hover:text-white sm:inline">
-                Logout
-              </button>
-            </div>
-          )}
+          <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-slate-200">
+            <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
+            <span className="hidden sm:inline font-mono uppercase tracking-wider text-[0.68rem] text-slate-300">Operator Workspace</span>
+          </div>
         </div>
       </div>
     </header>

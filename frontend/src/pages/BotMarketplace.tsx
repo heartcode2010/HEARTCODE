@@ -39,15 +39,15 @@ export const BotMarketplace: React.FC = () => {
                 <ArrowLeft size={14} /> Back to Hub
               </button>
               <h1 className="text-2xl font-extrabold flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
-                <BotIcon size={26} className="text-[#8b5cf6]" /> BOT MARKETPLACE
+                <BotIcon size={26} className="text-[#8b5cf6]" /> AUTOMATION MARKETPLACE
               </h1>
-              <p className="text-xs text-[#6e6868] mt-1">Supercharge DMs, groups, and automated channel streams with Technova Bots.</p>
+              <p className="text-xs text-[#6e6868] mt-1">Supercharge DMs, groups, and channel streams with Technova automations and extensions.</p>
             </div>
             <button
               onClick={() => navigate('/bot-creator')}
               className="px-4 py-2 bg-gradient-to-r from-[#00d4ff] to-[#8b5cf6] hover:opacity-90 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
             >
-              <Cpu size={14} /> Custom Bot Studio
+              <Cpu size={14} /> Automation Studio
             </button>
           </div>
 

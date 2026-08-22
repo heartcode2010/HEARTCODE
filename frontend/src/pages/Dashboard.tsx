@@ -372,7 +372,7 @@ export const Dashboard: React.FC = () => {
                 <div className="mt-4 space-y-3">
                   {[
                     { title: 'Launch a vulnerability scan', description: 'Inspect a fresh target and open the evidence panel.', action: 'Start scan' },
-                    { title: 'Use AI forensics', description: 'Surface patterns that traditional inspection misses.', action: 'Open AI tools' },
+                    { title: 'Run code forensics', description: 'Surface structural patterns that traditional inspection misses.', action: 'Open forensics' },
                   ].map((item) => (
                     <div key={item.title} className="flex items-center justify-between rounded-2xl border border-white/10 bg-slate-950/50 p-4">
                       <div>

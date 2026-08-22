@@ -54,8 +54,8 @@ export const BotCreator: React.FC = () => {
               <Cpu size={24} className="text-white" />
             </div>
             <div>
-              <h1 className="text-xl font-extrabold tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>AI BOT CREATOR STUDIO</h1>
-              <p className="text-xs text-[#6e6868]">Build, trigger, audit, and configure custom Technova bots with zero-code visual workflows.</p>
+              <h1 className="text-xl font-extrabold tracking-tight" style={{ fontFamily: "'Outfit', sans-serif" }}>AUTOMATION & WORKFLOW STUDIO</h1>
+              <p className="text-xs text-[#6e6868]">Build, trigger, audit, and configure custom Technova automations with visual workflows.</p>
             </div>
           </div>
 

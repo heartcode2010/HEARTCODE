@@ -4,11 +4,13 @@ import useSubscriptionStore, { SubscriptionTier, TIER_CONFIG } from '../store/su
 import { Shield, Sparkles, Check, Crown, Flame, Zap, Award } from 'lucide-react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { ComingSoonModal } from '../components/Shared/ComingSoonModal';
 
 export const SubscriptionPlans: React.FC = () => {
   const navigate = useNavigate();
   const { tier, upgradeTier, paymentProvider, setPaymentProvider, initiateCheckout, isProcessingPayment } = useSubscriptionStore();
   const [billingCycle, setBillingCycle] = useState<'monthly' | 'yearly'>('monthly');
+  const [showComingSoon, setShowComingSoon] = useState(false);
 
   const handleSelectTier = async (selectedTier: SubscriptionTier) => {
     if (selectedTier === 'free') {
@@ -16,7 +18,8 @@ export const SubscriptionPlans: React.FC = () => {
       alert('Switched to Free Tier');
       return;
     }
-    await initiateCheckout(selectedTier);
+    // Show Coming Soon modal for paid tiers (payment gateway not yet live)
+    setShowComingSoon(true);
   };
 
   const getTierIcon = (t: SubscriptionTier) => {
@@ -40,7 +43,7 @@ export const SubscriptionPlans: React.FC = () => {
               CHOOSE YOUR TECHNOVA VERSE PLAN
             </h1>
             <p className="text-sm text-[#8a8080] max-w-xl mx-auto">
-              Unlock dedicated AI quotas, advanced vulnerability scanners, token mints, studio rentals, and production-grade App builders.
+              Unlock dedicated compute quotas, advanced vulnerability scanners, token mints, studio rentals, and production-grade app builders.
             </p>
 
             <div className="flex justify-center mt-6">
@@ -170,6 +173,13 @@ export const SubscriptionPlans: React.FC = () => {
           </div>
         </div>
       </div>
+      <ComingSoonModal
+        isOpen={showComingSoon}
+        onClose={() => setShowComingSoon(false)}
+        title="Payment Gateway Coming Soon"
+        featureName="Live Checkout"
+        description="Our payment processing integration is being finalized. You'll be able to upgrade your plan securely through Paystack, Flutterwave, or Stripe very soon."
+      />
       <Footer />
     </div>
   );

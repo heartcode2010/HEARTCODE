@@ -13,8 +13,8 @@ const QuizVersePage: React.FC = () => {
           subtitle="LEARNING MODULE COMPILER" 
           features={[
             'Interactive assessment engine',
-            'AI-driven question generation',
-            'Progress tracking and scoring logic'
+            'Dynamic question generation and scoring',
+            'Progress tracking and performance analytics'
           ]}
         />
       </div>

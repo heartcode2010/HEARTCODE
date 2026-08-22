@@ -4,6 +4,7 @@ import useWalletStore from '../store/walletStore';
 import { Wallet, ArrowUpRight, ArrowDownLeft, Clock, CheckCircle, XCircle, DollarSign, Users, TrendingUp, ArrowLeft, CreditCard, Building2 } from 'lucide-react';
 import { Header } from '../components/Header';
 import { Footer } from '../components/Footer';
+import { ComingSoonModal } from '../components/Shared/ComingSoonModal';
 
 export const WalletPage: React.FC = () => {
   const navigate = useNavigate();
@@ -13,14 +14,12 @@ export const WalletPage: React.FC = () => {
   const [wdBank, setWdBank] = useState('OPay');
   const [wdAccount, setWdAccount] = useState('');
   const [wdName, setWdName] = useState('');
+  const [showComingSoon, setShowComingSoon] = useState(false);
 
   const handleWithdraw = (e: React.FormEvent) => {
     e.preventDefault();
-    const amt = parseInt(wdAmount);
-    if (!amt || amt < 1000) { alert('Minimum withdrawal is ₦1,000'); return; }
-    const success = w.requestWithdrawal(amt, wdBank, wdAccount, wdName);
-    if (success) { alert(`Withdrawal of ₦${amt.toLocaleString()} submitted for review!`); setWdAmount(''); setWdAccount(''); setWdName(''); }
-    else alert('Insufficient withdrawable balance.');
+    // Withdrawal processing not yet live
+    setShowComingSoon(true);
   };
 
   const statusIcon = (s: string) => {
@@ -186,6 +185,13 @@ export const WalletPage: React.FC = () => {
           )}
         </div>
       </div>
+      <ComingSoonModal
+        isOpen={showComingSoon}
+        onClose={() => setShowComingSoon(false)}
+        title="Withdrawals Coming Soon"
+        featureName="Bank Withdrawal"
+        description="Our banking integration is currently being set up. You'll be able to withdraw your earnings directly to OPay, GTBank, Zenith, and more very soon."
+      />
       <Footer />
     </div>
   );

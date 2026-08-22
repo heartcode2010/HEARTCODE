@@ -2,7 +2,7 @@ import { ThreatRadarData } from '../types';
 
 export const threatRadar = {
   getRadarLabels(): string[] {
-    return ['Attack Surface', 'AI Usage', 'Privacy Exp.', 'Tracking Int.', 'Obfuscation', 'Infra. Complexity'];
+    return ['Attack Surface', 'Automation Lvl', 'Privacy Exp.', 'Tracking Int.', 'Obfuscation', 'Infra. Complexity'];
   },
 
   getRadarValues(data: ThreatRadarData | null): number[] {

@@ -48,9 +48,9 @@ const SCAN_LAYERS: LayerConfig[] = [
   },
   {
     id: 'ai-forensics',
-    label: 'AI FORENSICS',
+    label: 'CODE FORENSICS',
     icon: '⟐',
-    description: 'AI-generated code detection, human vs AI classification',
+    description: 'Code authenticity analysis, structural pattern classification',
     depth: 4,
     color: '#a855f7',
     panels: ['ai-forensics', 'dna-profile', 'execution-trace'],

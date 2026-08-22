@@ -9,7 +9,7 @@ export const Footer = () => {
     'Vulnerability scanning analyses client-side source only and should be paired with server tools for full coverage.',
     'Use the highlighted view for syntax-coloured HTML.',
     'Paste source when a target blocks direct fetching.',
-    'AI analysis helps surface generative patterns after source is loaded.',
+    'Pattern analysis helps surface structural cues after source is loaded.',
     'Export findings as HTML, Markdown, JSON, or CSV reports.',
   ];
 
