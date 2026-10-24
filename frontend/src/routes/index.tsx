@@ -5,18 +5,11 @@
  */
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-<<<<<<< HEAD
-=======
-import useAuthStore from '../store/authStore';
 import MusicPlayer from '../components/Shared/MusicPlayer';
->>>>>>> b733d8dfa1b6d44921a2fd3fa5658f3ec62e645e
 
 const Dashboard = lazy(() => import('../pages/Dashboard'));
-<<<<<<< HEAD
-=======
 
 // ── Academy Pages ──
->>>>>>> b733d8dfa1b6d44921a2fd3fa5658f3ec62e645e
 const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
 
 // ── Megastructure Module Pages ──
@@ -51,8 +44,6 @@ const PageLoader: React.FC = () => (
   </div>
 );
 
-<<<<<<< HEAD
-=======
 // ── Direct Route Access (No Login Requirement) ──────────────────────────────
 interface ProtectedRouteProps {
   children: React.ReactNode;
@@ -62,17 +53,11 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
   return <>{children}</>;
 };
 
->>>>>>> b733d8dfa1b6d44921a2fd3fa5658f3ec62e645e
 // ── App Router ────────────────────────────────────────────────────────────────
 const AppRouter: React.FC = () => (
   <BrowserRouter>
     <Suspense fallback={<PageLoader />}>
       <Routes>
-<<<<<<< HEAD
-        <Route path="/" element={<Dashboard />} />
-        <Route path="/academy/*" element={<AcademyLanding />} />
-        <Route path="/login" element={<Navigate to="/" replace />} />
-=======
         {/* Redirect login directly to dashboard */}
         <Route path="/login" element={<Navigate to="/" replace />} />
 
@@ -137,7 +122,7 @@ const AppRouter: React.FC = () => (
           }
         />
         <Route
-          path="/learning-dashboard"
+          path="/learning"
           element={
             <ProtectedRoute>
               <LearningDashboard />
@@ -145,7 +130,7 @@ const AppRouter: React.FC = () => (
           }
         />
         <Route
-          path="/course/:courseId"
+          path="/course/:id"
           element={
             <ProtectedRoute>
               <CoursePage />
@@ -262,7 +247,6 @@ const AppRouter: React.FC = () => (
         />
 
         {/* Catch-all */}
->>>>>>> b733d8dfa1b6d44921a2fd3fa5658f3ec62e645e
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
       {/* Mounted globally for continuous play across navigation loops */}
@@ -272,4 +256,3 @@ const AppRouter: React.FC = () => (
 );
 
 export default AppRouter;
-

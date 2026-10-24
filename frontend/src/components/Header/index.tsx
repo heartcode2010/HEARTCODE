@@ -8,7 +8,7 @@ import { ChevronDown, Crown, Trophy, Wallet, Cpu, Sparkles } from 'lucide-react'
 
 export const Header = () => {
   const { status } = useScanStore();
-  const { user, logoutAction } = useAuthStore();
+  const { user } = useAuthStore();
   const { tier } = useSubscriptionStore();
   const { getOverallLevel } = useHallmarkStore();
   const navigate = useNavigate();
@@ -74,38 +74,6 @@ export const Header = () => {
             </div>
           </button>
 
-<<<<<<< HEAD
-      <div className="hdr-right flex items-center gap-3 flex-shrink-0">
-        <button 
-          onClick={() => setHistoryOpen(true)}
-          className="act-btn flex items-center gap-1.5 px-3 py-1 bg-cyber-surface2 hover:bg-cyber-surface3 border border-cyber-border hover:border-cyber-border-red rounded text-[0.68rem] text-cyber-ash hover:text-white font-sans cursor-pointer transition-all duration-150 active:scale-[0.97]"
-          title="Scan History"
-        >
-          <svg width="12" height="12" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2.2">
-            <circle cx="12" cy="12" r="10" />
-            <polyline points="12 6 12 12 16 14" />
-          </svg>
-          <span className="hidden sm:inline">History</span>
-        </button>
-
-        <div className={`status-pill flex items-center gap-2 bg-cyber-surface border rounded-[100px] px-3.5 py-1 text-[0.68rem] font-mono whitespace-nowrap transition-colors duration-300 ${pillBorder}`}>
-          <div className={`w-1.5 h-1.5 rounded-full flex-shrink-0 transition-all duration-300 ${dotColor}`} />
-          <span>{statusLabel}</span>
-        </div>
-
-        <div className="session-clock font-mono text-[0.66rem] text-cyber-ash3 whitespace-nowrap hidden sm:block">
-          Session <b className="text-cyber-ash2 font-normal">{sessionTime}</b>
-        </div>
-
-        {user && (
-          <div className="flex items-center gap-2 border-l border-cyber-border pl-3">
-            <span className="font-mono text-[0.68rem] text-cyber-ash2">
-              [{user.username.toUpperCase()}]
-            </span>
-          </div>
-        )}
-
-=======
           <div className="relative hidden md:block">
             <button
               onClick={() => setShowDropdown(!showDropdown)}
@@ -175,10 +143,11 @@ export const Header = () => {
           </button>
           <div className="flex items-center gap-2 rounded-full border border-white/10 bg-white/5 px-3 py-2 text-xs font-medium text-slate-200">
             <span className="h-2 w-2 rounded-full bg-emerald-400 animate-pulse" />
-            <span className="hidden sm:inline font-mono uppercase tracking-wider text-[0.68rem] text-slate-300">Operator Workspace</span>
+            <span className="hidden sm:inline font-mono uppercase tracking-wider text-[0.68rem] text-slate-300">
+              {user ? `Operator: ${user.username}` : 'Operator Workspace'}
+            </span>
           </div>
         </div>
->>>>>>> b733d8dfa1b6d44921a2fd3fa5658f3ec62e645e
       </div>
     </header>
   );
