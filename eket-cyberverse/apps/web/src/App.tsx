@@ -10,9 +10,9 @@ import {
   Terminal,
   Activity,
   FileText,
-  Search,
   Plus,
   ArrowRight,
+
   ExternalLink,
   Flame,
   Radio,

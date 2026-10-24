@@ -79,7 +79,7 @@ const AICyberTutor: React.FC = () => {
     } catch (err) {
       console.error(err);
       addLog('Tutor channel disrupted. Initializing rule-based fallback response.');
-      
+
       // Rule-based fallback if backend offline or error
       let fallbackContent = '';
       const lowerText = text.toLowerCase();
@@ -99,15 +99,6 @@ Phishing leverages human manipulation rather than technical exploits:
 - **Urgency**: "Your bank account will be locked in 2 hours!"
 - **Spoofing**: Domains designed to look real (\`paypal-security.support\`).
 - **Advice**: Never click links directly. Navigate to your bank or service directly in a fresh tab.`;
-      } else {
-        fallbackContent = `### 🤖 AI Cyber Tutor [Rule-Based Fallback]
-
-I am currently running in local offline mode. To activate the full LLM chat experience:
-1. Ensure your backend \`.env\` has either \`GEMINI_API_KEY\` or \`OPENAI_API_KEY\` set.
-2. Verify the backend service is running.
-
-**Your Question**: "${text}"
-**Suggested Academy Paths**: Please try the **Phishing Lab** or **Scam Detector** modules!`;
       }
 
       const tutorMsg: TutorMessage = {
@@ -226,7 +217,7 @@ I am currently running in local offline mode. To activate the full LLM chat expe
                 <div className="max-w-md space-y-2">
                   <h3 className="font-display font-bold text-cyber-cyan text-sm tracking-wide">INITIAL CONTACT ESTABLISHED</h3>
                   <p className="text-xs text-cyber-ash2">
-                    Welcome to the Heartcode AI Cybersecurity Tutor. I am here to help you develop, reinforce, and expand your cyber-defense capabilities.
+                    Welcome to the Tehnova OS Cybersecurity Tutor. I am here to help you develop, reinforce, and expand your cyber-defense capabilities.
                   </p>
                 </div>
 
@@ -253,11 +244,10 @@ I am currently running in local offline mode. To activate the full LLM chat expe
                   className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
                 >
                   <div
-                    className={`max-w-[85%] rounded p-3.5 border ${
-                      msg.role === 'user'
+                    className={`max-w-[85%] rounded p-3.5 border ${msg.role === 'user'
                         ? 'bg-cyber-surface2 border-cyber-border text-white rounded-tr-none'
                         : 'bg-cyber-bg border-cyber-border text-cyber-ash rounded-tl-none font-mono text-xs leading-relaxed space-y-2'
-                    }`}
+                      }`}
                   >
                     {msg.role === 'user' ? (
                       msg.content

@@ -5,62 +5,41 @@ export const Footer = () => {
   const statusLabel = useScanStore((state) => state.statusLabel);
 
   const messages = [
-    'Authorised white-box pentesting tool — only inspect targets you own or have permission to test',
-    'Vulnerability scan analyses client-side source only — combine with server tools for full coverage',
-    'Use Highlighted view for syntax-coloured HTML — default view',
-    'Use Paste to load source when target sites block direct fetching',
-    'AI Analyse runs Deep generative security audits using LLMs after source is loaded',
-    'Export saves scan findings as printable HTML, Markdown, JSON, or CSV reports',
+    'Authorised white-box pentesting tool — inspect only targets you own or have permission to test.',
+    'Vulnerability scanning analyses client-side source only and should be paired with server tools for full coverage.',
+    'Use the highlighted view for syntax-coloured HTML.',
+    'Paste source when a target blocks direct fetching.',
+    'Pattern analysis helps surface structural cues after source is loaded.',
+    'Export findings as HTML, Markdown, JSON, or CSV reports.',
   ];
 
-  // Repeat the array to ensure seamless infinite animation loop
   const tickerContent = [...messages, ...messages].map((msg, index) => (
     <React.Fragment key={index}>
-      <span className="tick-msg font-mono text-[0.58rem] text-cyber-ash3 px-6">
-        {msg.includes('white-box') ? (
-          <>
-            Authorised <b>white-box pentesting</b> tool — only inspect targets you own or have permission to test
-          </>
-        ) : msg.includes('client-side') ? (
-          <>
-            Vulnerability scan analyses <b>client-side source only</b> — combine with server tools for full coverage
-          </>
-        ) : msg.includes('Highlighted') ? (
-          <>
-            Use <b>Highlighted</b> view for syntax-coloured HTML — default view
-          </>
-        ) : msg.includes('AI Analyse') ? (
-          <>
-            <b>AI Analyse</b> runs deep security checks using LLM endpoints
-          </>
-        ) : msg.includes('Export') ? (
-          <>
-            <b>Export</b> saves scan findings as a report
-          </>
-        ) : (
-          msg
-        )}
-      </span>
-      <span className="tick-msg text-cyber-ash3 font-mono text-[0.58rem] select-none">·</span>
+      <span className="px-6 text-[0.68rem] text-slate-400">{msg}</span>
+      <span className="select-none text-slate-600">·</span>
     </React.Fragment>
   ));
 
   return (
-    <div className="h-7 bg-cyber-surface border-t border-cyber-border-red flex items-center px-4 gap-3.5 flex-shrink-0 overflow-hidden select-none">
-      <div className="fi font-mono text-[0.6rem] text-cyber-ash3 flex items-center gap-1 whitespace-nowrap flex-shrink-0">
-        Status: <b className="text-cyber-ash2 font-normal">{statusLabel}</b>
-      </div>
-      <div className="w-px h-3.5 bg-cyber-border flex-shrink-0" />
-      <div className="fi font-mono text-[0.6rem] text-cyber-ash3 whitespace-nowrap flex-shrink-0">
-        v4.0
-      </div>
-      <div className="w-px h-3.5 bg-cyber-border flex-shrink-0" />
-      <div className="flex-1 overflow-hidden min-w-0">
-        <div className="tick-track">
-          {tickerContent}
+    <footer className="border-t border-white/10 bg-slate-950/80 backdrop-blur-xl">
+      <div className="mx-auto flex max-w-7xl flex-col gap-3 px-4 py-3 text-sm sm:flex-row sm:items-center sm:justify-between sm:px-6 lg:px-8">
+        <div className="flex flex-wrap items-center gap-2 text-[0.72rem] uppercase tracking-[0.24em] text-slate-500">
+          <span>Status</span>
+          <span className="rounded-full border border-white/10 bg-white/5 px-2.5 py-1 font-semibold text-slate-200">{statusLabel}</span>
+          <span className="text-slate-600">•</span>
+          <span>v4.0</span>
+        </div>
+        <div className="overflow-hidden rounded-full border border-white/10 bg-white/5 px-3 py-2">
+          <div className="flex animate-[marquee_18s_linear_infinite] whitespace-nowrap text-[0.72rem] text-slate-400">
+            {tickerContent}
+          </div>
+        </div>
+        <div className="flex items-center gap-3 text-[0.72rem] text-slate-500">
+          <a href="https://wa.me/2348140473040" target="_blank" rel="noopener noreferrer" className="transition hover:text-white">WhatsApp</a>
+          <a href="mailto:aniebietabasienobong@gmail.com" className="transition hover:text-white">Email</a>
         </div>
       </div>
-    </div>
+    </footer>
   );
 };
 

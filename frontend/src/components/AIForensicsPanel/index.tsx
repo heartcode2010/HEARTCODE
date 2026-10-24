@@ -11,10 +11,10 @@ export const AIForensicsPanel = () => {
         <div className="absolute inset-0 bg-[radial-gradient(rgba(224,40,64,0.03)_1px,transparent_1px)] bg-[size:16px_16px] pointer-events-none"></div>
         <div className="text-3xl mb-3 animate-pulse">🕵️‍♂️</div>
         <div className="font-display text-[0.7rem] font-bold text-cyber-red tracking-[0.2em] uppercase">
-          AWAITING AI CLASSIFICATION
+          AWAITING CODE AUTHENTICITY SCAN
         </div>
         <div className="text-[0.58rem] text-cyber-ash2 font-mono mt-1 max-w-xs">
-          Trigger model scanners to evaluate code structure weights and boilerplate lines.
+          Trigger scanners to evaluate code structure weights and boilerplate lines.
         </div>
       </div>
     );
@@ -39,11 +39,11 @@ export const AIForensicsPanel = () => {
         <div className="flex items-center gap-2">
           <span className="text-base">🔬</span>
           <h3 className="font-display text-[0.72rem] font-black tracking-wider text-white">
-            GENERATIVE MODEL FORENSICS
+            CODE AUTHENTICITY ANALYSIS
           </h3>
         </div>
         <span className="font-mono text-[0.55rem] text-cyber-red bg-cyber-red-dim border border-cyber-border-red px-1.5 py-0.5 rounded uppercase">
-          AI_FORENSICS
+          FORENSICS
         </span>
       </div>
 
@@ -51,7 +51,7 @@ export const AIForensicsPanel = () => {
         {/* Likelihood Gauge */}
         <div className="grid grid-cols-2 gap-3 flex-shrink-0">
           <div className="bg-cyber-bg border border-cyber-border p-3 rounded flex flex-col justify-between items-center text-center">
-            <span className="text-[0.52rem] text-cyber-ash2 uppercase tracking-wider">AI CONFI_SCORE</span>
+            <span className="text-[0.52rem] text-cyber-ash2 uppercase tracking-wider">AUTHENTICITY SCORE</span>
             
             <div className="relative w-14 h-14 my-2 flex items-center justify-center">
               <svg className="w-full h-full transform -rotate-90" viewBox="0 0 36 36">
@@ -69,8 +69,8 @@ export const AIForensicsPanel = () => {
             
             <div className="space-y-1.5 my-2">
               <div className="flex justify-between text-[0.52rem] font-mono">
-                <span className="text-cyber-green font-bold">HUMAN</span>
-                <span className="text-cyber-red font-bold">AI</span>
+                <span className="text-cyber-green font-bold">ORIGINAL</span>
+                <span className="text-cyber-red font-bold">TEMPLATED</span>
               </div>
               <div className="w-full bg-cyber-ash3 h-2 rounded overflow-hidden flex">
                 <div className="bg-cyber-green h-full" style={{ width: `${human}%` }}></div>
@@ -94,7 +94,7 @@ export const AIForensicsPanel = () => {
           </div>
 
           <div className="bg-cyber-bg border border-cyber-border p-2.5 rounded flex flex-col justify-between">
-            <span className="text-cyber-ash2">PROBABLE BUILD TOOL</span>
+            <span className="text-cyber-ash2">PATTERN ARCHETYPE</span>
             <span className="text-white font-bold mt-1 text-center truncate">
               {aiForensics.probableAISource?.join(', ') || 'N/A'}
             </span>

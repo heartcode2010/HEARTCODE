@@ -1,4 +1,5 @@
 import React from 'react';
+import { Cpu, Layers3, ScanLine } from 'lucide-react';
 import useScanStore from '../../store/scanStore';
 import api from '../../services/api';
 
@@ -8,15 +9,11 @@ export const TechStackPanel: React.FC = () => {
   const [steps, setSteps] = React.useState<{ text: string; done: boolean }[]>([]);
 
   const SCAN_STEPS = [
-    'Parsing HTML meta tags…',
-    'Checking generator signatures…',
-    'Detecting frontend frameworks…',
-    'Scanning CSS libraries…',
-    'Fingerprinting JS bundles…',
-    'Checking analytics trackers…',
-    'Detecting CDN patterns…',
-    'Identifying build tools…',
-    'Correlating stack signals…',
+    'Reviewing meta patterns…',
+    'Checking framework signatures…',
+    'Inspecting shared libraries…',
+    'Mapping analytics and hosting cues…',
+    'Building the stack summary…',
   ];
 
   const wait = (ms: number) => new Promise(r => setTimeout(r, ms));
@@ -25,7 +22,7 @@ export const TechStackPanel: React.FC = () => {
     if (!scanId || scanning) return;
     setScanning(true);
     setSteps([]);
-    setStatus('working', 'Detecting tech…');
+    setStatus('working', 'Inspecting stack…');
 
     const stepList: { text: string; done: boolean }[] = [];
 
@@ -44,19 +41,18 @@ export const TechStackPanel: React.FC = () => {
       const res = await api.post('/scans/tech-stack', { scanId });
       if (res.data?.success) {
         setTechStack(res.data.techStack);
-        setStatus('ok', 'Tech Stack Done');
-        showToast('🔬', `Detected ${res.data.techStack.length} technologies`);
+        setStatus('ok', 'Stack review complete');
+        showToast('•', `${res.data.techStack.length} stack signals captured`);
       }
     } catch (err: any) {
-      setStatus('fail', 'Tech detect failed');
-      showToast('⚠️', err.response?.data?.message || 'Tech detection failed');
+      setStatus('fail', 'Stack review failed');
+      showToast('•', err.response?.data?.message || 'The stack review could not be completed.');
     } finally {
       setScanning(false);
       setSteps([]);
     }
   };
 
-  // Group by category
   const groupedStack = techStack.reduce<Record<string, typeof techStack>>((acc, tech) => {
     if (!acc[tech.cat]) acc[tech.cat] = [];
     acc[tech.cat].push(tech);
@@ -64,87 +60,55 @@ export const TechStackPanel: React.FC = () => {
   }, {});
 
   return (
-    <div
-      className="aidet-panel w-[300px] min-w-[240px] max-w-[340px] flex flex-col flex-shrink-0 bg-cyber-bg2"
-      style={{ borderLeft: '1px solid rgba(34,170,255,0.2)' }}
-    >
-      {/* Header */}
-      <div
-        className="aidet-panel-header bg-cyber-surface px-4 py-2.5 flex items-center justify-between flex-shrink-0 gap-2.5"
-        style={{ borderBottom: '1px solid rgba(34,170,255,0.22)' }}
-      >
-        <div className="aidet-title font-display text-[0.6rem] font-bold tracking-[0.2em] text-[#22aaff] uppercase flex items-center gap-2">
-          <div className="w-1.5 h-1.5 rounded-full bg-[#22aaff] shadow-[0_0_7px_#22aaff] animate-[blink_0.8s_infinite]" />
-          Technology Stack
+    <div className="flex min-w-[280px] max-w-[340px] flex-col border-l border-white/10 bg-slate-950/70">
+      <div className="border-b border-white/10 px-4 py-4 sm:px-5">
+        <div className="flex items-start justify-between gap-3">
+          <div>
+            <div className="section-title">Stack</div>
+            <h3 className="mt-1 text-base font-semibold text-white">A clear view of the build</h3>
+            <p className="mt-1 text-sm text-slate-400">Frameworks, libraries, and supporting services that shape the experience.</p>
+          </div>
+          {scanId && (
+            <button onClick={handleDetect} disabled={scanning} className="btn-secondary h-9 px-3 text-xs">
+              {scanning ? 'Inspecting…' : techStack.length > 0 ? 'Re-check' : 'Inspect'}
+            </button>
+          )}
         </div>
-        {scanId && (
-          <button
-            onClick={handleDetect}
-            disabled={scanning}
-            className={`text-[0.62rem] font-mono px-2.5 py-1 rounded border transition-all duration-200 cursor-pointer
-              ${scanning
-                ? 'border-[#22aaff] text-[#22aaff] bg-[rgba(34,170,255,0.08)] opacity-70 pointer-events-none'
-                : 'border-[rgba(34,170,255,0.4)] text-[#22aaff] hover:bg-[rgba(34,170,255,0.12)] hover:border-[#22aaff]'
-              }`}
-          >
-            {scanning ? 'Scanning…' : techStack.length > 0 ? 'Re-Scan' : 'Detect'}
-          </button>
-        )}
       </div>
 
-      {/* Body */}
-      <div className="aidet-scroll flex-1 overflow-y-auto p-4 flex flex-col gap-2.5">
-
-        {/* Idle */}
+      <div className="flex-1 overflow-y-auto p-3 sm:p-4">
         {!scanId && !scanning && techStack.length === 0 && (
-          <div className="aidet-idle flex flex-col items-center justify-center gap-3 py-10 text-center flex-1">
-            <div className="text-4xl opacity-15" style={{ animation: 'float 5s ease-in-out infinite' }}>🔬</div>
-            <div className="text-[0.78rem] text-cyber-ash3 leading-[1.7]">
-              Load a target page, then click<br />
-              <strong className="text-cyber-ash2">Detect Technology Stack</strong><br />
-              to fingerprint what it's built with.
-            </div>
+          <div className="flex h-full flex-col items-center justify-center gap-3 rounded-[24px] border border-dashed border-white/10 bg-white/4 px-5 py-10 text-center">
+            <div className="rounded-full bg-white/5 p-3 text-slate-300"><Layers3 size={20} /></div>
+            <div className="text-sm leading-6 text-slate-400">Inspect a target and we’ll map the platform beneath the surface.</div>
           </div>
         )}
 
-        {/* Scanning steps */}
         {scanning && steps.length > 0 && (
-          <div className="flex flex-col gap-2 py-1">
-            {steps.map((step, i) => (
-              <div
-                key={i}
-                className={`font-mono text-[0.72rem] leading-[1.8] flex items-center gap-2 ${step.done ? 'text-[#22aaff]' : 'text-cyber-ash2'}`}
-                style={{ opacity: 0, animation: 'fi 0.12s forwards' }}
-              >
-                <span className="text-[0.66rem] text-[#22aaff]">
-                  {step.done ? '[✓]' : '[~]'}
-                </span>
+          <div className="space-y-2 rounded-[24px] border border-white/10 bg-white/5 p-4">
+            {steps.map((step, index) => (
+              <div key={index} className="flex items-center gap-2 text-sm text-slate-400">
+                <span className={step.done ? 'text-cyan-300' : 'text-slate-500'}>•</span>
                 {step.text}
               </div>
             ))}
           </div>
         )}
 
-        {/* Results grouped by category */}
         {!scanning && techStack.length > 0 && (
-          <div className="flex flex-col gap-3">
+          <div className="space-y-3">
             {Object.entries(groupedStack).map(([category, items]) => (
-              <div key={category}>
-                <div className="font-mono text-[0.58rem] uppercase tracking-[0.16em] text-[rgba(34,170,255,0.5)] mb-1.5 font-semibold">{category}</div>
-                <div className="flex flex-col gap-1.5">
-                  {items.map((tech, i) => (
-                    <div
-                      key={i}
-                      className="bg-cyber-surface border border-cyber-border rounded p-2.5 flex items-start gap-2.5"
-                    >
-                      <span className="text-[1rem] flex-shrink-0 leading-none mt-0.5">{tech.icon}</span>
-                      <div className="flex-1 min-w-0">
-                        <div className="text-[0.78rem] font-semibold text-[#22aaff] leading-tight">{tech.name}</div>
-                        {tech.evidence && (
-                          <div className="font-mono text-[0.62rem] text-cyber-ash3 mt-0.5 leading-[1.5] break-all">
-                            {tech.evidence.substring(0, 80)}{tech.evidence.length > 80 ? '…' : ''}
-                          </div>
-                        )}
+              <div key={category} className="rounded-[24px] border border-white/10 bg-white/5 p-3">
+                <div className="mb-2 text-[0.7rem] font-semibold uppercase tracking-[0.2em] text-slate-500">{category}</div>
+                <div className="space-y-2">
+                  {items.map((tech, index) => (
+                    <div key={index} className="rounded-2xl border border-white/10 bg-slate-950/60 p-3">
+                      <div className="flex items-start gap-2">
+                        <div className="mt-0.5 rounded-full bg-cyan-500/10 p-2 text-cyan-300"><Cpu size={14} /></div>
+                        <div className="min-w-0 flex-1">
+                          <div className="text-sm font-semibold text-white">{tech.name}</div>
+                          {tech.evidence && <div className="mt-1 text-sm text-slate-400">{tech.evidence.substring(0, 90)}{tech.evidence.length > 90 ? '…' : ''}</div>}
+                        </div>
                       </div>
                     </div>
                   ))}
@@ -152,11 +116,8 @@ export const TechStackPanel: React.FC = () => {
               </div>
             ))}
 
-            {/* Total count */}
-            <div className="mt-1 px-3 py-2 bg-[rgba(34,170,255,0.07)] border border-[rgba(34,170,255,0.2)] rounded text-center">
-              <span className="font-mono text-[0.66rem] text-[#22aaff]">
-                {techStack.length} technolog{techStack.length === 1 ? 'y' : 'ies'} detected
-              </span>
+            <div className="rounded-[24px] border border-cyan-400/20 bg-cyan-500/10 px-3 py-2 text-center text-sm text-cyan-200">
+              {techStack.length} {techStack.length === 1 ? 'signal' : 'signals'} captured
             </div>
           </div>
         )}
