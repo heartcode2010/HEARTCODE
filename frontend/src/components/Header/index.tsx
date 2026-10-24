@@ -118,18 +118,12 @@ export const Header = () => {
 
         {user && (
           <div className="flex items-center gap-2 border-l border-cyber-border pl-3">
-            <span className="font-mono text-[0.68rem] text-cyber-ash2 hidden md:inline">
+            <span className="font-mono text-[0.68rem] text-cyber-ash2">
               [{user.username.toUpperCase()}]
             </span>
-            <button
-              onClick={logoutAction}
-              className="act-btn flex items-center gap-1 px-2.5 py-1 border border-cyber-border hover:border-cyber-red bg-cyber-surface2 hover:bg-cyber-red-dim rounded text-[0.66rem] text-cyber-red font-mono cursor-pointer transition-all duration-150 active:scale-[0.97]"
-              title="Log Out Security Session"
-            >
-              LOGOUT
-            </button>
           </div>
         )}
+
       </div>
     </header>
   );

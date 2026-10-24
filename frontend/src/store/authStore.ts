@@ -10,30 +10,29 @@ interface AuthStoreState {
   logoutAction: () => void;
 }
 
-// Read initial state from localStorage
-const cachedUser = localStorage.getItem('hc_user');
-const cachedAccessToken = localStorage.getItem('hc_access_token');
-const cachedRefreshToken = localStorage.getItem('hc_refresh_token');
+const defaultOperator: User = {
+  id: 'local-operator',
+  username: 'Operator',
+  email: 'operator@heartcode.local',
+  role: 'admin',
+  createdAt: new Date().toISOString(),
+};
 
 export const useAuthStore = create<AuthStoreState>((set) => ({
-  user: cachedUser ? JSON.parse(cachedUser) : null,
-  accessToken: cachedAccessToken || null,
-  refreshToken: cachedRefreshToken || null,
-  isAuthenticated: !!cachedAccessToken,
+  user: defaultOperator,
+  accessToken: 'local-operator-session',
+  refreshToken: 'local-operator-refresh',
+  isAuthenticated: true,
 
   setSession: (accessToken, refreshToken, user) => {
-    localStorage.setItem('hc_user', JSON.stringify(user));
-    localStorage.setItem('hc_access_token', accessToken);
-    localStorage.setItem('hc_refresh_token', refreshToken);
     set({ user, accessToken, refreshToken, isAuthenticated: true });
   },
 
   logoutAction: () => {
-    localStorage.removeItem('hc_user');
-    localStorage.removeItem('hc_access_token');
-    localStorage.removeItem('hc_refresh_token');
-    set({ user: null, accessToken: null, refreshToken: null, isAuthenticated: false });
+    // Reset to default operator in no-auth mode
+    set({ user: defaultOperator, accessToken: 'local-operator-session', refreshToken: 'local-operator-refresh', isAuthenticated: true });
   },
 }));
 
 export default useAuthStore;
+

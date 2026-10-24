@@ -55,7 +55,7 @@ export const SplashScreen: React.FC<{ onDone: () => void }> = ({ onDone }) => {
         <img
           id="intro-img"
           src="/media/images/379439.png"
-          alt="HEARTCODE Domain"
+          alt="Eket CyberVerse"
           draggable={false}
           className="w-full h-full object-contain block"
           style={{ animation: 'intro-img-show 2.4s ease forwards' }}

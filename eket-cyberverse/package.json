@@ -1,0 +1,17 @@
+{
+  "name": "eket-cyberverse",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Eket Cyberverse - Global Cybersecurity Intelligence, Exposure Management, Defensive Automation, and Digital Resilience Platform",
+  "author": "Heartcode Technologies",
+  "scripts": {
+    "dev": "concurrently \"npm run dev:api\" \"npm run dev:web\"",
+    "dev:api": "npm run dev --prefix apps/api",
+    "dev:web": "npm run dev --prefix apps/web",
+    "build": "npm run build --prefix apps/api && npm run build --prefix apps/web",
+    "test": "npm run test --prefix apps/api"
+  },
+  "devDependencies": {
+    "concurrently": "^8.2.2"
+  }
+}
