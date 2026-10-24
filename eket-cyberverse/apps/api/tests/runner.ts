@@ -42,10 +42,11 @@ test('Verified Remediation: Reject verification attempt lacking substantive evid
   assert.ok(task, 'Task must exist');
 
   // Attempt verification with empty evidence
-  const emptyEvidence = '';
-  const isRejected = !emptyEvidence || emptyEvidence.trim().length < 10;
+  const emptyEvidence: string = '';
+  const isRejected = emptyEvidence.trim().length < 10;
 
   assert.strictEqual(isRejected, true, 'Verification without evidence MUST be rejected');
+
 });
 
 // 3. Evidence-Based Verification Success Test
