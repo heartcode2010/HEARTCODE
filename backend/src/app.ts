@@ -12,6 +12,8 @@ import reportRoutes from './routes/report.routes';
 import settingsRoutes from './routes/settings.routes';
 import intelligenceRoutes from './routes/intelligence.routes';
 import academyRoutes from './routes/academy.routes';
+import adminRoutes from './routes/admin.routes';
+import { crawlerProtection } from './middleware/crawlerProtection.middleware';
 import { errorHandler } from './middleware/error.middleware';
 
 dotenv.config();
@@ -23,22 +25,25 @@ app.use(helmet());
 
 // CORS setup
 const corsOptions = {
-  origin: process.env.VITE_URL || '*', // allow frontend Vite origin
+  origin: '*', // allow frontend Vite origin and dynamic requests
   optionsSuccessStatus: 200,
 };
 app.use(cors(corsOptions));
 
 // Parsing JSON payloads
-app.use(express.json({ limit: '15mb' })); // support large HTML paste inputs
+app.use(express.json({ limit: '15mb' }));
 app.use(express.urlencoded({ extended: true, limit: '15mb' }));
+
+// Anti-Crawler and External Scanner Defense Filter
+app.use(crawlerProtection);
 
 // Rate Limiter
 const limiter = rateLimit({
-  windowMs: 15 * 60 * 1000, // 15 minutes
-  max: 200, // limit each IP to 200 requests per window
+  windowMs: 15 * 60 * 1000,
+  max: 300,
   standardHeaders: true,
   legacyHeaders: false,
-  message: 'Too many requests from this IP, please try again after 15 minutes',
+  message: 'Too many requests from this client, please try again shortly.',
 });
 app.use('/api/', limiter);
 
@@ -52,10 +57,11 @@ app.use('/api/reports', reportRoutes);
 app.use('/api/settings', settingsRoutes);
 app.use('/api/intelligence', intelligenceRoutes);
 app.use('/api/academy', academyRoutes);
+app.use('/api/admin', adminRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
-  res.status(200).json({ status: 'OK', timestamp: new Date() });
+  res.status(200).json({ status: 'OK', timestamp: new Date(), version: '2.0.0' });
 });
 
 // Global Error Handler

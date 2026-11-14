@@ -1,17 +1,14 @@
-/**
- * backend/src/routes/ai.routes.ts
- * /api/ai-detection/*
- */
 import { Router } from 'express';
-import { authenticateToken } from '../middleware/auth.middleware';
-import { getAnalysis, deepReport, explainFinding } from '../controllers/ai.controller';
+import { optionalAuth } from '../middleware/auth.middleware';
+import { getAnalysis, deepReport, explainFinding, chatCyberExpert } from '../controllers/ai.controller';
 
 const router = Router();
 
-router.get('/:scanId', authenticateToken, getAnalysis);
-router.post('/deep-report', authenticateToken, deepReport);
+router.use(optionalAuth);
 
-// Explain specific finding
-router.post('/explain-finding', authenticateToken, explainFinding);
+router.get('/:scanId', getAnalysis);
+router.post('/deep-report', deepReport);
+router.post('/explain-finding', explainFinding);
+router.post('/chat', chatCyberExpert);
 
 export default router;

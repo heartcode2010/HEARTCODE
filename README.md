@@ -101,7 +101,7 @@ JWT_REFRESH_SECRET=supersecretjwtrefreshkeyforheartcodenotproductionready456!
 # LLM Providers (Required for AI features, e.g. Cyber Tutor, Scam Detector)
 GEMINI_API_KEY=your_gemini_api_key_here
 ACADEMY_AI_MODEL=gemini-1.5-flash
-CERTIFICATE_SECRET=heartcode_academy_cryptographic_verification_key_hash_salt
+CERTIFICATE_SECRET=heartcode_academy_cryptographic_verification_key_hash_salt 
 ACADEMY_STORAGE_PATH=./data/academy
 ```
 

@@ -13,11 +13,28 @@ export const inspectUrl = async (req: AuthenticatedRequest, res: Response, next:
       return res.status(400).json({ success: false, message: 'URL is required' });
     }
 
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: 'Authentication required' });
+    // Self-scan prevention check
+    const protectedHosts = ['localhost', '127.0.0.1', '0.0.0.0', '::1', 'heartcode.io', 'heartcode.vercel.app', 'heartcode.dev'];
+    let targetHost = '';
+    try {
+      const parsed = new URL(url.startsWith('http://') || url.startsWith('https://') ? url : `https://${url}`);
+      targetHost = parsed.hostname.toLowerCase();
+    } catch {
+      targetHost = url.toLowerCase();
     }
 
-    console.log(`[ScanController] Inspecting URL: ${url} (User: ${req.user.username})`);
+    if (protectedHosts.some(h => targetHost === h || targetHost.endsWith(`.${h}`))) {
+      return res.status(400).json({
+        success: false,
+        isSelfScan: true,
+        message: "Can't scan: HEARTCODE self-scan is restricted. Target represents the application's local or production infrastructure."
+      });
+    }
+
+    const userId = req.user?.id || 'guest_user';
+    const username = req.user?.username || 'Guest';
+
+    console.log(`[ScanController] Inspecting URL: ${url} (User: ${username})`);
     
     // 1. Fetch source code and headers
     const { html, headers } = await ScanService.fetchTargetData(url);
@@ -28,7 +45,7 @@ export const inspectUrl = async (req: AuthenticatedRequest, res: Response, next:
     // 3. Save Scan mapping into MongoDB
     const scan = new Scan({
       url,
-      userId: req.user.id,
+      userId,
       htmlSource: html,
       headers: headers,
       ...stats,
@@ -143,11 +160,9 @@ export const runAIDeepAnalysis = async (req: AuthenticatedRequest, res: Response
 
 export const getScanHistory = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: 'Authentication required' });
-    }
+    const userId = req.user?.id || 'guest_user';
 
-    const history = await Scan.find({ userId: req.user.id })
+    const history = await Scan.find({ userId })
       .sort({ createdAt: -1 })
       .limit(15)
       .select('url size lines createdAt');
@@ -163,11 +178,9 @@ export const getScanHistory = async (req: AuthenticatedRequest, res: Response, n
 
 export const clearScanHistory = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    if (!req.user) {
-      return res.status(401).json({ success: false, message: 'Authentication required' });
-    }
+    const userId = req.user?.id || 'guest_user';
 
-    await Scan.deleteMany({ userId: req.user.id });
+    await Scan.deleteMany({ userId });
     
     return res.status(200).json({
       success: true,

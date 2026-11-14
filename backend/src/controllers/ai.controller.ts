@@ -1,7 +1,3 @@
-/**
- * backend/src/controllers/ai.controller.ts
- * Endpoints for AI analysis queries (separate from scan triggers).
- */
 import { Response, NextFunction } from 'express';
 import AIAnalysis from '../models/AIAnalysis';
 import Scan from '../models/Scan';
@@ -16,9 +12,6 @@ export const getAnalysis = async (req: AuthenticatedRequest, res: Response, next
 
     const scan = await Scan.findById(scanId);
     if (!scan) return res.status(404).json({ success: false, message: 'Scan not found' });
-    if (scan.userId.toString() !== req.user?.id && req.user?.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
 
     const analysis = await AIAnalysis.findOne({ scanId });
     if (!analysis) return res.status(404).json({ success: false, message: 'No AI analysis found for this scan' });
@@ -35,9 +28,6 @@ export const deepReport = async (req: AuthenticatedRequest, res: Response, next:
 
     const scan = await Scan.findById(scanId);
     if (!scan) return res.status(404).json({ success: false, message: 'Scan not found' });
-    if (scan.userId.toString() !== req.user?.id && req.user?.role !== 'admin') {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
 
     const report = await AIService.generateDeepReport(scan.htmlSource, scan.url);
     return res.json({ success: true, report });
@@ -53,14 +43,24 @@ export const explainFinding = async (req: AuthenticatedRequest, res: Response, n
     const finding = await Vulnerability.findById(findingId);
     if (!finding) return res.status(404).json({ success: false, message: 'Finding not found' });
 
-    // Ensure the user owns the scan that this finding belongs to
-    const scan = await Scan.findById(finding.scanId);
-    if (!scan || (scan.userId.toString() !== req.user?.id && req.user?.role !== 'admin')) {
-      return res.status(403).json({ success: false, message: 'Forbidden' });
-    }
-
     const explanation = await AIService.explainFinding(finding as any);
     return res.json({ success: true, explanation });
   } catch (err) { next(err); }
 };
 
+/** POST /api/ai-detection/chat — Conversational Talkie-style Cyber Expert Chat */
+export const chatCyberExpert = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
+  try {
+    const { messages, persona } = req.body;
+    if (!messages || !Array.isArray(messages)) {
+      return res.status(400).json({ success: false, message: 'Messages array is required' });
+    }
+
+    const reply = await AIService.chatExpert(messages, persona || 'red_team');
+    return res.json({ success: true, reply });
+  } catch (err) {
+    next(err);
+  }
+};
+
+export default { getAnalysis, deepReport, explainFinding, chatCyberExpert };

@@ -2,7 +2,10 @@ import { Schema, model, Document } from 'mongoose';
 
 export interface IUser extends Document {
   username: string;
-  passwordHash: string;
+  email?: string;
+  passwordHash?: string;
+  googleId?: string;
+  avatarUrl?: string;
   role: 'user' | 'admin';
   refreshToken?: string;
   createdAt: Date;
@@ -18,9 +21,23 @@ const UserSchema = new Schema<IUser>(
       trim: true,
       minlength: 3,
     },
+    email: {
+      type: String,
+      sparse: true,
+      trim: true,
+      lowercase: true,
+    },
     passwordHash: {
       type: String,
-      required: true,
+      default: null,
+    },
+    googleId: {
+      type: String,
+      sparse: true,
+    },
+    avatarUrl: {
+      type: String,
+      default: null,
     },
     role: {
       type: String,
