@@ -23,45 +23,65 @@ export const HistoryModal = ({ isOpen, onClose }: ModalProps) => {
 
   const fetchHistory = async () => {
     setLoading(true);
+    // Load local history first
+    const local = JSON.parse(localStorage.getItem('coded_scan_history') || '[]');
     try {
       const res = await api.get('/scans/history');
-      if (res.data?.success) {
-        setHistoryList(res.data.history || []);
+      if (res.data?.success && Array.isArray(res.data.history) && res.data.history.length > 0) {
+        setHistoryList(res.data.history);
+      } else {
+        setHistoryList(local);
       }
     } catch (err) {
-      console.error(err);
+      setHistoryList(local);
     } finally {
       setLoading(false);
     }
   };
 
   const handleClearAll = async () => {
+    localStorage.removeItem('coded_scan_history');
     try {
-      const res = await api.delete('/scans/history');
-      if (res.data?.success) {
-        setHistoryList([]);
-        showToast('🗑', 'History cleared');
-      }
-    } catch (err) {
-      console.error(err);
-    }
+      await api.delete('/scans/history');
+    } catch (err) {}
+    setHistoryList([]);
+    showToast('🗑', 'History cleared');
   };
 
-  const handleReload = async (scanId: string) => {
+  const handleReload = async (entry: any) => {
     onClose();
     setStatus('working', 'Connecting…');
-    showToast('👁', 'Reloading target source...');
-    try {
-      const res = await api.get(`/scans/${scanId}/source`);
-      if (res.data?.success) {
-        setScanResult(res.data.scan);
-        setStatus('ok', 'Loaded');
-        showToast('✓', 'Target loaded from history');
-      }
-    } catch (err) {
-      setStatus('fail', 'Failed');
-      showToast('⚠️', 'Failed to load source code.');
+    showToast('👁', `Reloading ${entry.url || 'target'}...`);
+    
+    // Try backend if entry has _id
+    if (entry._id) {
+      try {
+        const res = await api.get(`/scans/${entry._id}/source`);
+        if (res.data?.success) {
+          setScanResult(res.data.scan);
+          setStatus('ok', 'Loaded');
+          showToast('✓', 'Target loaded from history');
+          return;
+        }
+      } catch (err) {}
     }
+
+    // Fallback: trigger inspect on URL
+    if (entry.url) {
+      useScanStore.getState().setUrl(entry.url);
+      try {
+        const res = await api.post('/scans/inspect', { url: entry.url });
+        if (res.data?.success) {
+          setScanResult(res.data.scan);
+          setStatus('ok', 'Loaded');
+          showToast('✓', 'Target loaded from history');
+          return;
+        }
+      } catch (e) {}
+    }
+    
+    setStatus('fail', 'Failed');
+    showToast('⚠️', 'Failed to load source code.');
   };
 
   const getRelativeTime = (timeStr: string) => {

@@ -2,8 +2,8 @@
   "version": 2,
   "name": "heartcode-frontend",
   "framework": "vite",
-  "buildCommand": "npm install --prefix frontend --legacy-peer-deps && npm run build --prefix frontend",
-  "outputDirectory": "frontend/dist",
+  "buildCommand": "npm run build",
+  "outputDirectory": "dist",
   "cleanUrls": true,
   "rewrites": [
     {
