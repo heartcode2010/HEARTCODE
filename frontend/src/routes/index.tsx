@@ -36,27 +36,19 @@ const AppRouter: React.FC = () => (
   <BrowserRouter>
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Public routes */}
-        <Route path="/login" element={<Login />} />
+        {/* Public routes */}d
+        <Route path="/login" element={<Navigate to="/" replace />} />
 
         {/* Protected routes */}
         <Route
           path="/"
-          element={
-            <ProtectedRoute>
-              <Dashboard />
-            </ProtectedRoute>
-          }
+          element={<Dashboard />}
         />
 
         {/* Academy routes */}
         <Route
           path="/academy/*"
-          element={
-            <ProtectedRoute>
-              <AcademyLanding />
-            </ProtectedRoute>
-          }
+          element={<AcademyLanding />}
         />
 
         {/* Catch-all */}

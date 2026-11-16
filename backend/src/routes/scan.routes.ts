@@ -1,13 +1,15 @@
 import { Router } from 'express';
-import { inspectUrl, getScanHistory, clearScanHistory, loadScanSource, runScan } from '../controllers/scan.controller';
-import { optionalAuth } from '../middleware/auth.middleware';
+import { inspectUrl, getScanHistory, clearScanHistory, loadScanSource, runVulnerabilityScan, runAiDetect, runTechStackScan, } from '../controllers/scan.controller';
+import { authenticateToken } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.use(optionalAuth);
+router.use(authenticateToken);
 
 router.post('/inspect', inspectUrl);
-router.post('/run', runScan);
+router.post('/vulnerability', runVulnerabilityScan);
+router.get('/ai-detect', runAiDetect);
+router.get('/tech-stack', runTechStackScan);
 router.get('/history', getScanHistory);
 router.delete('/history', clearScanHistory);
 router.get('/:scanId/source', loadScanSource);
