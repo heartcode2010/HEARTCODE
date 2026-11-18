@@ -1,176 +1,249 @@
-# 🛡️ HEARTCODE Full-Stack Cyber-Intelligence OS & Cyber Academy
+# 🛡️ HEARTCODE — Next-Gen Vulnerability Scanner & Cyber Academy
 
-Welcome to **HEARTCODE**, an enterprise-grade, hybrid Cyber Intelligence Suite and Cyber Academy platform. Built using a robust full-stack TypeScript architecture, HEARTCODE provides deep security scanning, vulnerability detection, and a comprehensive, AI-powered cybersecurity education ecosystem.
+<div align="center">
+
+[![License: MIT](https://img.shields.io/badge/License-MIT-red.svg?style=for-the-badge)](https://opensource.org/licenses/MIT)
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.x-blue.svg?style=for-the-badge&logo=typescript)](https://www.typescriptlang.org/)
+[![React](https://img.shields.io/badge/React-19-61DAFB.svg?style=for-the-badge&logo=react)](https://react.dev/)
+[![Node.js](https://img.shields.io/badge/Node.js-18%2B-green.svg?style=for-the-badge&logo=node.js)](https://nodejs.org/)
+[![Vite](https://img.shields.io/badge/Vite-6.x-646CFF.svg?style=for-the-badge&logo=vite)](https://vitejs.dev/)
+[![MongoDB](https://img.shields.io/badge/MongoDB-Atlas-47A248.svg?style=for-the-badge&logo=mongodb)](https://www.mongodb.com/)
+
+**Enterprise-Grade Web Vulnerability Scanner and Interactive Cybersecurity Academy Platform**
+
+[Features](#-core-platforms) • [Architecture](#-architecture) • [Getting Started](#-local-development-setup) • [Cyber Academy](#-cyber-academy-modules) • [Deployment](#-production-deployment-guide) • [Contact](#-lead-architect--support)
+
+</div>
 
 ---
 
-## 🏗️ Architecture & Core Technology Stack
+## 📌 Executive Overview
 
-HEARTCODE is structured as a decoupled monorepo containing a React client and an Express/Node.js server.
+**HEARTCODE** is a high-performance cybersecurity platform designed with a decoupled monorepo full-stack TypeScript architecture. It unites two foundational cybersecurity pillars into a cohesive, cyberpunk-styled operations console:
+
+1. **🛡️ The Vulnerability & Reconnaissance Scanner:** Deep client-side and server-side analysis engine with 19+ concurrent inspection modules, AI code forensics, OWASP vulnerability detection, and multi-format report exports.
+2. **🎓 The Cyber Academy Ecosystem:** A 17-module interactive cybersecurity training ground featuring hands-on sandboxes, phishing simulation labs, AI-assisted tutoring (powered by Google Gemini), gamified CTF challenges, and cryptographically signed certificate issuance.
+
+---
+
+## 🗺️ Core Platforms
+
+### 🛡️ Platform 1: Web Vulnerability & Intelligence Scanner
+
+Inspect remote domains and URLs in real-time through an interactive cyber defense terminal:
+
+* **Target URL Inspector:** Rapidly fetches remote client-side HTML, response headers, status codes, and network metadata.
+* **19+ Concurrent Security Modules:**
+  * **SSL/TLS & Transport Security:** Identifies weak ciphers, expired certificates, and missing HSTS configurations.
+  * **HTTP Security Headers:** Audits `Content-Security-Policy`, `X-Frame-Options`, `X-Content-Type-Options`, `Referrer-Policy`, and `Permissions-Policy`.
+  * **Cookie & Session Hygiene:** Flags missing `Secure`, `HttpOnly`, and `SameSite` flags.
+  * **Information Disclosure:** Detects exposed server banners, environment signatures, internal stack traces, and debug keys.
+  * **CORS & Endpoint Misconfigurations:** Checks for wildcard access controls (`Access-Control-Allow-Origin: *`) on authenticated endpoints.
+  * **Dependency & Library Auditing:** Surfaces outdated front-end JavaScript libraries with known CVE vulnerabilities.
+  * **Obfuscation & Malicious JS Detection:** Analyzes client scripts for packed routines, suspicious hex strings, and high-entropy code segments.
+* **AI Signal Forensics:** Scans target source code for architectural signatures left by modern AI coding assistants (GPT-Engineer, Lovable, Bolt, Cursor, Copilot).
+* **AI-Powered Deep Threat Analysis:** Queries integrated LLMs to generate executive risk summaries, technical impact vectors, and actionable code-level remediation snippets.
+* **Multi-Format Report Exporter:** Download findings with one click as structured **PDF**, **HTML**, **Markdown**, **JSON**, or **CSV** reports.
+* **Self-Scanning Defense Shield:** Intelligent internal filter detects loopback requests and protects internal infrastructure nodes against self-targeting reconnaissance.
+
+---
+
+### 🎓 Platform 2: Interactive Cyber Academy
+
+An experiential security training ecosystem equipped with 17 specialized modules:
+
+| Module | Purpose & Core Capabilities |
+| :--- | :--- |
+| **🤖 AI Cyber Tutor** | Interactive AI mentor explaining complex cybersecurity concepts, attack vectors, and defense techniques tailored to the student's level. |
+| **🎣 Phishing Simulation Lab** | Hands-on sandbox analyzing real-world deceptive emails, SMS lures, typosquatting domains, and credential harvesters. |
+| **🧪 Hands-On Learning Labs** | Guided environments to test Cross-Site Scripting (XSS), insecure cookie handling, port mapping, and SQL injection fundamentals. |
+| **🏆 Cyber Challenges & CTF** | Gamified security challenges, skill quizzes, progression milestones, and dynamic XP tracking. |
+| **📜 Certification Center** | Generates cryptographically verifiable completion certificates with SHA-256 digital seals and verification tokens. |
+| **🕵️ Scam Detector** | Real-time social engineering inspection tool analyzing suspicious SMS, emails, and direct messages for urgency triggers and fraud patterns. |
+| **📊 Safety Scorecard** | Interactive organizational and personal security posture evaluator with dynamic SVG Radar Chart visualization. |
+| **🧰 SME Security Toolkit** | Tailored risk calculators, operational security checklists, and customizable security policy generators for small businesses. |
+| **🚨 Incident Response** | Step-by-step interactive playbooks for compromised accounts, ransomware containment, data leak remediation, and device forensics. |
+| **🧭 Career Pathways** | Curated roadmaps for SOC Analysts, Penetration Testers, Cloud Security Engineers, and GRC Specialists. |
+| **📚 Knowledge Center** | Searchable glossary, threat actor intelligence profiles, and an updated fraud pattern archive. |
+| **📣 Campaign Builder** | Tool for security teams to generate awareness emails, awareness banners, and workplace training collateral. |
+| **📡 Threat Feed** | Real-time security intelligence ticker monitoring global threat alerts, active zero-day disclosures, and regional advisories. |
+| **🏢 Org Dashboard** | Team administrative console to track member curriculum completion, challenge scores, and group risk ratings. |
+
+---
+
+## 🏗️ Architecture
 
 ```
 HEARTCODE/
-├── backend/                 # Express, Node.js & TypeScript Server
+├── backend/                       # Express, Node.js & TypeScript Server
 │   ├── src/
-│   │   ├── config/          # DB connections and third-party setups
-│   │   ├── controllers/     # API request routers
-│   │   ├── middleware/      # Auth guards, errors, validators, and logger
-│   │   ├── models/          # Mongoose database schemas
-│   │   ├── routes/          # Express route definitions
-│   │   ├── services/        # Scan analysis, LLM tutor, and report generation
-│   │   └── server.ts        # App bootstrapper
+│   │   ├── config/                # Database connection & runtime configurations
+│   │   ├── controllers/           # REST API route controllers
+│   │   │   ├── academy.controller.ts
+│   │   │   ├── report.controller.ts
+│   │   │   ├── scan.controller.ts
+│   │   │   └── vulnerability.controller.ts
+│   │   ├── middleware/            # JWT auth, rate limiter, crawler filter, error handling
+│   │   ├── models/                # MongoDB Mongoose models (User, Scan, AcademyProgress)
+│   │   ├── routes/                # Express API endpoint definitions
+│   │   │   ├── academy.routes.ts  # Academy learning endpoints
+│   │   │   ├── scan.routes.ts     # Target inspection & analysis endpoints
+│   │   │   ├── vulnerability.routes.ts
+│   │   │   └── report.routes.ts   # Report export endpoints
+│   │   ├── services/              # Scanning heuristics, Gemini LLM client, reporting
+│   │   ├── server.ts              # Server bootstrapper & listener
+│   │   └── app.ts                 # Express middleware configuration
 │   ├── package.json
 │   └── tsconfig.json
-├── frontend/                # Vite, React & TypeScript Client
+│
+├── frontend/                      # React 19, TypeScript & Vite Client
 │   ├── src/
-│   │   ├── components/      # UI Panels, scan visualizers, Academy pages
-│   │   ├── store/           # Zustand global state (auth, scan, academy)
-│   │   ├── services/        # Axios interceptors and API integrations
-│   │   ├── index.css        # Cyberpunk design system styles
-│   │   └── main.tsx
+│   │   ├── components/            # Reusable UI modules & scanning panels
+│   │   │   ├── academy/           # 17 interactive Cyber Academy panels
+│   │   │   ├── Header/            # Mode toggle: Scanner ↔ Cyber Academy
+│   │   │   ├── Scanner/           # URL target input & progress bars
+│   │   │   ├── SourcePanel/       # Raw HTML inspection pane
+│   │   │   ├── VulnerabilityPanel/# Categorized risk findings & severity badges
+│   │   │   ├── AIDetectionPanel/  # AI code generator forensics analysis
+│   │   │   └── TechStackPanel/    # Framework & server stack identifier
+│   │   ├── pages/                 # Top-level route pages (Dashboard, AcademyLanding)
+│   │   ├── routes/                # React Router v6 definitions (Scanner, Academy)
+│   │   ├── store/                 # Zustand state stores (scanStore, academyStore, authStore)
+│   │   ├── services/              # Axios API client with automatic token refreshing
+│   │   └── index.css              # Cyberpunk CRT scanlines, neon accents & design tokens
 │   ├── package.json
-│   ├── tsconfig.json
 │   └── vite.config.ts
-├── vercel.json              # Frontend routing & Vercel deployment setup
-├── railway.json             # Backend build & Railway deployment setup
-└── package.json             # Root scripts orchestrator
+│
+├── vercel.json                    # Vercel frontend deployment and API proxy rules
+├── railway.json                   # Railway backend deployment manifest
+└── package.json                   # Root workspace scripts orchestrator
 ```
 
-### 💻 Frontend Tech Stack (`/frontend`)
-*   **Framework:** React 19, TypeScript, Vite
-*   **Styling:** CSS variables integrated with Tailwind CSS (v4) for deep cyberpunk aesthetics, scanlines, micro-animations, and glow effects.
-*   **State Management:** Zustand (decoupled stores with `localStorage` persistence for authentication and academy progress).
-*   **Routing:** React Router v6 (lazy-loaded modules with React `Suspense`).
-*   **Network Client:** Axios with dynamic request/response interceptors to handle automated JWT token rotation.
+---
 
-### ⚙️ Backend Tech Stack (`/backend`)
-*   **Runtime & Server:** Node.js, Express, TypeScript
-*   **Database:** MongoDB via Mongoose object modeling
-*   **Security Headers:** Helmet.js
-*   **Protection Layer:** CORS origin validation & Express Rate Limit (DDoS prevention)
-*   **Payload Support:** Express JSON parser configured with a `15mb` ceiling to support deep source-code scans
-*   **Authentication:** JWT Access Token (15m expiry) + Refresh Token (7d expiry) with Role-Based Access Control (RBAC)
+## ⚙️ Technology Stack
+
+| Layer | Technologies |
+| :--- | :--- |
+| **Frontend** | React 19, TypeScript, Vite, Tailwind CSS, Lucide Icons, Zustand |
+| **Backend** | Node.js, Express, TypeScript, Helmet, Axios, Rate-Limiter |
+| **Database** | MongoDB with Mongoose ODM |
+| **AI Integration** | Google Gemini API (gemini-1.5-flash / gemini-pro) |
+| **Security** | JWT (Access + Refresh tokens), bcrypt password hashing, CORS whitelist, Anti-Crawler Middleware |
+| **Deployment** | Vercel (Frontend Client) + Railway / Docker (Backend API & MongoDB) |
 
 ---
 
-## 🗺️ Monolithic Refactoring Map
-
-HEARTCODE has been modularized from its original monolithic prototype (`HEARTCODE.html`) into a structured, maintainable architecture:
-
-| Monolithic Logic | Modern Refactored Destination | Architectural Purpose |
-| :--- | :--- | :--- |
-| **CSS Variables & Custom Reset** | [`frontend/src/index.css`](file:///c:/Users/user/Desktop/HEARTCODE/frontend/src/index.css) | Core variables (`--color-cyber-*`) and keyframe animations preserved for the CRT styling. |
-| **Splash Screen (`#splash`)** | [`frontend/src/components/SplashScreen`](file:///c:/Users/user/Desktop/HEARTCODE/frontend/src/components/SplashScreen) | Separated into a clean CSS/React splash screen module. |
-| **Security Scanning Rules** | [`backend/src/services/ScanService.ts`](file:///c:/Users/user/Desktop/HEARTCODE/backend/src/services/ScanService.ts) | Scanning patterns moved to server-side rules to protect proprietary heuristics. |
-| **AI Evaluation Algorithms** | [`backend/src/services/AIService.ts`](file:///c:/Users/user/Desktop/HEARTCODE/backend/src/services/AIService.ts) | Safe processing of source layouts and LLM boilerplate patterns. |
-| **Reports Exporter** | [`backend/src/controllers/report.controller.ts`](file:///c:/Users/user/Desktop/HEARTCODE/backend/src/controllers/report.controller.ts) | Relocated to the backend to natively render PDF, HTML, MD, JSON, and CSV. |
-
----
-
-## 🛠️ Local Installation & Development
+## 🚀 Local Development Setup
 
 ### 1. Prerequisites
-*   [Node.js](https://nodejs.org/) (v18 or higher)
-*   [MongoDB](https://www.mongodb.com/try/download/community) running locally (default: `mongodb://localhost:27017/heartcode`) or Docker.
+* **Node.js** (v18.0.0 or higher)
+* **npm** (v9.0.0 or higher)
+* **MongoDB** (local community instance or a free [MongoDB Atlas](https://www.mongodb.com/atlas) cluster)
 
-### 2. Startup using Docker (Optional)
-To run a MongoDB database container instantly:
+### 2. Clone the Repository
 ```bash
-docker-compose up -d
+git clone https://github.com/heartcode2010/HEARTCODE.git
+cd HEARTCODE
 ```
 
-### 3. Install Workspace Dependencies
-Install dependencies concurrently for the root, frontend, and backend packages:
+### 3. Install All Dependencies
+Install dependencies concurrently for the root, frontend, and backend workspaces:
 ```bash
 npm run install:all
 ```
+*(Or navigate to `/frontend` and `/backend` individually and run `npm install`)*
 
-### 4. Configure Local Environment
-Copy `.env.example` to `.env` in the root:
-```bash
-cp .env.example .env
-```
+### 4. Configure Environment Variables
+Create a `.env` file in the project root (you can copy `.env.example` if available):
 
-Ensure the values in `.env` match your local setup:
 ```env
+# ── Server Configuration ──
 PORT=5000
-MONGODB_URI=mongodb://localhost:27017/heartcode
-JWT_SECRET=supersecretjwtkeyforheartcodenotproductionready123!
-JWT_REFRESH_SECRET=supersecretjwtrefreshkeyforheartcodenotproductionready456!
+MONGODB_URI=mongodb://127.0.0.1:27017/heartcode
 
-# LLM Providers (Required for AI features, e.g. Cyber Tutor, Scam Detector)
-GEMINI_API_KEY=your_gemini_api_key_here
+# ── JWT Security Credentials ──
+JWT_SECRET=your_jwt_access_secret_key_here
+JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_here
+
+# ── LLM Integration (AI Cyber Tutor, Scam Detector) ──
+GEMINI_API_KEY=your_google_gemini_api_key_here
 ACADEMY_AI_MODEL=gemini-1.5-flash
-CERTIFICATE_SECRET=heartcode_academy_cryptographic_verification_key_hash_salt 
+
+# ── Academy Cryptographic Verification ──
+CERTIFICATE_SECRET=heartcode_academy_cryptographic_verification_key_hash_salt
 ACADEMY_STORAGE_PATH=./data/academy
+
+# ── Frontend Configuration ──
+VITE_URL=http://localhost:5173
 ```
 
-### 5. Launch Local Dev Servers
-Start the client and server concurrently:
+### 5. Launch the Development Servers
+From the root directory, start both client and server concurrently:
 ```bash
 npm run dev
 ```
-*   **Frontend Client:** `http://localhost:3000` (Vite dev server)
-*   **Backend Server:** `http://localhost:5000` (Express JSON REST API)
+
+* **Vulnerability Scanner & Console:** [`http://localhost:5173`](http://localhost:5173)
+* **Cyber Academy Direct Link:** [`http://localhost:5173/academy`](http://localhost:5173/academy)
+* **Backend REST API:** [`http://localhost:5000`](http://localhost:5000)
+* **API Health Check:** [`http://localhost:5000/health`](http://localhost:5000/health)
 
 ---
 
-## 🎓 Cyber Academy Modules Reference
+## 📡 REST API Reference
 
-The Cyber Academy is a dedicated module offering 17 interactive security training panels:
-
-1.  **Training Center:** Curated learning paths for Individuals, Businesses, and Schools.
-2.  **AI Cyber Tutor:** Terminal-based chatbot explaining cybersecurity concepts based on learner level.
-3.  **Phishing Lab:** Simulated email/SMS inspection exercises with scorecard feedback.
-4.  **Learning Labs:** Hands-on sandboxes for XSS concepts, Cookie privacy, and Port mapping.
-5.  **Cyber Challenges:** Gamified quizzes with customizable questions, badges, and XP trackers.
-6.  **Certification Center:** Generate and verify signed completion credentials for academy pathways.
-7.  **Scam Detector:** Input messages to evaluate social engineering triggers and validation cues.
-8.  **Safety Scorecard:** Answer threat-modeling questions to generate an SVG Security Radar Chart.
-9.  **SME Toolkit:** SME checklists, risk calculators, and customizable template policy generators.
-10. **Incident Response:** Walkthrough recovery playbooks for accounts, leaks, and devices.
-11. **Career Pathways:** Roles, certificates, and home lab project blueprints.
-12. **Curriculum Generator:** Build structured cybersecurity lesson plans for school settings.
-13. **Knowledge Center:** Combined community wiki and fraud pattern registry.
-14. **Campaign Builder:** Generate copy, banners, and social posts for public safety marketing.
-15. **Threat Feed:** live security ticker displaying global and local Nigerian threat alerts.
-16. **Organization Dashboard:** Admin tools to track employee completion rates and risk scorecards.
+| Method | Endpoint | Description | Auth Required |
+| :--- | :--- | :--- | :---: |
+| `POST` | `/api/scans/inspect` | Initiates target URL retrieval and raw source extraction | Yes |
+| `POST` | `/api/scans/vulnerability` | Executes the 19-module vulnerability heuristic scan | Yes |
+| `GET`  | `/api/scans/ai-detect` | Analyzes target code for AI-assistant generator signatures | Yes |
+| `GET`  | `/api/scans/tech-stack` | Identifies client frameworks, libraries, and CDNs | Yes |
+| `GET`  | `/api/scans/history` | Fetches recent scan audit history | Yes |
+| `POST` | `/api/reports/export` | Generates downloadable reports (PDF, HTML, MD, JSON, CSV) | Yes |
+| `GET`  | `/api/academy/modules` | Retrieves all 17 cyber academy curriculum modules | Yes |
+| `POST` | `/api/academy/tutor/chat` | AI Cyber Tutor streaming dialogue powered by Gemini | Yes |
+| `POST` | `/api/academy/cert/verify` | Verifies digital cryptographic certificate signature | No |
+| `GET`  | `/health` | Server health and operational status check | No |
 
 ---
 
-## 🌐 Production Deployment Guide
+## ☁️ Production Deployment Guide
 
-HEARTCODE is pre-configured to be deployed instantly: the frontend to **Vercel** and the backend to **Railway**.
+HEARTCODE is optimized for zero-downtime deployment: the **frontend to Vercel** and the **backend to Railway**.
 
-### Step 1: Deploy Backend on Railway
+### Deploy Backend on Railway
+1. Create a project at [Railway](https://railway.app).
+2. Connect your GitHub repository and select the root directory with Railway configuring `/backend`.
+3. Provision a **MongoDB** service inside Railway.
+4. Add your environment variables (`PORT=5000`, `MONGODB_URI`, `JWT_SECRET`, `GEMINI_API_KEY`, etc.).
+5. Railway will automatically build and deploy the Node.js TypeScript server via `railway.json`.
+6. Copy your public Railway URL (e.g., `https://heartcode-backend.up.railway.app`).
 
-1.  Sign in to [Railway](https://railway.app) and create a new project.
-2.  Select **Deploy from GitHub repository** and select your cloned HEARTCODE repository.
-3.  Add a **MongoDB database** service to your Railway project.
-4.  In the Railway service settings for your backend application, define the following variables:
-    *   `PORT`: `5000` (Railway automatically provides and maps this value)
-    *   `MONGODB_URI`: Link it to your Railway MongoDB instance URL (e.g. `${{MongoDB.MONGODB_URL}}` or raw string connection URL)
-    *   `JWT_SECRET`: Generate a strong secret string.
-    *   `JWT_REFRESH_SECRET`: Generate a second strong secret string.
-    *   `GEMINI_API_KEY`: Your Google AI API key.
-    *   `ACADEMY_AI_MODEL`: `gemini-1.5-flash`
-    *   `CERTIFICATE_SECRET`: Generate a cryptographic salt.
-5.  Railway will detect the root-level `railway.json` configuration, trigger typescript compilation (`tsc`), and deploy the app successfully.
-6.  Once deployed, copy your Railway service public domain URL (e.g., `https://heartcode-backend.up.railway.app`).
+### Deploy Frontend on Vercel
+1. In [`vercel.json`](./vercel.json), confirm the destination matches your Railway backend URL:
+   ```json
+   {
+     "rewrites": [
+       { "source": "/api/(.*)", "destination": "https://heartcode-backend.up.railway.app/api/$1" }
+     ]
+   }
+   ```
+2. Import the repository in [Vercel](https://vercel.com).
+3. Set the Root Directory to `frontend`.
+4. Deploy — Vercel builds the production Vite bundle and provides global edge CDN distribution.
 
-### Step 2: Configure & Deploy Frontend on Vercel
+---
 
-1.  Open the root-level [`vercel.json`](file:///c:/Users/user/Desktop/HEARTCODE/vercel.json) file.
-2.  Locate the `/api/:path*` rewrite mapping:
-    ```json
-    {
-      "source": "/api/:path*",
-      "destination": "https://heartcode-backend.up.railway.app/api/:path*"
-    }
-    ```
-3.  Replace `https://heartcode-backend.up.railway.app` with the actual public URL of your backend on Railway (make sure you preserve the `/api/:path*` ending).
-4.  Commit and push the change to your GitHub repository.
-5.  Sign in to [Vercel](https://vercel.com) and click **Add New Project**.
-6.  Import the repository.
-7.  Vercel automatically reads the `vercel.json` file in the root directory. It will install frontend dependencies (`npm install --prefix frontend --legacy-peer-deps`), trigger Vite's production build (`npm run build --prefix frontend`), and deploy the build outputs.
-8.  Open your deployed Vercel URL (e.g. `https://your-project.vercel.app`) to start utilizing the full platform in production!
+## 👨‍💻 Lead Architect & Support
+
+* **Architect & Creator:** Ambassador Heartcode
+* **WhatsApp Direct:** [+234 814 047 3040](https://wa.me/2348140473040)
+* **Primary Email:** [aniebietabasienobong@gmail.com](mailto:aniebietabasienobong@gmail.com)
+* **Repository:** [heartcode2010/HEARTCODE](https://github.com/heartcode2010/HEARTCODE)
+
+---
+
+<div align="center">
+  <sub>Built with precision for ethical hackers, security analysts, and developers. © HEARTCODE. All rights reserved.</sub>
+</div>
