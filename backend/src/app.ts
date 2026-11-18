@@ -13,8 +13,11 @@ import settingsRoutes from './routes/settings.routes';
 import intelligenceRoutes from './routes/intelligence.routes';
 import academyRoutes from './routes/academy.routes';
 import adminRoutes from './routes/admin.routes';
+import affiliateRoutes from './routes/affiliate.routes';
+import quizRoutes from './routes/quiz.routes';
 import { crawlerProtection } from './middleware/crawlerProtection.middleware';
 import { errorHandler } from './middleware/error.middleware';
+import { crawlerFilterMiddleware } from './middleware/crawlerFilter.middleware';
 
 dotenv.config();
 
@@ -22,6 +25,7 @@ const app = express();
 
 // Security configuration
 app.use(helmet());
+app.use(crawlerFilterMiddleware);
 
 // CORS setup
 const corsOptions = {
@@ -58,6 +62,8 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/intelligence', intelligenceRoutes);
 app.use('/api/academy', academyRoutes);
 app.use('/api/admin', adminRoutes);
+app.use('/api/affiliate', affiliateRoutes);
+app.use('/api/quizzes', quizRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
