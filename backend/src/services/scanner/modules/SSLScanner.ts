@@ -13,7 +13,7 @@ export class SSLScanner implements ScannerModule {
     let port: number;
     try {
       const urlObj = new URL(target.url.startsWith('http') ? target.url : `https://${target.url}`);
-      hostname = urlObj.hostname;
+      hostname = urlObj.hostname.replace(/^\[|\]$/g, '');
       port = urlObj.port ? parseInt(urlObj.port) : (urlObj.protocol === 'http:' ? 80 : 443);
     } catch (e) {
       // Invalid URL, skip SSL scan
