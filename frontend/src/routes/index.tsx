@@ -10,7 +10,8 @@ import useAuthStore from '../store/authStore';
 const Login = lazy(() => import('../pages/Login'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const TechnovaWorkspace = lazy(() => import('../pages/TechnovaWorkspace'));
-const QuizVerse = lazy(() => import('../pages/QuizVerse'));
+const QuizVerse = lazy(() => import('../pages/QuizVerseCloud'));
+const QuizVerseLocal = lazy(() => import('../pages/QuizVerse'));
 
 // ── Academy Pages (lazy-loaded) ──
 const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
@@ -51,6 +52,7 @@ const AppRouter: React.FC = () => (
         <Route path="/os" element={<TechnovaWorkspace />} />
         <Route path="/workspace" element={<Navigate to="/os" replace />} />
         <Route path="/quizverse" element={<QuizVerse />} />
+        <Route path="/quizverse/local" element={<QuizVerseLocal />} />
 
         {/* Academy routes */}
         <Route
