@@ -151,6 +151,24 @@ export const useAcademyStore = create<AcademyState>((set, get) => ({
   tutorMessages: [],
   tutorLoading: false,
   phishingLab: { ...INITIAL_PHISHING },
+  completedTopics: [],
+  completedModules: [],
+  completeTopic: (moduleId, topicId, moduleTopicIds) => {
+    const state = get();
+    if (state.completedTopics.includes(topicId)) return;
+    const completedTopics = [...state.completedTopics, topicId];
+    const moduleFinished = moduleTopicIds.every(id => completedTopics.includes(id));
+    const completedModules = moduleFinished && !state.completedModules.includes(moduleId)
+      ? [...state.completedModules, moduleId]
+      : state.completedModules;
+    const totalXP = state.progress.totalXP + 25;
+    set({
+      completedTopics,
+      completedModules,
+      progress: { ...state.progress, totalXP, level: calcLevel(totalXP), modulesCompleted: completedModules.length, lastActivity: new Date().toISOString() },
+    });
+    get().saveToLocalStorage();
+  },
   quizResults: [],
   currentQuizIndex: 0,
   badges: DEFAULT_BADGES.map(b => ({ ...b })),
