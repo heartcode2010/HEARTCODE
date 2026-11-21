@@ -1,14 +1,13 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middleware/auth.middleware';
+import { requireVerifiedUser } from '../middleware/platformAuth.middleware';
 import { createQuiz, listQuizzes, getQuiz, updateQuiz, submitQuizAttempt, listMyQuizAttempts } from '../controllers/quiz.controller';
 
 const router = Router();
-
-router.post('/', authenticateToken, createQuiz);
-router.get('/', authenticateToken, listQuizzes);
-router.get('/attempts/me', authenticateToken, listMyQuizAttempts);
-router.get('/:id', authenticateToken, getQuiz);
-router.post('/:id/attempts', authenticateToken, submitQuizAttempt);
-router.put('/:id', authenticateToken, updateQuiz);
-
+router.use(requireVerifiedUser);
+router.post('/', createQuiz);
+router.get('/', listQuizzes);
+router.get('/attempts/me', listMyQuizAttempts);
+router.get('/:id', getQuiz);
+router.post('/:id/attempts', submitQuizAttempt);
+router.put('/:id', updateQuiz);
 export default router;
