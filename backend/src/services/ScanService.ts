@@ -1,4 +1,4 @@
-import axios from 'axios';
+import { SafeTargetFetcher } from './scanner/SafeTargetFetcher';
 import { ScannerEngine } from './scanner/ScannerEngine';
 import { SecurityReport, ScanTarget } from './scanner/types';
 
@@ -73,44 +73,10 @@ export class ScanService {
   }
 
   /**
-   * Fetches the raw HTML source of a target URL and its headers.
+   * Fetches a public website safely, pinning DNS resolution and validating redirects.
    */
-  static async fetchTargetData(url: string): Promise<{ html: string; headers: Record<string, string> }> {
-    let formattedUrl = url.trim();
-    if (!formattedUrl.startsWith('http')) {
-      formattedUrl = 'https://' + formattedUrl;
-    }
-
-    const lowerUrl = formattedUrl.toLowerCase();
-    if (
-      lowerUrl.includes('heartcode') ||
-      lowerUrl.includes('technova') ||
-      lowerUrl.includes('localhost') ||
-      lowerUrl.includes('127.0.0.1') ||
-      lowerUrl.includes('192.168.') ||
-      lowerUrl.includes('10.')
-    ) {
-      throw new Error("Security Restriction: Can't scan internal system node. Access Denied.");
-    }
-
-    const response = await axios.get(formattedUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-      timeout: 10000,
-    });
-
-    if (typeof response.data !== 'string') {
-      throw new Error('Target URL did not return a valid HTML string');
-    }
-
-    // Axios returns headers in lower-case automatically
-    return {
-      html: response.data,
-      headers: response.headers as Record<string, string>
-    };
+  static async fetchTargetData(url: string): Promise<{ url: string; html: string; headers: Record<string, string>; ip: string }> {
+    return SafeTargetFetcher.fetch(url);
   }
 
   /**
@@ -132,8 +98,8 @@ export class ScanService {
   /**
    * Run the advanced modular vulnerability scan.
    */
-  static async runAdvancedScan(url: string, html: string, headers: Record<string, string>): Promise<SecurityReport> {
-    const target: ScanTarget = { url, html, headers };
+  static async runAdvancedScan(url: string, html: string, headers: Record<string, string>, ip?: string): Promise<SecurityReport> {
+    const target: ScanTarget = { url, html, headers, ip };
     return await this.engine.runScan(target);
   }
 

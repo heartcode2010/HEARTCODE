@@ -11,16 +11,18 @@ export class SSLScanner implements ScannerModule {
     
     let hostname: string;
     let port: number;
+    let protocol: string;
     try {
       const urlObj = new URL(target.url.startsWith('http') ? target.url : `https://${target.url}`);
       hostname = urlObj.hostname;
+      protocol = urlObj.protocol;
       port = urlObj.port ? parseInt(urlObj.port) : (urlObj.protocol === 'http:' ? 80 : 443);
     } catch (e) {
       // Invalid URL, skip SSL scan
       return findings;
     }
 
-    if (port !== 443 && !target.url.startsWith('https')) {
+    if (protocol === 'http:') {
        findings.push({
         id: 'SSL-001',
         category: this.category,
@@ -36,8 +38,13 @@ export class SSLScanner implements ScannerModule {
       return findings; // Can't do TLS checks on plain HTTP
     }
 
+    if (!target.ip) {
+      // Older scan records may not contain a validated destination IP; avoid a fresh, unpinned connection.
+      return findings;
+    }
+
     try {
-      const certData = await this.getTlsInfo(hostname, port);
+      const certData = await this.getTlsInfo(hostname, port, target.ip);
       
       const validTo = new Date(certData.valid_to);
       const now = new Date();
@@ -104,10 +111,10 @@ export class SSLScanner implements ScannerModule {
     return findings;
   }
 
-  private getTlsInfo(hostname: string, port: number): Promise<any> {
+  private getTlsInfo(hostname: string, port: number, pinnedIp?: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const socket = tls.connect({
-        host: hostname,
+        host: pinnedIp || hostname,
         port: port,
         servername: hostname, // For SNI
         rejectUnauthorized: false, // Don't crash on invalid certs, we want to inspect them
