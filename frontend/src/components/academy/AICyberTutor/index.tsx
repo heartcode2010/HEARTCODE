@@ -59,6 +59,7 @@ const AICyberTutor: React.FC = () => {
       const response = await api.post('/academy/tutor', {
         message: text,
         mode: tutorMode,
+        history: tutorMessages.slice(-8).map((item) => ({ role: item.role === 'tutor' ? 'assistant' : 'user', content: item.content })),
         scanContext: scanUrl ? { url: scanUrl, findingsCount: scanFindings?.length || 0, findings: scanFindings } : null
       });
 
