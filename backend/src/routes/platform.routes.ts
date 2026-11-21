@@ -4,6 +4,7 @@ import axios from 'axios';
 import { randomBytes } from 'crypto';
 import mongoose, { Schema } from 'mongoose';
 import { z } from 'zod';
+import User from '../models/User';
 
 type SessionRequest = Request & { sessionUser?: { id: string; username: string; email?: string; role: string } };
 const router = Router();
@@ -12,7 +13,7 @@ const Org = mongoose.models.TNOrganization || mongoose.model('TNOrganization', n
   name: { type: String, required: true, trim: true, maxlength: 100 },
   slug: { type: String, required: true, unique: true, lowercase: true },
   ownerId: { type: Schema.Types.ObjectId, required: true, index: true },
-  members: [{ userId: Schema.Types.ObjectId, role: { type: String, enum: ['owner', 'admin', 'instructor', 'learner'], default: 'learner' }, joinedAt: { type: Date, default: Date.now } }],
+  members: [{ userId: { type: Schema.Types.ObjectId, ref: 'User' }, role: { type: String, enum: ['owner', 'admin', 'instructor', 'learner'], default: 'learner' }, joinedAt: { type: Date, default: Date.now } }],
   createdAt: { type: Date, default: Date.now },
 }, { timestamps: true }));
 
@@ -138,6 +139,43 @@ router.get('/quizverse/quizzes', async (req: SessionRequest, res: Response, next
   try {
     const items = await Quiz.find({ ownerId: req.sessionUser!.id, status: { $ne: 'archived' } }).sort({ updatedAt: -1 }).lean();
     res.json({ success: true, quizzes: items });
+  } catch (error) { next(error); }
+});
+
+router.post('/organizations/:organizationId/members', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.organizationId)) return res.status(400).json({ success: false, message: 'Invalid organization ID.' });
+    const parsed = z.object({ identifier: z.string().trim().min(3).max(254), role: z.enum(['admin', 'instructor', 'learner']).default('learner') }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ success: false, message: 'Provide an existing username or email and a valid member role.' });
+    const organization = await Org.findById(req.params.organizationId);
+    if (!organization) return res.status(404).json({ success: false, message: 'Organization not found.' });
+    const actor = organization.members.find((member: any) => member.userId.toString() === req.sessionUser!.id);
+    if (!actor || !['owner', 'admin'].includes(actor.role)) return res.status(403).json({ success: false, message: 'Only organization owners and admins can add members.' });
+    const identifier = parsed.data.identifier.toLowerCase();
+    const member = await User.findOne({ $or: [{ username: parsed.data.identifier }, { email: identifier }] }).select('_id username email');
+    if (!member) return res.status(404).json({ success: false, message: 'No existing TECHNOVA account matches that username or email.' });
+    if (organization.members.some((entry: any) => entry.userId.toString() === member._id.toString())) return res.status(409).json({ success: false, message: 'This account is already a member.' });
+    organization.members.push({ userId: member._id, role: parsed.data.role } as any);
+    await organization.save();
+    await audit(req.sessionUser!.id, 'organization.member.added', 'organization', organization.id);
+    res.status(201).json({ success: true, message: 'Member added to the organization.', member: { id: member._id, username: member.username, email: member.email, role: parsed.data.role } });
+  } catch (error) { next(error); }
+});
+
+router.delete('/organizations/:organizationId/members/:memberId', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    if (!mongoose.isValidObjectId(req.params.organizationId) || !mongoose.isValidObjectId(req.params.memberId)) return res.status(400).json({ success: false, message: 'Invalid organization or member ID.' });
+    const organization = await Org.findById(req.params.organizationId);
+    if (!organization) return res.status(404).json({ success: false, message: 'Organization not found.' });
+    const actor = organization.members.find((member: any) => member.userId.toString() === req.sessionUser!.id);
+    if (!actor || !['owner', 'admin'].includes(actor.role)) return res.status(403).json({ success: false, message: 'Only organization owners and admins can remove members.' });
+    const target = organization.members.find((member: any) => member.userId.toString() === req.params.memberId);
+    if (!target) return res.status(404).json({ success: false, message: 'Organization member not found.' });
+    if (target.role === 'owner') return res.status(403).json({ success: false, message: 'The organization owner cannot be removed.' });
+    organization.members = organization.members.filter((member: any) => member.userId.toString() !== req.params.memberId) as any;
+    await organization.save();
+    await audit(req.sessionUser!.id, 'organization.member.removed', 'organization', organization.id);
+    res.json({ success: true, message: 'Member removed.' });
   } catch (error) { next(error); }
 });
 
