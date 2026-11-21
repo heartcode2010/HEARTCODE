@@ -11,6 +11,7 @@ const CampaignBuilder: React.FC = () => {
   const [style, setStyle] = useState('Social Media Alert Copy');
   const [loading, setLoading] = useState(false);
   const [content, setContent] = useState<string | null>(null);
+  const [generationSource, setGenerationSource] = useState('');
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -22,12 +23,14 @@ const CampaignBuilder: React.FC = () => {
 
       if (response.data?.success && response.data?.data) {
         setContent(response.data.data);
+        setGenerationSource('AI-generated campaign');
         addXP(25);
       } else {
         throw new Error('API offline');
       }
     } catch (err) {
-      console.warn('Backend campaign service offline, utilizing local template compiler...');
+      console.warn('Campaign AI unavailable; using a local starter template.');
+      setGenerationSource('Local starter template · not AI-generated');
       
       let text = '';
       if (style.includes('Social Media')) {
@@ -127,7 +130,7 @@ HEARTCODE DIGITAL COMPLIANCE MATRIX // ENGAGE SECURELY`;
             disabled={loading}
             className="w-full bg-cyber-surface2 hover:bg-cyber-cyan-dim border border-cyber-border hover:border-cyber-cyan text-cyber-cyan disabled:text-cyber-ash3 text-xs font-mono py-2.5 rounded cursor-pointer"
           >
-            {loading ? 'COMPILING COPYWRITING LOGS...' : 'GENERATE CAMPAIGN LAYOUT'}
+            {loading ? 'COMPILING COPYWRITING LOGS...' : 'CREATE CAMPAIGN MATERIAL'}
           </button>
         </div>
 
@@ -141,7 +144,7 @@ HEARTCODE DIGITAL COMPLIANCE MATRIX // ENGAGE SECURELY`;
           ) : content ? (
             <div className="bg-cyber-surface border border-cyber-border rounded overflow-hidden">
               <div className="bg-cyber-bg2 px-4 py-2 border-b border-cyber-border flex justify-between font-mono text-[0.66rem] text-cyber-ash">
-                <span>COMPILED MATERIALS DECREE</span>
+                <span>{generationSource}</span>
                 <button
                   onClick={() => { navigator.clipboard.writeText(content); alert('Copied to clipboard'); }}
                   className="text-cyber-cyan hover:underline text-[0.66rem] font-mono cursor-pointer"
