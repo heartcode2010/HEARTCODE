@@ -11,16 +11,18 @@ export class SSLScanner implements ScannerModule {
     
     let hostname: string;
     let port: number;
+    let protocol: string;
     try {
       const urlObj = new URL(target.url.startsWith('http') ? target.url : `https://${target.url}`);
       hostname = urlObj.hostname;
+      protocol = urlObj.protocol;
       port = urlObj.port ? parseInt(urlObj.port) : (urlObj.protocol === 'http:' ? 80 : 443);
     } catch (e) {
       // Invalid URL, skip SSL scan
       return findings;
     }
 
-    if (urlObj.protocol === 'http:') {
+    if (protocol === 'http:') {
        findings.push({
         id: 'SSL-001',
         category: this.category,
