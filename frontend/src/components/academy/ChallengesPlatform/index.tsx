@@ -94,14 +94,6 @@ const QUIZZES: CyberQuiz[] = [
   }
 ];
 
-const MOCK_LEADERBOARD = [
-  { name: 'X_HUNTER_99', level: 14, xp: 6850 },
-  { name: 'NIGERIAN_DEFENDER', level: 11, xp: 5200 },
-  { name: 'ROOT_SHELL', level: 9, xp: 4150 },
-  { name: 'CYBER_COPILOT', level: 7, xp: 3200 },
-  { name: 'ANONYMOUS_ACADEMY', level: 4, xp: 1850 }
-];
-
 const ChallengesPlatform: React.FC = () => {
   const navigate = useNavigate();
   const {
@@ -375,9 +367,10 @@ const ChallengesPlatform: React.FC = () => {
 
         {/* Sidebar Local Leaderboards */}
         <div className="lg:col-span-4 bg-cyber-surface border border-cyber-border rounded p-4 space-y-4">
-          <h3 className="font-display font-bold text-white text-xs tracking-wider">🏆 HIGH SCORE REGISTRY</h3>
+          <h3 className="font-display font-bold text-white text-xs tracking-wider">YOUR LEARNING RECORD</h3>
+          <p className="text-cyber-ash2 text-[0.65rem]">Your personal progress saved on this device. There is no public leaderboard connected.</p>
           <div className="space-y-1.5 font-mono text-[0.66rem]">
-            {MOCK_LEADERBOARD.map((item, idx) => (
+            {[{ name: 'You', level: progress.level, xp: progress.totalXP }].map((item, idx) => (
               <div
                 key={idx}
                 className="flex items-center justify-between border-b border-cyber-border/40 pb-1.5 text-cyber-ash2"
