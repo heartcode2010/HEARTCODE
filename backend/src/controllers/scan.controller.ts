@@ -1,10 +1,24 @@
 import { Response, NextFunction } from 'express';
+import { createHash } from 'crypto';
 import { AuthenticatedRequest } from '../middleware/auth.middleware';
 import { ScanService } from '../services/ScanService';
 import { AIService } from '../services/AIService';
 import Scan from '../models/Scan';
 import Vulnerability from '../models/Vulnerability';
 import AIAnalysis from '../models/AIAnalysis';
+
+const getScanOwnerId = (req: AuthenticatedRequest): string => {
+  const id = req.user?.id || `guest:${req.ip || 'unknown'}`;
+  return /^[a-f0-9]{24}$/i.test(id)
+    ? id
+    : createHash('sha256').update(id).digest('hex').slice(0, 24);
+};
+
+const canAccessScan = (scan: { userId: { toString(): string } }, req: AuthenticatedRequest): boolean => {
+  const isAuthenticatedAdmin = req.user?.role === 'admin' &&
+    !!req.user.id && /^[a-f0-9]{24}$/i.test(req.user.id);
+  return scan.userId.toString() === getScanOwnerId(req) || isAuthenticatedAdmin;
+};
 
 export const inspectUrl = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
@@ -31,7 +45,7 @@ export const inspectUrl = async (req: AuthenticatedRequest, res: Response, next:
       });
     }
 
-    const userId = req.user?.id || 'guest_user';
+    const userId = getScanOwnerId(req);
     const username = req.user?.username || 'Guest';
 
     console.log(`[ScanController] Inspecting URL: ${url} (User: ${username})`);
@@ -84,6 +98,9 @@ export const runScan = async (req: AuthenticatedRequest, res: Response, next: Ne
     const scan = await Scan.findById(scanId);
     if (!scan) {
       return res.status(404).json({ success: false, message: 'Scan record not found' });
+    }
+    if (!canAccessScan(scan, req)) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to scan this record.' });
     }
 
     console.log(`[ScanController] Running advanced security engine on ScanId: ${scanId}`);
@@ -198,6 +215,9 @@ export const loadScanSource = async (req: AuthenticatedRequest, res: Response, n
     if (!scan) {
       return res.status(404).json({ success: false, message: 'Scan record not found' });
     }
+    if (!canAccessScan(scan, req)) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to access this scan.' });
+    }
 
     return res.status(200).json({
       success: true,
@@ -220,6 +240,9 @@ export const runVulnerabilityScan = async (req: AuthenticatedRequest, res: Respo
     const scan = await Scan.findById(scanId);
     if (!scan) {
       return res.status(404).json({ success: false, message: 'Scan record not found' });
+    }
+    if (!canAccessScan(scan, req)) {
+      return res.status(403).json({ success: false, message: 'You do not have permission to scan this record.' });
     }
 
     const report = await ScanService.runAdvancedScan(scan.url, scan.htmlSource, scan.headers ? Object.fromEntries(scan.headers as any) : {});
@@ -244,6 +267,8 @@ export const runVulnerabilityScan = async (req: AuthenticatedRequest, res: Respo
     return res.status(200).json({
       success: true,
       findings: insertedFindings,
+      overallScore: report.overallScore,
+      riskBreakdown: report.riskBreakdown,
     });
   } catch (error) {
     next(error);
