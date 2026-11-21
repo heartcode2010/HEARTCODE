@@ -86,7 +86,7 @@ export default function TechnovaWorkspace() {
         </Link>
         <div className="tech-os-topbar-right">
           <span className="tech-os-system-label"><span /> UNIFIED WORKSPACE</span>
-          <Link className="tech-os-profile-link" to="/">CyberVerse <ArrowUpRight size={14} /></Link>
+          <Link className="tech-os-profile-link" to="/admin">Control centre <ArrowUpRight size={14} /></Link><Link className="tech-os-profile-link" to="/">CyberVerse <ArrowUpRight size={14} /></Link>
         </div>
       </header>
 
