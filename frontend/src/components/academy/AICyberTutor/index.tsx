@@ -76,44 +76,18 @@ const AICyberTutor: React.FC = () => {
       } else {
         throw new Error(response.data?.message || 'Invalid server response');
       }
-    } catch (err) {
-      console.error(err);
-      addLog('Tutor channel disrupted. Initializing rule-based fallback response.');
-      
-      // Rule-based fallback if backend offline or error
-      let fallbackContent = '';
-      const lowerText = text.toLowerCase();
-      if (lowerText.includes('scan') || lowerText.includes('vulnerability') || lowerText.includes('explain')) {
-        fallbackContent = `### 💡 AI Tutor Context Analysis [Rule-Based Fallback]
-
-Your active scan is targetting **${scanUrl || 'None (No site scanned yet)'}** with **${scanFindings?.length || 0} vulnerabilities** detected.
-
-If you are seeing vulnerabilities like missing headers or outdated stacks, remember:
-1. **Remediation**: Always configure your hosting environment to serve secure headers (CSP, HSTS, X-Frame-Options).
-2. **Impact**: Unprotected endpoints can expose details to threat actors.
-3. **Action**: Implement least-privilege policies in your codebase.`;
-      } else if (lowerText.includes('phish')) {
-        fallbackContent = `### 🎣 Phishing Analysis [Rule-Based Fallback]
-
-Phishing leverages human manipulation rather than technical exploits:
-- **Urgency**: "Your bank account will be locked in 2 hours!"
-- **Spoofing**: Domains designed to look real (\`paypal-security.support\`).
-- **Advice**: Never click links directly. Navigate to your bank or service directly in a fresh tab.`;
-      } else {
-        fallbackContent = `### 🤖 AI Cyber Tutor [Rule-Based Fallback]
-
-I am currently running in local offline mode. To activate the full LLM chat experience:
-1. Ensure your backend \`.env\` has either \`GEMINI_API_KEY\` or \`OPENAI_API_KEY\` set.
-2. Verify the backend service is running.
-
-**Your Question**: "${text}"
-**Suggested Academy Paths**: Please try the **Phishing Lab** or **Scam Detector** modules!`;
-      }
-
+    } catch (err: any) {
+      console.error('[AICyberTutor] Live AI request failed:', err);
+      const serverMessage = err?.response?.data?.message;
+      addLog('Live AI unavailable. No simulated answer was generated.');
       const tutorMsg: TutorMessage = {
         id: Math.random().toString(36).substring(7),
         role: 'tutor',
-        content: fallbackContent,
+        content: `### Live AI connection unavailable
+
+I couldn't reach the AI model, so I won't pretend a rule-based reply is an AI answer.
+
+${serverMessage ? `**Server response:** ${serverMessage}\n\n` : ''}Please retry once the backend and an AI provider (Gemini, OpenAI, or Groq) are configured.`,
         timestamp: new Date().toISOString(),
         mode: tutorMode
       };
