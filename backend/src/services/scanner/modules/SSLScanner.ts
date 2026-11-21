@@ -20,7 +20,7 @@ export class SSLScanner implements ScannerModule {
       return findings;
     }
 
-    if (port !== 443 && !target.url.startsWith('https')) {
+    if (urlObj.protocol === 'http:') {
        findings.push({
         id: 'SSL-001',
         category: this.category,
@@ -37,7 +37,7 @@ export class SSLScanner implements ScannerModule {
     }
 
     try {
-      const certData = await this.getTlsInfo(hostname, port);
+      const certData = await this.getTlsInfo(target.ip || hostname, port, hostname);
       
       const validTo = new Date(certData.valid_to);
       const now = new Date();
@@ -104,12 +104,12 @@ export class SSLScanner implements ScannerModule {
     return findings;
   }
 
-  private getTlsInfo(hostname: string, port: number): Promise<any> {
+  private getTlsInfo(connectHost: string, port: number, servername: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const socket = tls.connect({
-        host: hostname,
+        host: connectHost,
         port: port,
-        servername: hostname, // For SNI
+        servername, // Preserve hostname for SNI while connecting to the validated IP
         rejectUnauthorized: false, // Don't crash on invalid certs, we want to inspect them
       }, () => {
         const cert = socket.getPeerCertificate();
