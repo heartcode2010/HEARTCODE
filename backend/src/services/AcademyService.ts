@@ -102,6 +102,7 @@ Please provide a highly structured, educational response formatted in Markdown. 
   static async analyzeScam(content: string): Promise<any> {
     const geminiKey = process.env.GEMINI_API_KEY;
     const openAIKey = process.env.OPENAI_API_KEY;
+    const groqKey = process.env.GROQ_API_KEY;
 
     const prompt = `You are a forensic cybersecurity analysis bot.
 Examine the following pasted text (could be an email, SMS message, WhatsApp alert, or job pitch) for social engineering cues, advance-fee scams, phishing links, or identity theft attempts.
@@ -122,6 +123,28 @@ You must analyze this and return your evaluation ONLY as a valid JSON object mat
 }
 
 Do not include any Markdown blocks (\`\`\`json) or conversational texts in your response. Return strictly the raw JSON string.`;
+
+    // Try Groq structured JSON response first.
+    if (groqKey) {
+      try {
+        const response = await axios.post(
+          'https://api.groq.com/openai/v1/chat/completions',
+          {
+            model: 'llama-3.3-70b-versatile',
+            messages: [{ role: 'user', content: prompt }],
+            temperature: 0.1,
+            max_tokens: 1200,
+            response_format: { type: 'json_object' }
+          },
+          { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` }, timeout: 20000 }
+        );
+        const textResult = response.data?.choices?.[0]?.message?.content || '';
+        const parsed = JSON.parse(textResult);
+        return parsed;
+      } catch (err) {
+        console.error('[AcademyService] Groq scam analyzer failed:', (err as Error).message);
+      }
+    }
 
     // Try Gemini
     if (geminiKey) {
@@ -171,6 +194,7 @@ Do not include any Markdown blocks (\`\`\`json) or conversational texts in your 
   static async generateCurriculum(level: string, topic: string, duration: string): Promise<string> {
     const geminiKey = process.env.GEMINI_API_KEY;
     const openAIKey = process.env.OPENAI_API_KEY;
+    const groqKey = process.env.GROQ_API_KEY;
 
     const prompt = `You are an expert curriculum designer in cybersecurity.
 Design a highly structured, week-by-week curriculum scheme of work.
@@ -181,6 +205,20 @@ Topic Focus: ${topic}
 Duration: ${duration}
 
 Output a professional syllabus layout with week-by-week Objectives, Lesson Plans, Classroom Activities, and Quiz/Assessment ideas. Format strictly in clear plain text or basic Markdown.`;
+
+    if (groqKey) {
+      try {
+        const response = await axios.post(
+          'https://api.groq.com/openai/v1/chat/completions',
+          { model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.35, max_tokens: 1800 },
+          { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` }, timeout: 20000 }
+        );
+        const content = response.data?.choices?.[0]?.message?.content;
+        if (content) return content;
+      } catch (err) {
+        console.error('[AcademyService] Groq curriculum generation failed:', (err as Error).message);
+      }
+    }
 
     // Try Gemini
     if (geminiKey) {
@@ -221,6 +259,7 @@ Output a professional syllabus layout with week-by-week Objectives, Lesson Plans
   static async generateCampaign(topic: string, style: string): Promise<string> {
     const geminiKey = process.env.GEMINI_API_KEY;
     const openAIKey = process.env.OPENAI_API_KEY;
+    const groqKey = process.env.GROQ_API_KEY;
 
     const prompt = `You are a public safety copywriter specializing in digital safety.
 Generate copy or layout suggestions for an awareness campaign.
@@ -229,6 +268,20 @@ Topic: ${topic}
 Deliverable Format / Style: ${style}
 
 Ensure the content is highly engaging, highlights red flags, and offers actionable precautions. Format in clean, readable plain text.`;
+
+    if (groqKey) {
+      try {
+        const response = await axios.post(
+          'https://api.groq.com/openai/v1/chat/completions',
+          { model: 'llama-3.3-70b-versatile', messages: [{ role: 'user', content: prompt }], temperature: 0.5, max_tokens: 1200 },
+          { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` }, timeout: 20000 }
+        );
+        const content = response.data?.choices?.[0]?.message?.content;
+        if (content) return content;
+      } catch (err) {
+        console.error('[AcademyService] Groq campaign generation failed:', (err as Error).message);
+      }
+    }
 
     // Try Gemini
     if (geminiKey) {
