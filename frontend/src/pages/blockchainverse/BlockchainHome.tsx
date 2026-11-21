@@ -141,7 +141,7 @@ export const BlockchainHome: React.FC = () => {
       };
       setForgedTokens(prev => [newToken, ...prev]);
       setIsForging(false);
-      setTradeLogs(prev => [`Forged token ${newToken.name} (${newToken.symbol}) deployed to Virtual Sandbox at ${newToken.address}`, ...prev]);
+      setTradeLogs(prev => [`Simulation only: token record ${newToken.name} (${newToken.symbol}) created in the local sandbox. No on-chain deployment occurred.`, ...prev]);
     }, 1500);
   };
 
@@ -186,6 +186,7 @@ export const BlockchainHome: React.FC = () => {
             </div>
             <div>
               <h1 className="text-2xl font-bold tracking-tight font-display" style={{ fontFamily: "'Outfit', sans-serif" }}>BLOCKCHAINVERSE</h1>
+              <p className="text-[0.65rem] text-[#f0b27d] mt-2">Paper trading and contract deployment are simulations only. No real wallet, funds, market prices or on-chain transactions are connected.</p>
               <p className="text-xs text-[#6e6868] font-mono tracking-wider">SECURE DIGITAL LEDGER ENGINE</p>
             </div>
           </div>
