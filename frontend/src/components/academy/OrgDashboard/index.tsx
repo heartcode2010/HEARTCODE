@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 interface TeamLearner {
@@ -11,12 +11,19 @@ interface TeamLearner {
 
 const OrgDashboard: React.FC = () => {
   const navigate = useNavigate();
-  const [learners, setLearners] = useState<TeamLearner[]>([]);
+  const [learners, setLearners] = useState<TeamLearner[]>(() => {
+    try { return JSON.parse(localStorage.getItem('heartcode-academy-team-tracker') || '[]') as TeamLearner[]; }
+    catch { return []; }
+  });
   const [name, setName] = useState('');
   const [role, setRole] = useState('');
   const [modules, setModules] = useState('0');
   const [average, setAverage] = useState('0');
   const [notice, setNotice] = useState('');
+
+  useEffect(() => {
+    try { localStorage.setItem('heartcode-academy-team-tracker', JSON.stringify(learners)); } catch { /* storage may be unavailable */ }
+  }, [learners]);
 
   const averageScore = useMemo(() => learners.length
     ? Math.round(learners.reduce((sum, item) => sum + item.quizAverage, 0) / learners.length)
