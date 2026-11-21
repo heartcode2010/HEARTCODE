@@ -1,4 +1,4 @@
-import mongoose from 'mongoose';
+import { mongoose } from '../backend/src/config/db';
 import app from '../backend/src/app';
 
 let connection: Promise<typeof mongoose> | undefined;
