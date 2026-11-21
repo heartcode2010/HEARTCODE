@@ -57,8 +57,7 @@ const CertificationCenter: React.FC = () => {
       courseName: req.courseName,
       completionDate: new Date().toLocaleDateString(),
       certificateNumber: `HC-CERT-${Math.random().toString(36).substring(3, 9).toUpperCase()}-${Date.now().toString().slice(-4)}`,
-      skills: req.skills,
-      verificationUrl: `https://verify.heartcode.net/cert/${Math.random().toString(36).substring(3, 9)}`
+      skills: req.skills
     };
 
     addCertificate(newCert);
@@ -214,7 +213,7 @@ const CertificationCenter: React.FC = () => {
                   </div>
                   <div className="text-right">
                     <div className="text-cyber-cyan">HEARTCODE SIGNATURE LABS</div>
-                    <div>SECURE LINK VERIFIED // SHA-256 VALID</div>
+                    <div>LOCAL CERTIFICATE PREVIEW // ONLINE VERIFICATION NOT ENABLED</div>
                   </div>
                 </div>
               </div>
