@@ -33,7 +33,7 @@ export const getAffiliateProfile = async (req: AuthenticatedRequest, res: Respon
     ]);
     return res.json({
       success: true,
-      affiliate: { ...affiliate.toObject(), registeredReferrals: attributedCount },
+      affiliate: { ...affiliate.toObject(), registeredReferrals: attributedCount, activeReferrals: attributedCount },
       recentReferrals: attributionRows,
       commissionNote: 'The referral attribution is recorded. Commission earnings are only posted after eligible paid purchases are connected to the ledger.',
     });
