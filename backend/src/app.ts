@@ -17,6 +17,7 @@ import affiliateRoutes from './routes/affiliate.routes';
 import quizRoutes from './routes/quiz.routes';
 import walletRoutes from './routes/wallet.routes';
 import aiToolsRoutes from './routes/aiTools.routes';
+import platformAdminRoutes from './routes/platformAdmin.routes';
 import { crawlerProtection } from './middleware/crawlerProtection.middleware';
 import { errorHandler } from './middleware/error.middleware';
 import { crawlerFilterMiddleware } from './middleware/crawlerFilter.middleware';
@@ -68,6 +69,7 @@ app.use('/api/affiliate', affiliateRoutes);
 app.use('/api/quizzes', quizRoutes);
 app.use('/api/wallet', walletRoutes);
 app.use('/api/ai-tools', aiToolsRoutes);
+app.use('/api/platform-admin', platformAdminRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
