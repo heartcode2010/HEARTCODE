@@ -13,6 +13,7 @@ export class AcademyService {
   static async getTutorResponse(message: string, mode: 'beginner' | 'intermediate' | 'advanced', scanContext?: ScanContext | null): Promise<string> {
     const geminiKey = process.env.GEMINI_API_KEY;
     const openAIKey = process.env.OPENAI_API_KEY;
+    const groqKey = process.env.GROQ_API_KEY;
 
     let contextString = '';
     if (scanContext) {
@@ -28,6 +29,29 @@ ${contextString}
 User message: "${message}"
 
 Please provide a highly structured, educational response formatted in Markdown. Start directly with explanations and bullet points. Use code snippets or remediation checklists if relevant.`;
+
+    // Try Groq's OpenAI-compatible chat API first.
+    if (groqKey) {
+      try {
+        const response = await axios.post(
+          'https://api.groq.com/openai/v1/chat/completions',
+          {
+            model: 'llama-3.3-70b-versatile',
+            messages: [
+              { role: 'system', content: `You are HEARTCODE's expert cybersecurity tutor. Teach at the ${mode} level. ${contextString}` },
+              { role: 'user', content: message }
+            ],
+            temperature: 0.4,
+            max_tokens: 900
+          },
+          { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${groqKey}` }, timeout: 20000 }
+        );
+        const content = response.data?.choices?.[0]?.message?.content;
+        if (content) return content;
+      } catch (err) {
+        console.error('[AcademyService] Groq tutor call failed:', (err as Error).message);
+      }
+    }
 
     // Try Gemini
     if (geminiKey) {
