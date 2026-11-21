@@ -159,7 +159,7 @@ EOF // SECURE ACADEMY CURRICULUM LAYOUT
           ) : curriculum ? (
             <div className="bg-cyber-surface border border-cyber-border rounded overflow-hidden">
               <div className="bg-cyber-bg2 px-4 py-2 border-b border-cyber-border flex justify-between font-mono text-[0.66rem] text-cyber-ash">
-                <span>COMPILED SCHEME OF WORK</span>
+                <span>{generationSource || 'Generated scheme of work'}</span>
                 <button
                   onClick={() => { navigator.clipboard.writeText(curriculum); alert('Copied to clipboard'); }}
                   className="text-cyber-cyan hover:underline text-[0.66rem] font-mono cursor-pointer"
@@ -174,7 +174,7 @@ EOF // SECURE ACADEMY CURRICULUM LAYOUT
           ) : (
             <div className="bg-cyber-bg border border-cyber-border border-dashed rounded p-12 text-center text-cyber-ash3 font-mono text-xs flex flex-col items-center justify-center min-h-[300px]">
               <span>🎒 SYLLABUS DEPOSITIONS STANDBY</span>
-              <span className="text-[0.58rem] mt-1.5 max-w-xs leading-normal">Configure class properties on the left and start the AI compilation engine.</span>
+              <span className="text-[0.58rem] mt-1.5 max-w-xs leading-normal">Configure class properties on the left and generate the lesson plan.</span>
             </div>
           )}
         </div>
