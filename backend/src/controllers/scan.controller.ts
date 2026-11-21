@@ -177,7 +177,7 @@ export const runAIDeepAnalysis = async (req: AuthenticatedRequest, res: Response
 
 export const getScanHistory = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id || 'guest_user';
+    const userId = getScanOwnerId(req);
 
     const history = await Scan.find({ userId })
       .sort({ createdAt: -1 })
