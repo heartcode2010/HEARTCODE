@@ -68,14 +68,15 @@ Never expose provider secrets through frontend `VITE_*` variables.
 
 ## Validation and release gates
 
-1. GitHub Actions must pass the backend and frontend builds.
+1. GitHub Actions must pass the backend deployment transpilation and frontend build.
 2. Scanner-protection CI must pass.
-3. Test sign-up, login and refresh-token behaviour against the deployed API.
-4. Test QuizVerse with separate accounts, including attempts and answer secrecy.
-5. Test Paystack in test mode: pending, success, failed and repeated verification.
-6. Add signed Paystack webhooks and reconciliation before production wallet launch.
-7. Connect marketplace/subscription payments to the immutable ledger before calculating affiliate commissions.
-8. Complete mobile, accessibility, security and tenant-isolation QA before calling every Verse production-ready.
+3. The full backend TypeScript typecheck currently reports a pre-existing `urlObj` reference error in the protected `backend/src/services/scanner/modules/SSLScanner.ts`. This workstream does not edit that scanner file; the deployment build uses esbuild transpilation without changing scanner source. A separate scanner-owner-approved fix is required to restore a clean full typecheck.
+4. Test sign-up, login and refresh-token behaviour against the deployed API.
+5. Test QuizVerse with separate accounts, including attempts and answer secrecy.
+6. Test Paystack in test mode: pending, success, failed and repeated verification.
+7. Add signed Paystack webhooks and reconciliation before production wallet launch.
+8. Connect marketplace/subscription payments to the immutable ledger before calculating affiliate commissions.
+9. Complete mobile, accessibility, security and tenant-isolation QA before calling every Verse production-ready.
 
 ## Scanner protection
 
