@@ -1,11 +1,11 @@
-import React, { lazy, Suspense, useEffect } from 'react';
-import { Routes, Route, useNavigate, useLocation } from 'react-router-dom';
+import React, { lazy, Suspense, useEffect, useMemo, useState } from 'react';
+import { Navigate, Route, Routes, useNavigate } from 'react-router-dom';
 import { Header } from '../../components/Header';
 import { Footer } from '../../components/Footer';
 import { useAcademyStore } from '../../store/academyStore';
 import type { AcademySection } from '../../types';
+import './AcademyLanding.css';
 
-// ── Lazy-loaded Academy Components ──
 const TrainingCenter = lazy(() => import('../../components/academy/TrainingCenter'));
 const AICyberTutor = lazy(() => import('../../components/academy/AICyberTutor'));
 const PhishingLab = lazy(() => import('../../components/academy/PhishingLab'));
@@ -24,151 +24,160 @@ const KnowledgeCenter = lazy(() => import('../../components/academy/KnowledgeCen
 const CampaignBuilder = lazy(() => import('../../components/academy/CampaignBuilder'));
 const ThreatFeed = lazy(() => import('../../components/academy/ThreatFeed'));
 
-// ── Panel Loader ──
-const PanelLoader: React.FC = () => (
-  <div className="academy-panel-loader">
-    <div className="academy-panel-loader-bar" />
-  </div>
-);
-
-// ── Module Card Data ──
-interface ModuleCard {
+type ModuleCard = {
   id: AcademySection;
   title: string;
   description: string;
-  icon: string;
-  color: string;
   route: string;
-}
+  category: 'learn' | 'practice' | 'protect' | 'professional';
+  icon: string;
+  time: string;
+};
 
 const MODULES: ModuleCard[] = [
-  { id: 'training', title: 'Training Center', description: 'Security awareness learning paths for individuals, businesses, and schools', icon: '📚', color: '#00f5ff', route: 'training' },
-  { id: 'tutor', title: 'AI Cyber Tutor', description: 'AI-powered cybersecurity tutor with beginner to advanced modes', icon: '🤖', color: '#a855f7', route: 'tutor' },
-  { id: 'phishing-lab', title: 'Phishing Lab', description: 'Interactive phishing detection exercises with scoring', icon: '🐟', color: '#f59e0b', route: 'phishing-lab' },
-  { id: 'labs', title: 'Learning Labs', description: 'Safe educational labs for web security, privacy, and reconnaissance', icon: '🧪', color: '#10b981', route: 'labs' },
-  { id: 'challenges', title: 'Cyber Challenges', description: 'Gamified quizzes, badges, and progression system', icon: '🏆', color: '#f97316', route: 'challenges' },
-  { id: 'certifications', title: 'Certifications', description: 'Earn completion certificates in cybersecurity fundamentals', icon: '📜', color: '#eab308', route: 'certifications' },
-  { id: 'scam-detector', title: 'Scam Detector', description: 'AI-powered analysis of suspicious messages and offers', icon: '🛡️', color: '#ef4444', route: 'scam-detector' },
-  { id: 'safety-scorecard', title: 'Safety Scorecard', description: 'Assess your personal or organizational digital safety', icon: '📊', color: '#06b6d4', route: 'safety-scorecard' },
-  { id: 'threat-hub', title: 'Threat Education Hub', description: 'Nigerian cyber threat awareness and prevention education', icon: '🌍', color: '#22c55e', route: 'threat-hub' },
-  { id: 'knowledge', title: 'Knowledge Center', description: 'Searchable cybersecurity and fraud prevention knowledge base', icon: '📖', color: '#8b5cf6', route: 'knowledge' },
-  { id: 'incident-response', title: 'Incident Response', description: 'Guided workflows for common security incidents', icon: '🚨', color: '#dc2626', route: 'incident-response' },
-  { id: 'sme-toolkit', title: 'SME Toolkit', description: 'Security checklists, risk assessments, and policy templates for businesses', icon: '🏢', color: '#3b82f6', route: 'sme-toolkit' },
-  { id: 'career-hub', title: 'Career Pathways', description: 'Cybersecurity career roadmaps, skills, and certifications', icon: '🚀', color: '#ec4899', route: 'career-hub' },
-  { id: 'curriculum', title: 'Curriculum Generator', description: 'AI-assisted cybersecurity curriculum for schools', icon: '🎒', color: '#14b8a6', route: 'curriculum' },
-  { id: 'campaign-builder', title: 'Campaign Builder', description: 'Generate public awareness materials and content', icon: '📢', color: '#f43f5e', route: 'campaign-builder' },
-  { id: 'threat-feed', title: 'Threat Feed', description: 'Educational threat intelligence and emerging scam trends', icon: '📡', color: '#6366f1', route: 'threat-feed' },
-  { id: 'org-dashboard', title: 'Organization Dashboard', description: 'Track training completion and awareness scores for teams', icon: '📈', color: '#0ea5e9', route: 'org-dashboard' },
+  { id: 'training', title: 'Guided learning paths', description: 'Structured lessons for individuals, students, schools and teams.', route: 'training', category: 'learn', icon: '01', time: 'Start here' },
+  { id: 'knowledge', title: 'Cybersecurity library', description: 'Practical explainers on accounts, devices, privacy and online fraud.', route: 'knowledge', category: 'learn', icon: '02', time: 'Read & learn' },
+  { id: 'tutor', title: 'AI Cyber Tutor', description: 'Ask questions, get explanations and work through concepts with an AI tutor.', route: 'tutor', category: 'learn', icon: '03', time: 'Ask anything' },
+  { id: 'threat-hub', title: 'Nigeria threat awareness', description: 'Understand common local scams, impersonation and digital fraud tactics.', route: 'threat-hub', category: 'learn', icon: '04', time: 'Local scenarios' },
+  { id: 'phishing-lab', title: 'Phishing practice', description: 'Inspect realistic email and message examples. Find the warning signs.', route: 'phishing-lab', category: 'practice', icon: '05', time: 'Interactive lab' },
+  { id: 'labs', title: 'Hands-on security labs', description: 'Practise web security, cookie protection and safe reconnaissance concepts.', route: 'labs', category: 'practice', icon: '06', time: 'Interactive lab' },
+  { id: 'challenges', title: 'Knowledge challenges', description: 'Test what you know with quizzes, explanations and score history.', route: 'challenges', category: 'practice', icon: '07', time: 'Test yourself' },
+  { id: 'scam-detector', title: 'Message & scam checker', description: 'Review suspicious SMS, WhatsApp messages, emails and job offers.', route: 'scam-detector', category: 'protect', icon: '08', time: 'Check a message' },
+  { id: 'safety-scorecard', title: 'Personal safety review', description: 'Assess account, device, backup and browsing habits with an action plan.', route: 'safety-scorecard', category: 'protect', icon: '09', time: 'Self-assessment' },
+  { id: 'incident-response', title: 'Incident response guide', description: 'Know what to do if an account is hacked, a device is lost or money is stolen.', route: 'incident-response', category: 'protect', icon: '10', time: 'Step-by-step help' },
+  { id: 'threat-feed', title: 'Threat briefings', description: 'Review educational threat patterns and practical defensive advice.', route: 'threat-feed', category: 'protect', icon: '11', time: 'Awareness updates' },
+  { id: 'certifications', title: 'Certificates', description: 'Review learning requirements and your completed course certificates.', route: 'certifications', category: 'professional', icon: '12', time: 'Achievements' },
+  { id: 'career-hub', title: 'Cybersecurity careers', description: 'Explore roles, required skills, learning routes and portfolio projects.', route: 'career-hub', category: 'professional', icon: '13', time: 'Career planning' },
+  { id: 'sme-toolkit', title: 'Small business toolkit', description: 'Build practical security checklists, policies and basic risk reviews.', route: 'sme-toolkit', category: 'professional', icon: '14', time: 'For organisations' },
+  { id: 'curriculum', title: 'Classroom planner', description: 'Prepare cybersecurity schemes of work for schools and training groups.', route: 'curriculum', category: 'professional', icon: '15', time: 'For educators' },
+  { id: 'campaign-builder', title: 'Awareness content studio', description: 'Create useful cyber-safety messages for staff, students and communities.', route: 'campaign-builder', category: 'professional', icon: '16', time: 'Create materials' },
+  { id: 'org-dashboard', title: 'Team learning overview', description: 'A workspace for reviewing training activity and team readiness.', route: 'org-dashboard', category: 'professional', icon: '17', time: 'For teams' },
 ];
 
-// ── Landing Hub ──
+const GROUPS = [
+  { id: 'learn', title: 'Learn the fundamentals', intro: 'Build your understanding before moving into practical exercises.' },
+  { id: 'practice', title: 'Practise your skills', intro: 'Apply what you have learned in safe, guided activities.' },
+  { id: 'protect', title: 'Protect yourself and others', intro: 'Use practical tools and response guides for everyday digital risks.' },
+  { id: 'professional', title: 'Build professional capability', intro: 'Resources for educators, organisations and people pursuing cyber careers.' },
+] as const;
+
+const PanelLoader: React.FC = () => <div className="academy-loading"><span />Loading Academy workspace…</div>;
+
 const AcademyHub: React.FC = () => {
   const navigate = useNavigate();
   const { progress, loadFromLocalStorage } = useAcademyStore();
+  const [search, setSearch] = useState('');
+  const [activeCategory, setActiveCategory] = useState('all');
 
-  useEffect(() => { loadFromLocalStorage(); }, []);
+  useEffect(() => { loadFromLocalStorage(); }, [loadFromLocalStorage]);
 
-  const xpPercent = ((progress.totalXP % 500) / 500) * 100;
+  const filtered = useMemo(() => MODULES.filter((module) => {
+    const matchesCategory = activeCategory === 'all' || module.category === activeCategory;
+    const query = search.trim().toLowerCase();
+    const matchesSearch = !query || `${module.title} ${module.description}`.toLowerCase().includes(query);
+    return matchesCategory && matchesSearch;
+  }), [search, activeCategory]);
+
+  const percent = Math.min(100, Math.round((progress.totalXP % 500) / 5));
+  const open = (route: string) => navigate(`/academy/${route}`);
 
   return (
-    <div className="academy-landing">
-      {/* Hero Section */}
-      <div className="academy-hero">
-        <div className="academy-hero-content">
-          <h1 className="academy-hero-title">
-            <span className="academy-hero-icon">🎓</span>
-            CYBER ACADEMY
-          </h1>
-          <p className="academy-hero-subtitle">
-            AI-Powered Cybersecurity Education & Awareness Platform
-          </p>
-        </div>
-
-        {/* Progress Stats Bar */}
-        <div className="academy-stats-bar">
-          <div className="academy-stat">
-            <span className="academy-stat-value">{progress.level}</span>
-            <span className="academy-stat-label">Level</span>
-          </div>
-          <div className="academy-stat">
-            <span className="academy-stat-value">{progress.totalXP}</span>
-            <span className="academy-stat-label">XP</span>
-          </div>
-          <div className="academy-stat">
-            <span className="academy-stat-value">{progress.modulesCompleted}/{progress.totalModules}</span>
-            <span className="academy-stat-label">Modules</span>
-          </div>
-          <div className="academy-stat">
-            <span className="academy-stat-value">{progress.badgesEarned.length}</span>
-            <span className="academy-stat-label">Badges</span>
-          </div>
-          <div className="academy-stat">
-            <span className="academy-stat-value">{progress.certificatesEarned.length}</span>
-            <span className="academy-stat-label">Certs</span>
-          </div>
-          <div className="academy-stat academy-stat-xp-bar">
-            <div className="academy-xp-bar">
-              <div className="academy-xp-fill" style={{ width: `${xpPercent}%` }} />
-            </div>
-            <span className="academy-stat-label">Next Level</span>
+    <div className="academy-home">
+      <section className="academy-welcome">
+        <div className="academy-welcome-copy">
+          <div className="academy-eyebrow"><span /> HEARTCODE LEARNING ENVIRONMENT</div>
+          <h1>Cybersecurity starts with <em>knowing what to do.</em></h1>
+          <p>Learn practical digital safety, practise real-world scenarios and build the confidence to protect your accounts, devices and organisation.</p>
+          <div className="academy-welcome-actions">
+            <button className="academy-primary-action" onClick={() => open('training')}>Start learning <span>→</span></button>
+            <button className="academy-secondary-action" onClick={() => open('phishing-lab')}>Try a phishing exercise</button>
           </div>
         </div>
-      </div>
+        <aside className="academy-progress-panel">
+          <div className="academy-progress-top"><span>YOUR LEARNING</span><span className="academy-level">LEVEL {progress.level}</span></div>
+          <div className="academy-xp-number">{progress.totalXP}<small> XP</small></div>
+          <div className="academy-progress-track"><span style={{ width: `${percent}%` }} /></div>
+          <div className="academy-progress-caption"><span>{progress.totalXP % 500} / 500 XP</span><span>Next level</span></div>
+          <div className="academy-progress-divider" />
+          <div className="academy-progress-stats">
+            <div><strong>{progress.modulesCompleted}</strong><span>Modules completed</span></div>
+            <div><strong>{progress.quizzesPassed}</strong><span>Quizzes passed</span></div>
+            <div><strong>{progress.badgesEarned.length}</strong><span>Badges earned</span></div>
+          </div>
+          <p className="academy-progress-note">Your learning progress is saved on this device.</p>
+        </aside>
+      </section>
 
-      {/* Module Grid */}
-      <div className="academy-grid">
-        {MODULES.map((mod, i) => (
-          <button
-            key={mod.id}
-            className="academy-card"
-            onClick={() => navigate(`/academy/${mod.route}`)}
-            style={{ '--card-accent': mod.color, animationDelay: `${i * 50}ms` } as React.CSSProperties}
-          >
-            <div className="academy-card-icon">{mod.icon}</div>
-            <div className="academy-card-body">
-              <h3 className="academy-card-title">{mod.title}</h3>
-              <p className="academy-card-desc">{mod.description}</p>
+      <section className="academy-quick-start">
+        <div><span className="academy-section-kicker">A GOOD PLACE TO BEGIN</span><h2>Choose your next step</h2></div>
+        <div className="academy-quick-grid">
+          <button onClick={() => open('training')}><span className="academy-quick-number">01</span><span><strong>Learn a topic</strong><small>Follow short guided lessons</small></span><b>→</b></button>
+          <button onClick={() => open('phishing-lab')}><span className="academy-quick-number">02</span><span><strong>Test your awareness</strong><small>Spot a suspicious message</small></span><b>→</b></button>
+          <button onClick={() => open('safety-scorecard')}><span className="academy-quick-number">03</span><span><strong>Check your safety</strong><small>Get a personal action list</small></span><b>→</b></button>
+        </div>
+      </section>
+
+      <section className="academy-catalog">
+        <div className="academy-catalog-heading">
+          <div><span className="academy-section-kicker">THE ACADEMY</span><h2>Explore learning and tools</h2><p>Choose a resource based on what you need to do.</p></div>
+          <label className="academy-search"><span>⌕</span><input value={search} onChange={(event) => setSearch(event.target.value)} placeholder="Search lessons, labs and tools…" aria-label="Search Academy modules" /></label>
+        </div>
+        <div className="academy-filters" role="tablist" aria-label="Filter Academy modules">
+          {[['all','All resources'],['learn','Learn'],['practice','Practise'],['protect','Protection'],['professional','Professional']].map(([id,label]) => (
+            <button key={id} role="tab" aria-selected={activeCategory === id} className={activeCategory === id ? 'active' : ''} onClick={() => setActiveCategory(id)}>{label}</button>
+          ))}
+        </div>
+        {GROUPS.map((group) => {
+          const items = filtered.filter((module) => module.category === group.id);
+          if (!items.length) return null;
+          return <div className="academy-module-group" key={group.id}>
+            <div className="academy-group-heading"><h3>{group.title}</h3><p>{group.intro}</p></div>
+            <div className="academy-resource-grid">
+              {items.map((module) => <button className="academy-resource-card" key={module.id} onClick={() => open(module.route)}>
+                <span className="academy-resource-index">{module.icon}</span>
+                <span className="academy-resource-content"><strong>{module.title}</strong><small>{module.description}</small><em>{module.time}</em></span>
+                <span className="academy-resource-arrow">↗</span>
+              </button>)}
             </div>
-            <div className="academy-card-arrow">→</div>
-          </button>
-        ))}
-      </div>
+          </div>;
+        })}
+        {filtered.length === 0 && <div className="academy-empty">No Academy resources match “{search}”. Try another search.</div>}
+      </section>
+      <div className="academy-footnote">HEARTCODE Cyber Academy · Learn responsibly. Practise safely. Protect what matters.</div>
     </div>
   );
 };
 
-// ── Academy Page (with internal routing) ──
-const AcademyLanding: React.FC = () => {
-  return (
-    <div className="flex flex-col min-h-screen" style={{ display: 'flex', flexDirection: 'column' }}>
-      <Header />
-      <main className="academy-main" style={{ flex: '1 1 0%', overflow: 'auto' }}>
-        <Suspense fallback={<PanelLoader />}>
-          <Routes>
-            <Route index element={<AcademyHub />} />
-            <Route path="training" element={<TrainingCenter />} />
-            <Route path="tutor" element={<AICyberTutor />} />
-            <Route path="phishing-lab" element={<PhishingLab />} />
-            <Route path="labs" element={<LearningLabs />} />
-            <Route path="challenges" element={<ChallengesPlatform />} />
-            <Route path="certifications" element={<CertificationCenter />} />
-            <Route path="org-dashboard" element={<OrgDashboard />} />
-            <Route path="threat-hub" element={<ThreatEducationHub />} />
-            <Route path="scam-detector" element={<ScamDetector />} />
-            <Route path="safety-scorecard" element={<SafetyScorecard />} />
-            <Route path="sme-toolkit" element={<SMEToolkit />} />
-            <Route path="incident-response" element={<IncidentResponse />} />
-            <Route path="career-hub" element={<CareerHub />} />
-            <Route path="curriculum" element={<CurriculumGenerator />} />
-            <Route path="knowledge" element={<KnowledgeCenter />} />
-            <Route path="campaign-builder" element={<CampaignBuilder />} />
-            <Route path="threat-feed" element={<ThreatFeed />} />
-          </Routes>
-        </Suspense>
-      </main>
-      <Footer />
-    </div>
-  );
-};
+const AcademyLanding: React.FC = () => (
+  <div className="flex flex-col min-h-screen" style={{ display: 'flex', flexDirection: 'column' }}>
+    <Header />
+    <main className="academy-main" style={{ flex: '1 1 0%', overflow: 'auto' }}>
+      <Suspense fallback={<PanelLoader />}>
+        <Routes>
+          <Route index element={<AcademyHub />} />
+          <Route path="training" element={<TrainingCenter />} />
+          <Route path="tutor" element={<AICyberTutor />} />
+          <Route path="phishing-lab" element={<PhishingLab />} />
+          <Route path="labs" element={<LearningLabs />} />
+          <Route path="challenges" element={<ChallengesPlatform />} />
+          <Route path="certifications" element={<CertificationCenter />} />
+          <Route path="org-dashboard" element={<OrgDashboard />} />
+          <Route path="threat-hub" element={<ThreatEducationHub />} />
+          <Route path="scam-detector" element={<ScamDetector />} />
+          <Route path="safety-scorecard" element={<SafetyScorecard />} />
+          <Route path="sme-toolkit" element={<SMEToolkit />} />
+          <Route path="incident-response" element={<IncidentResponse />} />
+          <Route path="career-hub" element={<CareerHub />} />
+          <Route path="curriculum" element={<CurriculumGenerator />} />
+          <Route path="knowledge" element={<KnowledgeCenter />} />
+          <Route path="campaign-builder" element={<CampaignBuilder />} />
+          <Route path="threat-feed" element={<ThreatFeed />} />
+          <Route path="*" element={<Navigate to="/academy" replace />} />
+        </Routes>
+      </Suspense>
+    </main>
+    <Footer />
+  </div>
+);
 
 export default AcademyLanding;
