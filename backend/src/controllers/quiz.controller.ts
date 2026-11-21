@@ -22,8 +22,8 @@ const quizSchema = z.object({
   title: z.string().trim().min(3).max(140),
   description: z.string().max(2000).optional().default(''),
   category: z.string().trim().max(80).optional().default('general'),
-  accessMode: z.enum(['free', 'paid', 'subscription', 'institution']).optional().default('free'),
-  price: z.number().min(0).max(5000000).optional().default(0),
+  accessMode: z.literal('free').optional().default('free'),
+  price: z.literal(0).optional().default(0),
   tags: z.array(z.string().trim().min(1).max(40)).max(12).optional().default([]),
   questions: z.array(questionSchema).min(1).max(100),
   isPublished: z.boolean().optional().default(true),
@@ -34,7 +34,6 @@ export const createQuiz = async (req: AuthenticatedRequest, res: Response, next:
     if (!req.user) return res.status(401).json({ success: false, message: 'Authentication required' });
     const parsed = quizSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ success: false, message: 'Please check the quiz details and questions.', issues: parsed.error.issues });
-    if (parsed.data.accessMode === 'paid' && parsed.data.price <= 0) return res.status(400).json({ success: false, message: 'Paid quizzes must have a price greater than zero.' });
     const quiz = await Quiz.create({ ...parsed.data, creatorId: req.user.id });
     return res.status(201).json({ success: true, quiz });
   } catch (error) { next(error); }
@@ -43,7 +42,7 @@ export const createQuiz = async (req: AuthenticatedRequest, res: Response, next:
 export const listQuizzes = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     if (!req.user) return res.status(401).json({ success: false, message: 'Authentication required' });
-    const quizzes = await Quiz.find({ $or: [{ isPublished: true }, { creatorId: req.user.id }] }).sort({ createdAt: -1 }).lean();
+    const quizzes = await Quiz.find({ $or: [{ isPublished: true, accessMode: 'free' }, { creatorId: req.user.id }] }).sort({ createdAt: -1 }).lean();
     const safeQuizzes = quizzes.map((quiz: any) => {
       const isOwner = String(quiz.creatorId) === req.user!.id;
       if (isOwner) return { ...quiz, isOwner: true };
@@ -60,7 +59,7 @@ export const getQuiz = async (req: AuthenticatedRequest, res: Response, next: Ne
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz) return res.status(404).json({ success: false, message: 'Quiz not found' });
     const isOwner = quiz.creatorId.toString() === req.user.id;
-    if (!quiz.isPublished && !isOwner) return res.status(404).json({ success: false, message: 'Quiz not found' });
+    if ((!quiz.isPublished || quiz.accessMode !== 'free') && !isOwner) return res.status(404).json({ success: false, message: 'Quiz not found' });
     const data: any = quiz.toObject();
     data.isOwner = isOwner;
     if (!isOwner) data.questions = data.questions.map(({ id, question, options, difficulty, category }: any) => ({ id, question, options, difficulty, category }));
@@ -76,7 +75,6 @@ export const updateQuiz = async (req: AuthenticatedRequest, res: Response, next:
     if (!parsed.success) return res.status(400).json({ success: false, message: 'Please check the updated quiz fields.', issues: parsed.error.issues });
     const quiz = await Quiz.findOne({ _id: req.params.id, creatorId: req.user.id });
     if (!quiz) return res.status(404).json({ success: false, message: 'Quiz not found' });
-    if (parsed.data.accessMode === 'paid' && (parsed.data.price ?? quiz.price) <= 0) return res.status(400).json({ success: false, message: 'Paid quizzes must have a price greater than zero.' });
     Object.assign(quiz, parsed.data);
     await quiz.save();
     return res.json({ success: true, quiz });
@@ -88,7 +86,7 @@ export const submitQuizAttempt = async (req: AuthenticatedRequest, res: Response
     if (!req.user) return res.status(401).json({ success: false, message: 'Authentication required' });
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ success: false, message: 'Invalid quiz ID.' });
     const quiz = await Quiz.findById(req.params.id);
-    if (!quiz || (!quiz.isPublished && quiz.creatorId.toString() !== req.user.id)) return res.status(404).json({ success: false, message: 'Published quiz not found.' });
+    if (!quiz || ((!quiz.isPublished || quiz.accessMode !== 'free') && quiz.creatorId.toString() !== req.user.id)) return res.status(404).json({ success: false, message: 'Published free quiz not found.' });
     const answerSchema = z.array(z.object({ questionId: z.string().min(1), selectedIndex: z.number().int().min(0).max(5) })).length(quiz.questions.length);
     const parsed = answerSchema.safeParse(req.body.answers);
     if (!parsed.success) return res.status(400).json({ success: false, message: 'Submit one valid answer for every question.', issues: parsed.error.issues });
