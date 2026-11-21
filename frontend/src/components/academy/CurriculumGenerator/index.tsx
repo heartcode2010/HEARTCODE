@@ -12,6 +12,7 @@ const CurriculumGenerator: React.FC = () => {
   const [duration, setDuration] = useState('4 Weeks');
   const [loading, setLoading] = useState(false);
   const [curriculum, setCurriculum] = useState<string | null>(null);
+  const [generationSource, setGenerationSource] = useState('');
 
   const handleGenerate = async () => {
     setLoading(true);
@@ -24,12 +25,14 @@ const CurriculumGenerator: React.FC = () => {
 
       if (response.data?.success && response.data?.data) {
         setCurriculum(response.data.data);
+        setGenerationSource('AI-generated curriculum');
         addXP(30);
       } else {
         throw new Error('API offline');
       }
     } catch (err) {
-      console.warn('Backend curriculum service offline, utilizing local compiler...');
+      console.warn('Curriculum AI unavailable; using a local starter outline.');
+      setGenerationSource('Local starter outline · not AI-generated');
       
       // Local compiled curriculum syllabus
       const text = `================================================================================
