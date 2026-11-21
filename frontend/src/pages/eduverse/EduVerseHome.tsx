@@ -14,6 +14,8 @@ export const EduVerseHome: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [aiError, setAiError] = useState('');
   const [aiProvider, setAiProvider] = useState('');
+  const [examType, setExamType] = useState<'WAEC'|'JAMB'|'NECO'|'General'>('WAEC');
+  const [level, setLevel] = useState<'junior-secondary'|'senior-secondary'|'jamb'|'waec'|'beginner'|'intermediate'>('senior-secondary');
 
   const handleGenerateNotes = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -24,8 +26,8 @@ export const EduVerseHome: React.FC = () => {
     try {
       const { data } = await api.post('/ai-tools/eduverse/notes', {
         topic: inputText,
-        level: 'senior-secondary',
-        examType: 'General',
+        level,
+        examType,
       });
       setOutputNotes(data.content || '');
       setAiProvider(data.provider || 'AI provider');
@@ -49,7 +51,7 @@ export const EduVerseHome: React.FC = () => {
               <h1 className="text-2xl font-extrabold flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 <Brain size={24} className="text-[#10b981]" /> EDUVERSE ACADEMY PORTAL
               </h1>
-              <p className="text-xs text-[#6e6868] mt-1">WAEC & JAMB companion: generate flashcards, practice CBT quizzes, and download lecture notes.</p>
+              <p className="text-xs text-[#6e6868] mt-1">AI-assisted revision notes for Nigerian learners. Official WAEC/JAMB question banks are not yet integrated.</p>
             </div>
             <button
               onClick={() => navigate('/learning-dashboard')}
@@ -61,19 +63,17 @@ export const EduVerseHome: React.FC = () => {
 
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
             <div className="md:col-span-1 bg-[#111114] border border-[#2a2a2e] p-6 rounded-2xl h-fit space-y-4">
-              <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider">CBT Mock Preparations</h3>
+              <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider">CBT assessment workspace</h3>
+              <p className="text-[0.68rem] text-[#8a8080]">Open QuizVerse to create or practise assessments. Official exam question banks are not seeded yet.</p>
               <div className="space-y-2.5">
                 {[
-                  { name: 'JAMB Mathematics CBT Practice', count: '40 questions' },
-                  { name: 'WAEC English Language Essay Study', count: '10 prompts' },
-                  { name: 'JAMB Physics CBT Practice', count: '40 questions' },
+                  { name: 'JAMB Mathematics practice', count: 'QuizVerse' },
+                  { name: 'WAEC English practice', count: 'QuizVerse' },
+                  { name: 'JAMB Physics practice', count: 'QuizVerse' },
                 ].map((cbt, idx) => (
                   <button
                     key={idx}
-                    onClick={() => {
-                      alert(`Enrolling in mock exam: ${cbt.name}`);
-                      navigate('/learning-dashboard');
-                    }}
+                    onClick={() => navigate('/quizverse')}
                     className="w-full text-left p-3.5 bg-[#0c0c0e] hover:bg-[#1a1a20] border border-[#2a2a2e] rounded-xl text-xs font-semibold text-[#b0a8a8] hover:text-white transition-colors cursor-pointer flex justify-between items-center"
                   >
                     <span>{cbt.name}</span>
@@ -89,8 +89,12 @@ export const EduVerseHome: React.FC = () => {
                   <Sparkles size={14} className="text-[#10b981]" /> AI notes & flashcards generator
                 </h3>
                 <p className="text-xs text-[#b0a8a8] leading-relaxed">
-                  Enter any academic topic below. The AI tutor will generate comprehensive study notes, takeaways, and flashcard layouts.
+                  Choose your exam context and level. The configured AI provider will generate revision notes and original practice questions—not official past questions.
                 </p>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+                  <select value={examType} onChange={e=>setExamType(e.target.value as any)} className="bg-[#0c0c0e] border border-[#2a2a2e] text-xs p-3 rounded-xl text-white"><option value="WAEC">WAEC</option><option value="JAMB">JAMB</option><option value="NECO">NECO</option><option value="General">General study</option></select>
+                  <select value={level} onChange={e=>setLevel(e.target.value as any)} className="bg-[#0c0c0e] border border-[#2a2a2e] text-xs p-3 rounded-xl text-white"><option value="junior-secondary">Junior secondary</option><option value="senior-secondary">Senior secondary</option><option value="jamb">JAMB candidate</option><option value="waec">WAEC candidate</option><option value="beginner">Beginner</option><option value="intermediate">Intermediate</option></select>
+                </div>
                 <div className="flex gap-2">
                   <input
                     type="text"
