@@ -70,15 +70,14 @@ const TrainingCenter: React.FC = () => {
   const [activeTrack, setActiveTrack] = useState<TrainingTrack>('individuals');
   const [expandedModule, setExpandedModule] = useState<string | null>(null);
   const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
-  const { progress, updateProgress, addXP } = useAcademyStore();
+  const { completedTopics, completeTopic } = useAcademyStore();
   const navigate = useNavigate();
 
   const trackModules = TRAINING_MODULES.filter(m => m.track === activeTrack);
   const trackConfig = TRACK_CONFIG[activeTrack];
 
-  const handleCompleteTopic = (moduleId: string, topicId: string) => {
-    addXP(25);
-    updateProgress({ modulesCompleted: progress.modulesCompleted });
+  const handleCompleteTopic = (moduleId: string, topicId: string, moduleTopicIds: string[]) => {
+    completeTopic(moduleId, topicId, moduleTopicIds);
   };
 
   return (
@@ -137,7 +136,7 @@ const TrainingCenter: React.FC = () => {
                       className="academy-topic-header"
                       onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
                     >
-                      <span>{topic.completed ? '✅' : '📄'} {topic.title}</span>
+                      <span>{completedTopics.includes(topic.id) ? '✓' : '○'} {topic.title}</span>
                       <span>{expandedTopic === topic.id ? '−' : '+'}</span>
                     </button>
 
@@ -157,9 +156,10 @@ const TrainingCenter: React.FC = () => {
 
                         <button
                           className="academy-complete-btn"
-                          onClick={() => handleCompleteTopic(mod.id, topic.id)}
+                          disabled={completedTopics.includes(topic.id)}
+                          onClick={() => handleCompleteTopic(mod.id, topic.id, mod.topics.map(item => item.id))}
                         >
-                          ✓ Mark Complete (+25 XP)
+                          {completedTopics.includes(topic.id) ? '✓ Lesson completed' : 'Mark lesson complete · +25 XP'}
                         </button>
                       </div>
                     )}
