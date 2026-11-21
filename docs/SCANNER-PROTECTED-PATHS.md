@@ -15,6 +15,8 @@ The following files and directories are protected from changes in this workstrea
 - `backend/src/routes/report.routes.ts`
 - `backend/src/models/Scan.ts`
 - `backend/src/models/Vulnerability.ts`
+- `backend/src/config/db.ts`
+- `backend/src/middleware/auth.middleware.ts`
 - `backend/src/services/ScanService.ts`
 - `backend/src/services/scanner/**`
 
