@@ -3,7 +3,7 @@ import { AcademyService } from '../services/AcademyService';
 
 export const tutorChat = async (req: Request, res: Response, next: NextFunction): Promise<void> => {
   try {
-    const { message, mode, scanContext } = req.body;
+    const { message, mode, scanContext, history } = req.body;
 
     if (!message) {
       res.status(400).json({ success: false, message: 'Message parameter is required' });
@@ -11,7 +11,8 @@ export const tutorChat = async (req: Request, res: Response, next: NextFunction)
     }
 
     console.log(`[AcademyController] Processing tutor query. Mode: ${mode || 'beginner'}`);
-    const explanation = await AcademyService.getTutorResponse(message, mode || 'beginner', scanContext);
+    const safeHistory = Array.isArray(history) ? history.filter((item: any) => item && ['user', 'assistant'].includes(item.role) && typeof item.content === 'string').slice(-8) : [];
+    const explanation = await AcademyService.getTutorResponse(message, mode || 'beginner', scanContext, safeHistory);
 
     res.status(200).json({
       success: true,
@@ -19,8 +20,7 @@ export const tutorChat = async (req: Request, res: Response, next: NextFunction)
     });
   } catch (error) {
     console.error('[AcademyController] Tutor chat failed:', (error as Error).message);
-    // Let the route fail gracefully, client-side fallback handles it
-    next(error);
+    res.status(503).json({ success: false, message: (error as Error).message || 'Live AI tutor is temporarily unavailable.' });
   }
 };
 
