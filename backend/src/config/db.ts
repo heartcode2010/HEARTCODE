@@ -1,12 +1,22 @@
 import mongoose from 'mongoose';
 
+let connectionPromise: Promise<void> | null = null;
+
 export const connectDB = async (): Promise<void> => {
-  try {
-    const connStr = process.env.MONGODB_URI || 'mongodb://localhost:27017/heartcode';
-    await mongoose.connect(connStr);
-    console.log(`[Database] MongoDB Connected to: ${mongoose.connection.name}`);
-  } catch (error) {
-    console.error(`[Database] Connection Error: ${(error as Error).message}`);
-    process.exit(1);
+  if (mongoose.connection.readyState === 1) return;
+  const connStr = process.env.MONGODB_URI;
+  if (!connStr) throw new Error('MONGODB_URI must be configured before connecting to the database.');
+  if (!connectionPromise) {
+    connectionPromise = mongoose.connect(connStr)
+      .then(() => {
+        console.log('[Database] MongoDB connection ready: ' + mongoose.connection.name);
+      })
+      .then(() => undefined)
+      .catch((error) => {
+        connectionPromise = null;
+        console.error('[Database] MongoDB connection failed: ' + (error as Error).message);
+        throw error;
+      });
   }
+  await connectionPromise;
 };
