@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import './TechnovaWorkspace.css';
+import api from '../services/api';
 import { Link } from 'react-router-dom';
 import {
   ArrowUpRight, ShieldCheck, GraduationCap, Blocks, Palette, Code2,
@@ -64,7 +65,16 @@ const statusCopy = {
   planned: { label: 'Planned', icon: LockKeyhole, className: 'status-planned' },
 };
 
+type Overview = { organizations: number; quizzes: number; attempts: number; activeVerses: string[] };
+
 export default function TechnovaWorkspace() {
+  const [overview, setOverview] = useState<Overview | null>(null);
+  const [overviewMessage, setOverviewMessage] = useState('Connecting your workspace…');
+  useEffect(() => {
+    api.get('/v1/platform/overview')
+      .then(({ data }) => { setOverview(data.overview); setOverviewMessage('Your account workspace is synced.'); })
+      .catch(() => setOverviewMessage('Sign in to sync your organisations and learning activity.'));
+  }, []);
   return (
     <main className="tech-os">
       <div className="tech-os-noise" aria-hidden="true" />
@@ -90,6 +100,16 @@ export default function TechnovaWorkspace() {
           <span><ShieldCheck size={15} /> Security-first architecture</span>
           <span><Layers3 size={15} /> Connected platform services</span>
           <span><GraduationCap size={15} /> Learning built in</span>
+        </div>
+      </section>
+
+      <section className="tech-os-overview" aria-label="Account overview">
+        <div className="tech-os-overview-heading"><span>YOUR WORKSPACE</span><small>{overviewMessage}</small></div>
+        <div className="tech-os-overview-grid">
+          <div><strong>{overview ? overview.organizations : "—"}</strong><span>Organisations</span></div>
+          <div><strong>{overview ? overview.quizzes : "—"}</strong><span>Your quizzes</span></div>
+          <div><strong>{overview ? overview.attempts : "—"}</strong><span>Quiz attempts</span></div>
+          <div><strong>{overview ? overview.activeVerses.length : "—"}</strong><span>Connected Verses</span></div>
         </div>
       </section>
 
