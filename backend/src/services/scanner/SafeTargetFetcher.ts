@@ -66,7 +66,7 @@ function validateTargetUrl(input: string): URL {
 
   if (!['http:', 'https:'].includes(parsed.protocol)) throw new Error('Only HTTP and HTTPS websites can be scanned.');
   if (parsed.username || parsed.password) throw new Error('URLs containing embedded credentials are not allowed.');
-  if (parsed.port && !['80', '443'].includes(parsed.port)) throw new Error('Only standard HTTP (80) and HTTPS (443) ports are supported.');
+  if (parsed.port && parsed.port !== (parsed.protocol === 'https:' ? '443' : '80')) throw new Error('Only standard HTTP (80) and HTTPS (443) ports are supported.');
   parsed.hash = '';
   return parsed;
 }
@@ -81,6 +81,7 @@ export class SafeTargetFetcher {
         const requestedFamily = typeof options === 'number' ? options : options?.family;
         const selected = addresses.find((entry) => !requestedFamily || entry.family === requestedFamily) || addresses[0];
         if (!selected) return callback(new Error('No validated public address is available.'));
+        if (options?.all) return callback(null, addresses.map((entry) => ({ address: entry.address, family: entry.family })));
         callback(null, selected.address, selected.family);
       }) as any;
 
