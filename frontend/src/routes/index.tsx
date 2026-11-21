@@ -10,6 +10,7 @@ import ReferralCapture from '../components/ReferralCapture';
 
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const TechnovaOSHome = lazy(() => import('../pages/TechnovaOSHome'));
+const PlatformAdminPage = lazy(() => import('../pages/PlatformAdminPage'));
 
 // ── Academy Pages ──
 const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
@@ -67,6 +68,7 @@ const AppRouter: React.FC = () => (
         {/* Core routes */}
         <Route path="/" element={<Dashboard />} />
         <Route path="/os" element={<TechnovaOSHome />} />
+        <Route path="/platform-admin" element={<PlatformAdminPage />} />
 
         {/* Megastructure routes */}
         <Route
