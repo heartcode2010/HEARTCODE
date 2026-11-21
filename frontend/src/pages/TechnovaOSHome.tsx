@@ -16,7 +16,7 @@ const services=[
  {name:'Wallet',description:'Account-backed NGN ledger and Paystack funding. Withdrawals are not enabled.',icon:Wallet,to:'/wallet',state:'PAYSTACK-READY'},
  {name:'Affiliate Network',description:'Referral links, click tracking and one-time new-account attribution. Purchase commissions are not connected yet.',icon:Users,to:'/affiliate',state:'PARTIAL'},
  {name:'Marketplace',description:'Browse digital assets and freelance gigs in the current marketplace experience.',icon:ShoppingBag,to:'/marketplace',state:'PREVIEW'},
- {name:'Admin Control',description:'Open the current platform administration dashboard.',icon:Settings2,to:'/admin',state:'PREVIEW'},
+ {name:'Admin Control',description:'View real account, assessment, wallet and affiliate record counts and integration readiness.',icon:Settings2,to:'/platform-admin',state:'ADMIN-BACKED'},
  {name:'AI Workspace',description:'Open the existing AI chat experience and provider-connected tools.',icon:Sparkles,to:'/ai-chat',state:'PROVIDER-DEPENDENT'},
 ];
 export default function TechnovaOSHome(){
