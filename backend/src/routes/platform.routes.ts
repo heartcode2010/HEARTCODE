@@ -54,6 +54,10 @@ const WalletEntry = mongoose.models.TNWalletEntry || mongoose.model('TNWalletEnt
   sourceReference: { type: String, required: true, unique: true }, description: { type: String, required: true },
 }, { timestamps: true }));
 
+const FeatureFlag = mongoose.models.TNFeatureFlag || mongoose.model('TNFeatureFlag', new Schema({
+  key: { type: String, required: true, unique: true }, label: { type: String, required: true }, enabled: { type: Boolean, default: false }, updatedBy: Schema.Types.ObjectId,
+}, { timestamps: true }));
+
 const Audit = mongoose.models.TNAuditEvent || mongoose.model('TNAuditEvent', new Schema({
   actorId: { type: Schema.Types.ObjectId, required: true, index: true },
   action: { type: String, required: true },
@@ -277,6 +281,31 @@ router.get('/wallet/transactions', async (req: SessionRequest, res: Response, ne
   try {
     const entries = await WalletEntry.find({ userId: req.sessionUser!.id }).sort({ createdAt: -1 }).limit(50).lean();
     res.json({ success: true, transactions: entries.map((entry: any) => ({ direction: entry.direction, amountNaira: entry.amountKobo / 100, currency: entry.currency, description: entry.description, reference: entry.sourceReference, createdAt: entry.createdAt })) });
+  } catch (error) { next(error); }
+});
+
+router.get('/admin/overview', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    if (req.sessionUser!.role !== 'admin') return res.status(403).json({ success: false, message: 'Platform administrator access required.' });
+    const [users, organizations, quizzes, attempts, payments, walletEntries, flags] = await Promise.all([
+      User.countDocuments(), Org.countDocuments(), Quiz.countDocuments(), Attempt.countDocuments(), Payment.countDocuments(), WalletEntry.countDocuments(), FeatureFlag.find().sort({ key: 1 }).lean(),
+    ]);
+    res.json({ success: true, metrics: { users, organizations, quizzes, attempts, payments, walletEntries }, integrations: {
+      database: Boolean(process.env.MONGODB_URI), jwt: Boolean(process.env.JWT_SECRET), paystack: Boolean(process.env.PAYSTACK_SECRET_KEY),
+      groq: Boolean(process.env.GROQ_API_KEY), gemini: Boolean(process.env.GEMINI_API_KEY), openai: Boolean(process.env.OPENAI_API_KEY),
+    }, featureFlags: flags });
+  } catch (error) { next(error); }
+});
+
+router.put('/admin/feature-flags/:key', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    if (req.sessionUser!.role !== 'admin') return res.status(403).json({ success: false, message: 'Platform administrator access required.' });
+    if (!/^[a-z0-9][a-z0-9._-]{1,60}$/i.test(req.params.key)) return res.status(400).json({ success: false, message: 'Invalid feature flag key.' });
+    const parsed = z.object({ label: z.string().trim().min(2).max(100), enabled: z.boolean() }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ success: false, message: 'A label and enabled state are required.' });
+    const flag = await FeatureFlag.findOneAndUpdate({ key: req.params.key }, { ...parsed.data, updatedBy: req.sessionUser!.id }, { upsert: true, new: true, runValidators: true });
+    await audit(req.sessionUser!.id, 'platform.feature_flag.updated', 'feature_flag', flag.id);
+    res.json({ success: true, featureFlag: flag });
   } catch (error) { next(error); }
 });
 
