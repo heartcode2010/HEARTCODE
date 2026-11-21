@@ -33,6 +33,11 @@ interface AcademyState {
   // ── Phishing Lab ──
   phishingLab: PhishingLabState;
 
+  // ── Lesson completion ──
+  completedTopics: string[];
+  completedModules: string[];
+  completeTopic: (moduleId: string, topicId: string, moduleTopicIds: string[]) => void;
+
   // ── Quiz / Challenges ──
   quizResults: QuizResult[];
   currentQuizIndex: number;
@@ -244,6 +249,8 @@ export const useAcademyStore = create<AcademyState>((set, get) => ({
     try {
       const data = {
         progress: s.progress,
+        completedTopics: s.completedTopics,
+        completedModules: s.completedModules,
         quizResults: s.quizResults,
         badges: s.badges,
         achievements: s.achievements,
@@ -263,6 +270,8 @@ export const useAcademyStore = create<AcademyState>((set, get) => ({
       const data = JSON.parse(raw);
       set({
         progress: { ...INITIAL_PROGRESS, ...data.progress },
+        completedTopics: data.completedTopics || [],
+        completedModules: data.completedModules || [],
         quizResults: data.quizResults || [],
         badges: data.badges || DEFAULT_BADGES.map(b => ({ ...b })),
         achievements: data.achievements || DEFAULT_ACHIEVEMENTS.map(a => ({ ...a })),
