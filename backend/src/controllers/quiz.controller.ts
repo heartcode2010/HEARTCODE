@@ -27,9 +27,6 @@ const quizSchema = z.object({
   tags: z.array(z.string().trim().min(1).max(40)).max(12).optional().default([]),
   questions: z.array(questionSchema).min(1).max(100),
   isPublished: z.boolean().optional().default(true),
-}).refine((quiz) => !quiz.questions || new Set(quiz.questions.map((question) => question.id)).size === quiz.questions.length, {
-  message: 'Every quiz question must have a unique ID.',
-  path: ['questions'],
 });
 
 export const createQuiz = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -37,6 +34,7 @@ export const createQuiz = async (req: AuthenticatedRequest, res: Response, next:
     if (!req.user) return res.status(401).json({ success: false, message: 'Authentication required' });
     const parsed = quizSchema.safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ success: false, message: 'Please check the quiz details and questions.', issues: parsed.error.issues });
+    if (new Set(parsed.data.questions.map((question) => question.id)).size !== parsed.data.questions.length) return res.status(400).json({ success: false, message: 'Every quiz question must have a unique ID.' });
     const quiz = await Quiz.create({ ...parsed.data, creatorId: req.user.id });
     return res.status(201).json({ success: true, quiz });
   } catch (error) { next(error); }
@@ -76,6 +74,7 @@ export const updateQuiz = async (req: AuthenticatedRequest, res: Response, next:
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ success: false, message: 'Invalid quiz ID.' });
     const parsed = quizSchema.partial().safeParse(req.body);
     if (!parsed.success) return res.status(400).json({ success: false, message: 'Please check the updated quiz fields.', issues: parsed.error.issues });
+    if (parsed.data.questions && new Set(parsed.data.questions.map((question) => question.id)).size !== parsed.data.questions.length) return res.status(400).json({ success: false, message: 'Every quiz question must have a unique ID.' });
     const quiz = await Quiz.findOne({ _id: req.params.id, creatorId: req.user.id });
     if (!quiz) return res.status(404).json({ success: false, message: 'Quiz not found' });
     Object.assign(quiz, parsed.data);
