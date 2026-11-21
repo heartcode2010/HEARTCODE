@@ -15,6 +15,7 @@ import academyRoutes from './routes/academy.routes';
 import adminRoutes from './routes/admin.routes';
 import affiliateRoutes from './routes/affiliate.routes';
 import quizRoutes from './routes/quiz.routes';
+import technovaRoutes from './routes/technova.routes';
 import { crawlerProtection } from './middleware/crawlerProtection.middleware';
 import { errorHandler } from './middleware/error.middleware';
 import { crawlerFilterMiddleware } from './middleware/crawlerFilter.middleware';
@@ -64,6 +65,7 @@ app.use('/api/academy', academyRoutes);
 app.use('/api/admin', adminRoutes);
 app.use('/api/affiliate', affiliateRoutes);
 app.use('/api/quizzes', quizRoutes);
+app.use('/api/technova', technovaRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {

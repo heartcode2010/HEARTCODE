@@ -183,3 +183,20 @@ HEARTCODE is pre-configured to be deployed instantly: the frontend to **Vercel**
 6.  Import the repository.
 7.  Vercel automatically reads the `vercel.json` file in the root directory. It will install frontend dependencies (`npm install --prefix frontend --legacy-peer-deps`), trigger Vite's production build (`npm run build --prefix frontend`), and deploy the build outputs.
 8.  Open your deployed Vercel URL (e.g. `https://your-project.vercel.app`) to start utilizing the full platform in production!
+
+
+## TECHNOVA foundation
+
+An additive TECHNOVA workspace is available at `/technova`. It introduces a Corporate Editorial shell while leaving the existing vulnerability scanner and Cyber Academy routes/components untouched.
+
+### NOVA / Dark Obsydia AI connection
+
+Configure these **server-side** variables (never expose the API key through a `VITE_*` variable):
+
+- `OBSYDIA_BASE_URL`: base URL of your deployed Dark Obsydia AI instance, without a trailing slash (for example, `https://ai.example.com`).
+- `OBSYDIA_API_KEY`: a developer API key created in the Obsydia API dashboard.
+- `OBSYDIA_MODEL`: optional model name, e.g. `qwen3:4b`.
+
+The TECHNOVA backend proxies chat requests to Obsydia's `POST /api/v1/chat` endpoint. Until the URL and key are configured, NOVA reports itself as unconfigured and does not fabricate responses.
+
+The first TECHNOVA foundation includes a working EVM wallet connection request, browser-local project/opportunity notes, workspace navigation, and the NOVA API bridge. Wallet balances, signing, Solana, smart-contract compilation/deployment, persistent user accounts, credentials, payments and opportunity feeds require additional provider/backend integrations and are not represented as live in this foundation.

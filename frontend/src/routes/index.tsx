@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MusicPlayer from '../components/Shared/MusicPlayer';
 
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const TechnovaHome = lazy(() => import('../pages/TechnovaHome'));
 
 // ── Academy Pages ──
 const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
@@ -60,6 +61,9 @@ const AppRouter: React.FC = () => (
       <Routes>
         {/* Redirect login directly to dashboard */}
         <Route path="/login" element={<Navigate to="/" replace />} />
+
+        {/* TECHNOVA unified ecosystem — additive route; scanner and Academy remain untouched */}
+        <Route path="/technova/*" element={<TechnovaHome />} />
 
         {/* Core routes */}
         <Route path="/" element={<Dashboard />} />
