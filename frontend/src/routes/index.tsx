@@ -9,6 +9,7 @@ import useAuthStore from '../store/authStore';
 
 const Login = lazy(() => import('../pages/Login'));
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const TechnovaWorkspace = lazy(() => import('../pages/TechnovaWorkspace'));
 
 // ── Academy Pages (lazy-loaded) ──
 const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
@@ -36,7 +37,7 @@ const AppRouter: React.FC = () => (
   <BrowserRouter>
     <Suspense fallback={<PageLoader />}>
       <Routes>
-        {/* Public routes */}d
+        {/* Public routes */}
         <Route path="/login" element={<Navigate to="/" replace />} />
 
         {/* Protected routes */}
@@ -44,6 +45,10 @@ const AppRouter: React.FC = () => (
           path="/"
           element={<Dashboard />}
         />
+
+        {/* Unified TECHNOVA OS workspace. The scanner remains at the existing root route. */}
+        <Route path="/os" element={<TechnovaWorkspace />} />
+        <Route path="/workspace" element={<Navigate to="/os" replace />} />
 
         {/* Academy routes */}
         <Route
