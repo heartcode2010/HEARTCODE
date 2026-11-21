@@ -197,7 +197,8 @@ export const NexoraHome: React.FC = () => {
           {tab === 'rentals' && (
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
               <div className="bg-[#111114] border border-[#2a2a2e] p-6 rounded-2xl space-y-4">
-                <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-2">Book Video Production Studios</h3>
+                <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-2">Studio directory preview</h3>
+                <p className="text-[0.65rem] text-[#f0b27d] mb-3">Illustrative sample listings only. Booking is not connected and no reservation can be made.</p>
                 <div className="space-y-3">
                   {[
                     { name: 'Lagos Creative Hub Room 4A', price: '₦15,000 / hr', specs: 'Green screen, 4K cameras, priority lighting rigs' },
@@ -220,7 +221,8 @@ export const NexoraHome: React.FC = () => {
               </div>
 
               <div className="bg-[#111114] border border-[#2a2a2e] p-6 rounded-2xl space-y-4">
-                <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-2">Equipment Rentals</h3>
+                <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-2">Equipment directory preview</h3>
+                <p className="text-[0.65rem] text-[#f0b27d] mb-3">Illustrative sample listings only. Rental inventory and payment are not connected.</p>
                 <div className="space-y-3">
                   {[
                     { name: 'Sony FX3 Cinema Camera', price: '₦20,000 / day', cat: 'Camera' },
