@@ -13,8 +13,8 @@ const verses=[
 ];
 const services=[
  {name:'QuizVerse',description:'Create quizzes, publish assessments and score learner attempts on the server.',icon:ClipboardList,to:'/quizverse',state:'ACCOUNT-BACKED'},
- {name:'Wallet',description:'View the wallet demo and transaction interface. Live provider settlement is not enabled.',icon:Wallet,to:'/wallet',state:'DEMO'},
- {name:'Affiliate Network',description:'Referral profile and payout API foundations; the full affiliate dashboard is still being completed.',icon:Users,to:'/affiliate',state:'IN DEVELOPMENT'},
+ {name:'Wallet',description:'Account-backed NGN ledger and Paystack funding. Withdrawals are not enabled.',icon:Wallet,to:'/wallet',state:'PAYSTACK-READY'},
+ {name:'Affiliate Network',description:'Referral links, click tracking and one-time new-account attribution. Purchase commissions are not connected yet.',icon:Users,to:'/affiliate',state:'PARTIAL'},
  {name:'Marketplace',description:'Browse digital assets and freelance gigs in the current marketplace experience.',icon:ShoppingBag,to:'/marketplace',state:'PREVIEW'},
  {name:'Admin Control',description:'Open the current platform administration dashboard.',icon:Settings2,to:'/admin',state:'PREVIEW'},
  {name:'AI Workspace',description:'Open the existing AI chat experience and provider-connected tools.',icon:Sparkles,to:'/ai-chat',state:'PROVIDER-DEPENDENT'},
