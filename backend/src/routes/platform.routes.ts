@@ -1,9 +1,11 @@
 import { Router, Request, Response, NextFunction } from 'express';
 import jwt from 'jsonwebtoken';
+import axios from 'axios';
+import { randomBytes } from 'crypto';
 import mongoose, { Schema } from 'mongoose';
 import { z } from 'zod';
 
-type SessionRequest = Request & { sessionUser?: { id: string; username: string; role: string } };
+type SessionRequest = Request & { sessionUser?: { id: string; username: string; email?: string; role: string } };
 const router = Router();
 
 const Org = mongoose.models.TNOrganization || mongoose.model('TNOrganization', new Schema({
@@ -38,6 +40,19 @@ const Attempt = mongoose.models.TNQuizAttempt || mongoose.model('TNQuizAttempt',
   submittedAt: { type: Date, default: Date.now },
 }, { timestamps: true }));
 
+const Payment = mongoose.models.TNPayment || mongoose.model('TNPayment', new Schema({
+  userId: { type: Schema.Types.ObjectId, required: true, index: true }, reference: { type: String, required: true, unique: true },
+  amountKobo: { type: Number, required: true, min: 100000 }, currency: { type: String, enum: ['NGN'], default: 'NGN' },
+  purpose: { type: String, enum: ['wallet_topup'], default: 'wallet_topup' }, status: { type: String, enum: ['pending', 'success', 'failed'], default: 'pending' },
+  authorizationUrl: String, providerReference: String, verifiedAt: Date,
+}, { timestamps: true }));
+
+const WalletEntry = mongoose.models.TNWalletEntry || mongoose.model('TNWalletEntry', new Schema({
+  userId: { type: Schema.Types.ObjectId, required: true, index: true }, direction: { type: String, enum: ['credit', 'debit'], required: true },
+  amountKobo: { type: Number, required: true, min: 1 }, currency: { type: String, enum: ['NGN'], default: 'NGN' },
+  sourceReference: { type: String, required: true, unique: true }, description: { type: String, required: true },
+}, { timestamps: true }));
+
 const Audit = mongoose.models.TNAuditEvent || mongoose.model('TNAuditEvent', new Schema({
   actorId: { type: Schema.Types.ObjectId, required: true, index: true },
   action: { type: String, required: true },
@@ -52,14 +67,23 @@ function requireSession(req: SessionRequest, res: Response, next: NextFunction) 
   const secret = process.env.JWT_SECRET;
   if (!secret || !token) return res.status(401).json({ success: false, message: 'A valid TECHNOVA account session is required.' });
   try {
-    const decoded = jwt.verify(token, secret) as { id?: string; username?: string; role?: string };
+    const decoded = jwt.verify(token, secret) as { id?: string; username?: string; email?: string; role?: string };
     if (!decoded.id || !mongoose.isValidObjectId(decoded.id)) return res.status(401).json({ success: false, message: 'Invalid account session.' });
-    req.sessionUser = { id: decoded.id, username: decoded.username || 'Member', role: decoded.role || 'user' };
+    req.sessionUser = { id: decoded.id, username: decoded.username || 'Member', email: decoded.email, role: decoded.role || 'user' };
     next();
   } catch {
     return res.status(401).json({ success: false, message: 'Your session has expired. Sign in again.' });
   }
 }
+async function verifyPaystack(reference: string) {
+  const secret = process.env.PAYSTACK_SECRET_KEY || '';
+  if (!secret) throw new Error('Paystack is not configured on this server.');
+  const response = await axios.get('https://api.paystack.co/transaction/verify/' + encodeURIComponent(reference), {
+    headers: { Authorization: 'Bearer ' + secret }, timeout: 15000,
+  });
+  return response.data?.data;
+}
+
 router.use(requireSession);
 
 const orgInput = z.object({ name: z.string().trim().min(2).max(100) });
@@ -149,12 +173,73 @@ router.get('/quizverse/attempts', async (req: SessionRequest, res: Response, nex
   } catch (error) { next(error); }
 });
 
-router.get('/credits', (_req: SessionRequest, res: Response) => {
-  res.json({ success: true, status: 'not_configured', balance: null, message: 'AI credit purchases and usage will appear after the billing ledger and payment-provider verification are enabled.' });
+router.post('/commerce/paystack/initialize', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    const parsed = z.object({ amountNaira: z.number().int().min(1000).max(5000000) }).safeParse(req.body);
+    if (!parsed.success) return res.status(400).json({ success: false, message: 'Wallet top-ups must be between ₦1,000 and ₦5,000,000.' });
+    if (!req.sessionUser!.email) return res.status(400).json({ success: false, message: 'Add a verified email address to your account before making a payment.' });
+    const secret = process.env.PAYSTACK_SECRET_KEY || '';
+    if (!secret) return res.status(503).json({ success: false, message: 'Paystack is not configured yet. Add PAYSTACK_SECRET_KEY to the server environment.' });
+    const reference = 'tn_' + Date.now() + '_' + randomBytes(6).toString('hex');
+    const amountKobo = parsed.data.amountNaira * 100;
+    const payment = await Payment.create({ userId: req.sessionUser!.id, reference, amountKobo, currency: 'NGN', purpose: 'wallet_topup', status: 'pending' });
+    try {
+      const response = await axios.post('https://api.paystack.co/transaction/initialize', {
+        email: req.sessionUser!.email, amount: amountKobo, currency: 'NGN', reference,
+        callback_url: process.env.PAYSTACK_CALLBACK_URL || undefined,
+        metadata: { userId: req.sessionUser!.id, purpose: 'wallet_topup', paymentId: payment.id },
+      }, { headers: { Authorization: 'Bearer ' + secret, 'Content-Type': 'application/json' }, timeout: 15000 });
+      const authorizationUrl = response.data?.data?.authorization_url;
+      if (!authorizationUrl) throw new Error('Paystack did not return a checkout URL.');
+      payment.authorizationUrl = authorizationUrl;
+      await payment.save();
+      res.status(201).json({ success: true, reference, authorizationUrl, amountNaira: parsed.data.amountNaira, currency: 'NGN' });
+    } catch (error) {
+      payment.status = 'failed'; await payment.save(); throw error;
+    }
+  } catch (error) { next(error); }
 });
 
-router.get('/wallet', (_req: SessionRequest, res: Response) => {
-  res.json({ success: true, status: 'not_configured', balance: null, currency: 'NGN', message: 'Wallet balances are unavailable until verified payment processing and the immutable ledger are configured.' });
+router.get('/commerce/paystack/verify/:reference', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    const payment = await Payment.findOne({ reference: req.params.reference, userId: req.sessionUser!.id });
+    if (!payment) return res.status(404).json({ success: false, message: 'Payment reference not found for this account.' });
+    if (payment.status === 'success') return res.json({ success: true, credited: true, amountNaira: payment.amountKobo / 100, message: 'This payment has already been credited.' });
+    const verified = await verifyPaystack(payment.reference);
+    if (!verified || verified.status !== 'success' || Number(verified.amount) !== payment.amountKobo || verified.currency !== 'NGN') {
+      return res.status(400).json({ success: false, credited: false, message: 'Payment is not yet confirmed by Paystack. Try verification again shortly.' });
+    }
+    try {
+      await WalletEntry.create({ userId: payment.userId, direction: 'credit', amountKobo: payment.amountKobo, currency: 'NGN', sourceReference: payment.reference, description: 'Paystack wallet top-up' });
+    } catch (error: any) {
+      if (error?.code !== 11000) throw error;
+    }
+    payment.status = 'success'; payment.verifiedAt = new Date(); payment.providerReference = String(verified.id || '');
+    await payment.save();
+    await audit(req.sessionUser!.id, 'wallet.topup.verified', 'payment', payment.id);
+    res.json({ success: true, credited: true, amountNaira: payment.amountKobo / 100, message: 'Payment verified and wallet credited.' });
+  } catch (error) { next(error); }
+});
+
+router.get('/credits', (_req: SessionRequest, res: Response) => {
+  res.json({ success: true, status: 'not_configured', balance: null, message: 'AI credit packages and metered usage are not enabled yet.' });
+});
+
+router.get('/wallet', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    const userId = new mongoose.Types.ObjectId(req.sessionUser!.id);
+    const totals = await WalletEntry.aggregate([{ $match: { userId } }, { $group: { _id: '$direction', total: { $sum: '$amountKobo' } } }]);
+    const credits = totals.find((x: any) => x._id === 'credit')?.total || 0;
+    const debits = totals.find((x: any) => x._id === 'debit')?.total || 0;
+    res.json({ success: true, currency: 'NGN', balanceKobo: credits - debits, balanceNaira: (credits - debits) / 100 });
+  } catch (error) { next(error); }
+});
+
+router.get('/wallet/transactions', async (req: SessionRequest, res: Response, next: NextFunction) => {
+  try {
+    const entries = await WalletEntry.find({ userId: req.sessionUser!.id }).sort({ createdAt: -1 }).limit(50).lean();
+    res.json({ success: true, transactions: entries.map((entry: any) => ({ direction: entry.direction, amountNaira: entry.amountKobo / 100, currency: entry.currency, description: entry.description, reference: entry.sourceReference, createdAt: entry.createdAt })) });
+  } catch (error) { next(error); }
 });
 
 router.get('/affiliate', (_req: SessionRequest, res: Response) => {
