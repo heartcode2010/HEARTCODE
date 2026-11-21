@@ -55,6 +55,7 @@ const verses: Verse[] = [
 const sharedServices = [
   { title: 'QuizVerse', description: 'Create and take timed assessments with instant scoring.', icon: Layers3, to: '/quizverse' },
   { title: 'AI Credits', description: 'A unified usage and billing system for premium AI tools.', icon: Sparkles },
+  { title: 'Organisations', description: 'Manage schools, teams and training-centre members.', icon: Users, to: '/organizations' },
   { title: 'Wallet & Payments', description: 'Verified Paystack top-ups, NGN balance and transaction history.', icon: Wallet, to: '/wallet' },
   { title: 'Affiliate Network', description: 'Referrals, commissions and payout management.', icon: Users },
 ];
