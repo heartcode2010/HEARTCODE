@@ -86,8 +86,8 @@ const AcademyHub: React.FC = () => {
       <section className="academy-welcome">
         <div className="academy-welcome-copy">
           <div className="academy-eyebrow"><span /> HEARTCODE LEARNING ENVIRONMENT</div>
-          <h1>Cybersecurity starts with <em>knowing what to do.</em></h1>
-          <p>Learn practical digital safety, practise real-world scenarios and build the confidence to protect your accounts, devices and organisation.</p>
+          <h1>Cyber skills for <em>real life.</em></h1>
+          <p>From suspicious WhatsApp messages to business email fraud, build practical skills through guided lessons, realistic scenarios and hands-on challenges.</p>
           <div className="academy-welcome-actions">
             <button className="academy-primary-action" onClick={() => open('training')}>Start learning <span>→</span></button>
             <button className="academy-secondary-action" onClick={() => open('phishing-lab')}>Try a phishing exercise</button>
@@ -109,7 +109,7 @@ const AcademyHub: React.FC = () => {
       </section>
 
       <section className="academy-quick-start">
-        <div><span className="academy-section-kicker">A GOOD PLACE TO BEGIN</span><h2>Choose your next step</h2></div>
+        <div><span className="academy-section-kicker">A GOOD PLACE TO BEGIN</span><h2>Start with one practical skill</h2></div>
         <div className="academy-quick-grid">
           <button onClick={() => open('training')}><span className="academy-quick-number">01</span><span><strong>Learn a topic</strong><small>Follow short guided lessons</small></span><b>→</b></button>
           <button onClick={() => open('phishing-lab')}><span className="academy-quick-number">02</span><span><strong>Test your awareness</strong><small>Spot a suspicious message</small></span><b>→</b></button>
@@ -117,6 +117,18 @@ const AcademyHub: React.FC = () => {
         </div>
       </section>
 
+      <section className="academy-reality">
+        <div className="academy-reality-heading"><span className="academy-section-kicker">LEARN FOR THE WORLD YOU LIVE IN</span><h2>Not just cyber definitions.<br/><em>Decisions you can use.</em></h2><p>Practise the moments that matter: a suspicious job offer, a fake bank alert, a compromised account or a risky business request.</p></div>
+        <div className="academy-reality-grid">
+          <article><span>01 / SPOT IT</span><h3>Recognise the trick</h3><p>Read realistic messages and learn how to identify impersonation, pressure tactics and suspicious links.</p><button onClick={() => open('phishing-lab')}>Enter phishing lab <b>↗</b></button></article>
+          <article><span>02 / RESPOND</span><h3>Know your next move</h3><p>Follow clear steps when an account is taken over, a phone is lost or money is sent to a fraudster.</p><button onClick={() => open('incident-response')}>Open response guide <b>↗</b></button></article>
+          <article><span>03 / BUILD</span><h3>Grow a real skill</h3><p>Move from awareness into safe, guided practice and build a foundation for a cybersecurity career.</p><button onClick={() => open('labs')}>Explore practical labs <b>↗</b></button></article>
+        </div>
+      </section>
+      <section className="academy-outcomes">
+        <div><span className="academy-section-kicker">YOUR PROGRESS SHOULD MEAN SOMETHING</span><h2>Learn a skill. Prove you understand it. Put it to work.</h2></div>
+        <div className="academy-outcome-list"><p><b>01</b> Short lessons with practical takeaways</p><p><b>02</b> Scenario-based checks with explanations</p><p><b>03</b> Guided practice and a record of completed learning</p></div>
+      </section>
       <section className="academy-catalog">
         <div className="academy-catalog-heading">
           <div><span className="academy-section-kicker">THE ACADEMY</span><h2>Explore learning and tools</h2><p>Choose a resource based on what you need to do.</p></div>
