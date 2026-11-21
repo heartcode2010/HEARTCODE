@@ -13,6 +13,7 @@ import settingsRoutes from './routes/settings.routes';
 import intelligenceRoutes from './routes/intelligence.routes';
 import academyRoutes from './routes/academy.routes';
 import adminRoutes from './routes/admin.routes';
+import platformRoutes from './routes/platform.routes';
 import { crawlerProtection } from './middleware/crawlerProtection.middleware';
 import { errorHandler } from './middleware/error.middleware';
 
@@ -58,6 +59,8 @@ app.use('/api/settings', settingsRoutes);
 app.use('/api/intelligence', intelligenceRoutes);
 app.use('/api/academy', academyRoutes);
 app.use('/api/admin', adminRoutes);
+// Additive TECHNOVA platform APIs; existing scanner routes remain unchanged.
+app.use('/api/v1/platform', platformRoutes);
 
 // Health check endpoint
 app.get('/health', (req, res) => {
