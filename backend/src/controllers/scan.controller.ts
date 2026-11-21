@@ -9,7 +9,7 @@ import AIAnalysis from '../models/AIAnalysis';
 export const inspectUrl = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
     const { url } = req.body;
-    if (!url) {
+    if (typeof url !== 'string' || !url.trim()) {
       return res.status(400).json({ success: false, message: 'URL is required' });
     }
 
@@ -223,7 +223,7 @@ export const runVulnerabilityScan = async (req: AuthenticatedRequest, res: Respo
       return res.status(404).json({ success: false, message: 'Scan record not found' });
     }
 
-    const report = await ScanService.runAdvancedScan(scan.url, scan.htmlSource, scan.headers ? Object.fromEntries(scan.headers as any) : {});
+    const report = await ScanService.runAdvancedScan(scan.url, scan.htmlSource, scan.headers ? Object.fromEntries(scan.headers as any) : {}, scan.resolvedIp);
 
     await Vulnerability.deleteMany({ scanId });
     const insertedFindings = await Vulnerability.insertMany(
@@ -297,7 +297,7 @@ export const runTechStackScan = async (req: AuthenticatedRequest, res: Response,
     }
 
     // Filter just the Tech Stack findings
-    const report = await ScanService.runAdvancedScan(scan.url, scan.htmlSource, scan.headers ? Object.fromEntries(scan.headers as any) : {});
+    const report = await ScanService.runAdvancedScan(scan.url, scan.htmlSource, scan.headers ? Object.fromEntries(scan.headers as any) : {}, scan.resolvedIp);
     const techStackFindings = report.findings.filter(f => f.category === 'TECHNOLOGY STACK ANALYSIS');
     
     // Map them back to the old format for backwards compatibility if needed
