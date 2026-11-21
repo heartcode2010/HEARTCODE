@@ -6,6 +6,7 @@
 import React, { lazy, Suspense } from 'react';
 import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MusicPlayer from '../components/Shared/MusicPlayer';
+import ReferralCapture from '../components/ReferralCapture';
 
 const Dashboard = lazy(() => import('../pages/Dashboard'));
 const TechnovaOSHome = lazy(() => import('../pages/TechnovaOSHome'));
@@ -57,6 +58,7 @@ const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
 // ── App Router ────────────────────────────────────────────────────────────────
 const AppRouter: React.FC = () => (
   <BrowserRouter>
+    <ReferralCapture />
     <Suspense fallback={<PageLoader />}>
       <Routes>
         {/* Redirect login directly to dashboard */}
