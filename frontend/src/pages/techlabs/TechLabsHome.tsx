@@ -1,13 +1,11 @@
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import useSubscriptionStore from '../../store/subscriptionStore';
 import { ArrowLeft, Code, Play, Download, CloudLightning, ShieldAlert, FileCode, CheckCircle, RefreshCw, Layers } from 'lucide-react';
 import { Header } from '../../components/Header';
 import { Footer } from '../../components/Footer';
 
 export const TechLabsHome: React.FC = () => {
   const navigate = useNavigate();
-  const { tier, canAccess } = useSubscriptionStore();
   const [code, setCode] = useState(`<!DOCTYPE html>
 <html>
 <head>
@@ -121,7 +119,7 @@ export const TechLabsHome: React.FC = () => {
             <h1 className="text-xl font-extrabold flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
               <Layers size={22} className="text-[#ec4899]" /> TECHLABS APP STUDIO
             </h1>
-            <p className="text-xs text-[#6e6868] mt-1">Deploy sandboxed React & HTML5 static apps with instant real-time live preview canvas rendering.</p>
+            <p className="text-xs text-[#6e6868] mt-1">Build HTML projects with an isolated live preview and static HTML export. Cloud deployment is not connected yet.</p>
           </div>
 
           <div className="flex gap-2">
