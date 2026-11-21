@@ -1,6 +1,8 @@
-# 🛡️ HEARTCODE Full-Stack Cyber-Intelligence OS & Cyber Academy
+# TECHNOVA OS — HEARTCODE Unified Technology Platform
 
-Welcome to **HEARTCODE**, an enterprise-grade, hybrid Cyber Intelligence Suite and Cyber Academy platform. Built using a robust full-stack TypeScript architecture, HEARTCODE provides deep security scanning, vulnerability detection, and a comprehensive, AI-powered cybersecurity education ecosystem.
+TECHNOVA OS is the unified platform direction for HEARTCODE, connecting CyberVerse, BlockchainVerse, Nexora, TechVerse, EduVerse, TechLabs and shared services. The existing CyberVerse vulnerability scanner and Cyber Academy remain the flagship security experiences. The scanner stays on the original `/` route and is protected from changes in this workstream.
+
+**Open the unified workspace at `/os`.** See [TECHNOVA OS implementation status](docs/TECHNOVA-OS-IMPLEMENTATION-STATUS.md) for the distinction between account-backed features, simulations, previews and integrations that still require configuration.
 
 ---
 
