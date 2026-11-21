@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import useSubscriptionStore from '../../store/subscriptionStore';
 import { ArrowLeft, Code, Play, Download, CloudLightning, ShieldAlert, FileCode, CheckCircle, RefreshCw, Layers } from 'lucide-react';
@@ -39,37 +39,8 @@ export const TechLabsHome: React.FC = () => {
 
   const [activeTab, setActiveTab] = useState<'editor' | 'preview'>('editor');
   const [logs, setLogs] = useState<string[]>(['[SYSTEM] Sandbox compiler initialized.']);
-  const [isDeploying, setIsDeploying] = useState(false);
-  const [deployUrl, setDeployUrl] = useState('');
-  const iframeRef = useRef<HTMLIFrameElement>(null);
-
-  const runPreview = () => {
-    if (!iframeRef.current) return;
-    const doc = iframeRef.current.contentDocument;
-    if (!doc) return;
-    doc.open();
-    doc.write(code);
-    doc.close();
-    setLogs(prev => [...prev, `[COMPILER] Compilation completed. Rendered preview layout at ${new Date().toLocaleTimeString()}`]);
-  };
-
-  useEffect(() => {
-    runPreview();
-  }, [code]);
-
   const handleDeploy = () => {
-    if (!canAccess('oneClickDeploy')) {
-      alert('One-Click Cloud Container Deployment is locked. Upgrade to Pro/Premium to unlock production-grade hosting!');
-      return;
-    }
-    setIsDeploying(true);
-    setLogs(prev => [...prev, '[SANDBOX] Spawning Docker container sandbox...', '[SANDBOX] Initializing isolated Node server v18...']);
-    setTimeout(() => {
-      const mockUrl = `https://app-sandbox-${Math.random().toString(36).substring(3, 9)}.technova.dev`;
-      setDeployUrl(mockUrl);
-      setLogs(prev => [...prev, `[SYSTEM] Deploy successful. Running at: ${mockUrl}`]);
-      setIsDeploying(false);
-    }, 2500);
+    setLogs(prev => [...prev, '[DEPLOY] Cloud deployment is not connected in this release. Use Export HTML to download your project.']);
   };
 
   const handleDownload = () => {
@@ -174,10 +145,9 @@ export const TechLabsHome: React.FC = () => {
             </button>
             <button
               onClick={handleDeploy}
-              disabled={isDeploying}
-              className="px-4 py-2 bg-gradient-to-r from-[#00d4ff] to-[#8b5cf6] text-white hover:opacity-90 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
+              className="px-4 py-2 bg-[#1a1a20] border border-[#2a2a2e] text-[#b0a8a8] hover:text-white font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center gap-1.5"
             >
-              <CloudLightning size={14} /> {isDeploying ? 'Deploying...' : 'One-Click Deploy'}
+              <CloudLightning size={14} /> Cloud Deploy · Not connected
             </button>
           </div>
         </div>
@@ -199,17 +169,13 @@ export const TechLabsHome: React.FC = () => {
           <div className="bg-[#111114] border border-[#2a2a2e] rounded-2xl flex flex-col overflow-hidden h-[500px]">
             <div className="bg-[#0c0c0e] border-b border-[#2a2a2e] px-4 py-2.5 flex items-center justify-between text-xs font-mono text-gray-500 flex-shrink-0">
               <span className="flex items-center gap-1.5"><Play size={14} className="text-[#2ea86a]" /> Live Canvas Render</span>
-              {deployUrl && (
-                <a href={deployUrl} target="_blank" rel="noopener noreferrer" className="text-[0.62rem] text-[#00d4ff] hover:underline font-bold truncate max-w-[200px]">
-                  {deployUrl}
-                </a>
-              )}
+              <span className="text-[0.6rem] font-mono uppercase text-[#f59e0b]">Local preview only</span>
             </div>
             <iframe
-              ref={iframeRef}
               title="Static sandbox preview pane"
+              srcDoc={code}
               className="flex-1 bg-white border-none w-full"
-              sandbox="allow-scripts allow-popups"
+              sandbox="allow-scripts"
             />
           </div>
         </div>
