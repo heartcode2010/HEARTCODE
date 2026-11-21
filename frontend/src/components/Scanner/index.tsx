@@ -25,51 +25,6 @@ export const Scanner: React.FC<ScannerProps> = ({ onTriggerScan }) => {
   const [inputUrl, setInputUrl] = useState(url);
   const [inspecting, setInspecting] = useState(false);
 
-  // Multi-proxy fetch fallback matching user template
-  const fetchWithProxy = async (targetUrl: string): Promise<string> => {
-    const proxies = [
-      async (u: string) => {
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 8000);
-        try {
-          const r = await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`, { signal: ctrl.signal });
-          const j = await r.json();
-          if (!j.contents) throw new Error('Empty response');
-          return j.contents;
-        } finally { clearTimeout(tid); }
-      },
-      async (u: string) => {
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 8000);
-        try {
-          const r = await fetch(`https://corsproxy.io/?${encodeURIComponent(u)}`, { signal: ctrl.signal });
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          return await r.text();
-        } finally { clearTimeout(tid); }
-      },
-      async (u: string) => {
-        const ctrl = new AbortController();
-        const tid = setTimeout(() => ctrl.abort(), 8000);
-        try {
-          const r = await fetch(`https://api.codetabs.com/v1/proxy?quest=${encodeURIComponent(u)}`, { signal: ctrl.signal });
-          if (!r.ok) throw new Error(`HTTP ${r.status}`);
-          return await r.text();
-        } finally { clearTimeout(tid); }
-      },
-    ];
-
-    let lastErr = null;
-    for (const proxy of proxies) {
-      try {
-        const html = await proxy(targetUrl);
-        if (html && html.trim().length > 30) return html;
-      } catch (e) {
-        lastErr = e;
-      }
-    }
-    throw new Error(lastErr ? (lastErr as any).message : 'All proxies failed — site may block external CORS access.');
-  };
-
   const handleInspect = async (targetUrl = inputUrl) => {
     let cleanUrl = targetUrl.trim();
     if (!cleanUrl) {
@@ -88,49 +43,18 @@ export const Scanner: React.FC<ScannerProps> = ({ onTriggerScan }) => {
     clearScan();
 
     let html = '';
-
-    // First try backend API endpoint
     try {
       const res = await api.post('/scans/inspect', { url: cleanUrl });
-      if (res.data?.success && res.data.scan) {
-        html = res.data.scan.htmlSource || '';
-        setScanResult(res.data.scan);
+      if (!res.data?.success || !res.data.scan?.id || !res.data.scan?.htmlSource) {
+        throw new Error(res.data?.message || 'The scan service did not return a saved target.');
       }
-    } catch (backendErr) {
-      console.warn('Backend inspect attempt failed, falling back to direct multi-proxy client inspection...', backendErr);
-    }
-
-    // If backend didn't return HTML, try multi-proxy fallback directly in browser
-    if (!html) {
-      try {
-        html = await fetchWithProxy(cleanUrl);
-        const kb = new Blob([html]).size / 1024;
-        const sizeStr = kb >= 100 ? `${Math.round(kb)} KB` : `${kb.toFixed(1)} KB`;
-        const linesCount = html.split('\n').length;
-        const tags = (html.match(/<[a-zA-Z]/g) || []).length;
-        const scripts = (html.match(/<script/gi) || []).length;
-        const styles = (html.match(/<style|<link[^>]+stylesheet/gi) || []).length;
-        const images = (html.match(/<img/gi) || []).length;
-
-        setScanResult({
-          id: `scan-${Date.now()}`,
-          url: cleanUrl,
-          htmlSource: html,
-          size: sizeStr,
-          lines: linesCount,
-          tagsCount: tags,
-          scriptsCount: scripts,
-          stylesCount: styles,
-          imagesCount: images,
-          status: 'completed',
-          createdAt: new Date().toISOString(),
-        } as any);
-      } catch (proxyErr: any) {
-        setStatus('fail', 'Failed to fetch source');
-        showToast('⚠️', proxyErr.message || 'CORS proxy failed. Use "Paste Source" to inspect manually.');
-        setInspecting(false);
-        return;
-      }
+      html = res.data.scan.htmlSource;
+      setScanResult(res.data.scan);
+    } catch (err: any) {
+      setStatus('fail', 'Failed to inspect target');
+      showToast('⚠️', err.response?.data?.message || err.message || 'The scanner backend is unavailable. Please try again.');
+      setInspecting(false);
+      return;
     }
 
     // Save to history in localStorage

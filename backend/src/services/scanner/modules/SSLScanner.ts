@@ -13,14 +13,14 @@ export class SSLScanner implements ScannerModule {
     let port: number;
     try {
       const urlObj = new URL(target.url.startsWith('http') ? target.url : `https://${target.url}`);
-      hostname = urlObj.hostname;
+      hostname = urlObj.hostname.replace(/^\[|\]$/g, '');
       port = urlObj.port ? parseInt(urlObj.port) : (urlObj.protocol === 'http:' ? 80 : 443);
     } catch (e) {
       // Invalid URL, skip SSL scan
       return findings;
     }
 
-    if (port !== 443 && !target.url.startsWith('https')) {
+    if (urlObj.protocol === 'http:') {
        findings.push({
         id: 'SSL-001',
         category: this.category,
@@ -37,11 +37,26 @@ export class SSLScanner implements ScannerModule {
     }
 
     try {
-      const certData = await this.getTlsInfo(hostname, port);
+      const certData = await this.getTlsInfo(target.ip || hostname, port, hostname);
       
       const validTo = new Date(certData.valid_to);
       const now = new Date();
       const daysUntilExpiry = Math.ceil((validTo.getTime() - now.getTime()) / (1000 * 3600 * 24));
+
+      if (certData.authorized === false) {
+        findings.push({
+          id: 'SSL-006',
+          category: this.category,
+          severity: 'High',
+          confidence: 'Certain',
+          name: 'Untrusted or Invalid TLS Certificate',
+          description: 'The server certificate failed the TLS trust or hostname validation check.',
+          technicalExplanation: 'The TLS connection completed, but Node.js could not validate the certificate chain or the certificate identity for the requested hostname.',
+          businessImpact: 'Users may be exposed to interception or may be unable to verify that they are communicating with the intended server.',
+          remediation: 'Install a valid certificate from a trusted certificate authority and ensure its subject alternative names cover the target hostname.',
+          evidence: String(certData.authorizationError || 'TLS certificate validation failed'),
+        });
+      }
 
       if (daysUntilExpiry < 0) {
         findings.push({
@@ -104,12 +119,12 @@ export class SSLScanner implements ScannerModule {
     return findings;
   }
 
-  private getTlsInfo(hostname: string, port: number): Promise<any> {
+  private getTlsInfo(connectHost: string, port: number, servername: string): Promise<any> {
     return new Promise((resolve, reject) => {
       const socket = tls.connect({
-        host: hostname,
+        host: connectHost,
         port: port,
-        servername: hostname, // For SNI
+        servername, // Preserve hostname for SNI while connecting to the validated IP
         rejectUnauthorized: false, // Don't crash on invalid certs, we want to inspect them
       }, () => {
         const cert = socket.getPeerCertificate();
@@ -126,7 +141,9 @@ export class SSLScanner implements ScannerModule {
             valid_to: cert.valid_to,
             tlsVersion: protocol,
             issuer: cert.issuer,
-            subject: cert.subject
+            subject: cert.subject,
+            authorized: socket.authorized,
+            authorizationError: socket.authorizationError
         });
       });
 

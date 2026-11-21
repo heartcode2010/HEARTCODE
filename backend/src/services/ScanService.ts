@@ -1,4 +1,8 @@
 import axios from 'axios';
+import * as dns from 'dns';
+import * as net from 'net';
+import * as http from 'http';
+import * as https from 'https';
 import { ScannerEngine } from './scanner/ScannerEngine';
 import { SecurityReport, ScanTarget } from './scanner/types';
 
@@ -22,6 +26,64 @@ import { ObfuscationScanner } from './scanner/modules/ObfuscationScanner';
 import { ShadowAssetScanner } from './scanner/modules/ShadowAssetScanner';
 import { SecurityIntelligenceScanner } from './scanner/modules/SecurityIntelligenceScanner';
 import { DesignSystemScanner } from './scanner/modules/DesignSystemScanner';
+
+
+type ResolvedAddress = { address: string; family: number };
+
+const isPublicAddress = (address: string): boolean => {
+  const normalized = address.toLowerCase().split('%')[0];
+  const family = net.isIP(normalized);
+
+  if (family === 4) {
+    const octets = normalized.split('.').map(Number);
+    const [a, b, c] = octets;
+    if (octets.length !== 4 || octets.some(n => !Number.isInteger(n) || n < 0 || n > 255)) return false;
+    return !(
+      a === 0 || a === 10 || a === 127 || a >= 224 ||
+      (a === 169 && b === 254) ||
+      (a === 172 && b >= 16 && b <= 31) ||
+      (a === 192 && (b === 168 || (b === 0 && (c === 0 || c === 2)))) ||
+      (a === 198 && (b === 18 || b === 19 || b === 51 && c === 100)) ||
+      (a === 203 && b === 0 && c === 113) ||
+      (a === 100 && b >= 64 && b <= 127) ||
+      (a === 255 && b === 255 && c === 255)
+    );
+  }
+
+  if (family === 6) {
+    if (normalized === '::' || normalized === '::1' ||
+        normalized.startsWith('fc') || normalized.startsWith('fd') ||
+        /^fe[89ab]/.test(normalized) || normalized.startsWith('ff') ||
+        normalized.startsWith('2001:db8:')) return false;
+
+    const mapped = normalized.match(/^::ffff:(\d{1,3}(?:\.\d{1,3}){3})$/);
+    if (mapped) return isPublicAddress(mapped[1]);
+
+    const mappedHex = normalized.match(/^::ffff:([0-9a-f]{1,4}):([0-9a-f]{1,4})$/);
+    if (mappedHex) {
+      const high = parseInt(mappedHex[1], 16);
+      const low = parseInt(mappedHex[2], 16);
+      return isPublicAddress([
+        high >> 8, high & 255, low >> 8, low & 255
+      ].join('.'));
+    }
+    return true;
+  }
+
+  return false;
+};
+
+const resolvePublicAddresses = async (hostname: string): Promise<ResolvedAddress[]> => {
+  const literal = net.isIP(hostname);
+  const addresses: ResolvedAddress[] = literal
+    ? [{ address: hostname, family: literal }]
+    : await dns.promises.lookup(hostname, { all: true, verbatim: true });
+
+  if (!addresses.length || addresses.some(item => !isPublicAddress(item.address))) {
+    throw new Error('Security restriction: target resolves to a private, local, or reserved network address.');
+  }
+  return addresses;
+};
 
 export interface ScanStats {
   size: string;
@@ -76,41 +138,80 @@ export class ScanService {
    * Fetches the raw HTML source of a target URL and its headers.
    */
   static async fetchTargetData(url: string): Promise<{ html: string; headers: Record<string, string> }> {
-    let formattedUrl = url.trim();
-    if (!formattedUrl.startsWith('http')) {
-      formattedUrl = 'https://' + formattedUrl;
+    const input = url.trim();
+    if (!input || input.length > 2048) {
+      throw new Error('Please provide a valid target URL (maximum 2048 characters).');
     }
 
-    const lowerUrl = formattedUrl.toLowerCase();
-    if (
-      lowerUrl.includes('heartcode') ||
-      lowerUrl.includes('technova') ||
-      lowerUrl.includes('localhost') ||
-      lowerUrl.includes('127.0.0.1') ||
-      lowerUrl.includes('192.168.') ||
-      lowerUrl.includes('10.')
-    ) {
-      throw new Error("Security Restriction: Can't scan internal system node. Access Denied.");
+    let parsed: URL;
+    try {
+      parsed = new URL(/^https?:\/\//i.test(input) ? input : `https://${input}`);
+    } catch {
+      throw new Error('The target URL is invalid.');
     }
 
-    const response = await axios.get(formattedUrl, {
-      headers: {
-        'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/120.0.0.0 Safari/537.36',
-        'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-        'Accept-Language': 'en-US,en;q=0.5',
-      },
-      timeout: 10000,
-    });
-
-    if (typeof response.data !== 'string') {
-      throw new Error('Target URL did not return a valid HTML string');
+    if (!['http:', 'https:'].includes(parsed.protocol) || parsed.username || parsed.password) {
+      throw new Error('Only public HTTP or HTTPS URLs without embedded credentials can be scanned.');
     }
 
-    // Axios returns headers in lower-case automatically
-    return {
-      html: response.data,
-      headers: response.headers as Record<string, string>
-    };
+    const hostname = parsed.hostname.replace(/^\[|\]$/g, '').toLowerCase().replace(/\.$/, '');
+    const protectedHosts = ['localhost', 'heartcode.io', 'heartcode.vercel.app', 'heartcode.dev', 'technova.io'];
+    if (protectedHosts.some(host => hostname === host || hostname.endsWith(`.${host}`)) ||
+        hostname.endsWith('.localhost') || hostname.endsWith('.local') ||
+        hostname.endsWith('.internal')) {
+      throw new Error("Security restriction: HEARTCODE cannot scan its own or local infrastructure.");
+    }
+
+    const port = parsed.port ? Number(parsed.port) : (parsed.protocol === 'https:' ? 443 : 80);
+    if (!Number.isInteger(port) || port < 1 || port > 65535) {
+      throw new Error('The target URL contains an invalid port.');
+    }
+
+    const addresses = await resolvePublicAddresses(hostname);
+    const pinnedAddress = addresses[0];
+    const pinnedLookup = ((_host: string, options: any, callback: any) => {
+      if (options && typeof options === 'object' && options.all) {
+        callback(null, [pinnedAddress]);
+      } else {
+        callback(null, pinnedAddress.address, pinnedAddress.family);
+      }
+    }) as any;
+    const httpAgent = new http.Agent({ keepAlive: false, lookup: pinnedLookup } as any);
+    const httpsAgent = new https.Agent({ keepAlive: false, lookup: pinnedLookup } as any);
+
+    try {
+      const response = await axios.get<string>(parsed.toString(), {
+        headers: {
+          'User-Agent': 'HEARTCODE-Vulnerability-Scanner/1.0 (+authorised security assessment)',
+          'Accept': 'text/html,application/xhtml+xml',
+          'Accept-Language': 'en-US,en;q=0.5',
+        },
+        timeout: 12000,
+        maxRedirects: 0,
+        maxContentLength: 5 * 1024 * 1024,
+        maxBodyLength: 5 * 1024 * 1024,
+        responseType: 'text',
+        proxy: false,
+        httpAgent,
+        httpsAgent,
+      });
+
+      const contentType = String(response.headers['content-type'] || '');
+      if (!/^(text\/html|application\/xhtml\+xml)(;|$)/i.test(contentType)) {
+        throw new Error('The target did not return an HTML page that the scanner can inspect.');
+      }
+      if (typeof response.data !== 'string' || !response.data.trim()) {
+        throw new Error('The target returned an empty or invalid HTML response.');
+      }
+
+      return {
+        html: response.data,
+        headers: response.headers as unknown as Record<string, string>,
+      };
+    } finally {
+      httpAgent.destroy();
+      httpsAgent.destroy();
+    }
   }
 
   /**
@@ -133,7 +234,10 @@ export class ScanService {
    * Run the advanced modular vulnerability scan.
    */
   static async runAdvancedScan(url: string, html: string, headers: Record<string, string>): Promise<SecurityReport> {
-    const target: ScanTarget = { url, html, headers };
+    const parsed = new URL(/^https?:\/\//i.test(url) ? url : `https://${url}`);
+    const hostname = parsed.hostname.replace(/^\[|\]$/g, '');
+    const addresses = await resolvePublicAddresses(hostname);
+    const target: ScanTarget = { url, html, headers, ip: addresses[0].address };
     return await this.engine.runScan(target);
   }
 
