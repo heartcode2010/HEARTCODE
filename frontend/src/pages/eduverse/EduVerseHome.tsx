@@ -4,6 +4,7 @@ import useSubscriptionStore from '../../store/subscriptionStore';
 import { ArrowLeft, BookOpen, FileText, HelpCircle, Award, Sparkles, Brain, Plus } from 'lucide-react';
 import { Header } from '../../components/Header';
 import { Footer } from '../../components/Footer';
+import api from '../../services/api';
 
 export const EduVerseHome: React.FC = () => {
   const navigate = useNavigate();
@@ -11,27 +12,28 @@ export const EduVerseHome: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [outputNotes, setOutputNotes] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [aiError, setAiError] = useState('');
+  const [aiProvider, setAiProvider] = useState('');
 
-  const handleGenerateNotes = (e: React.FormEvent) => {
+  const handleGenerateNotes = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!inputText.trim()) return;
     setIsLoading(true);
-    setTimeout(() => {
-      setOutputNotes(`### AI Generated Lecture Notes: ${inputText}
-
-#### 1. Core Principles
-- Technical definition and primary conceptual vectors.
-- Operational logic and sandbox compilation parameters.
-
-#### 2. Key Takeaways
-- Always validate input boundaries to prevent leaks.
-- Leverage entitities encoding for HTML outputs.
-
-#### 3. Summary quiz question
-- *Question:* Which method is ideal for sanitizing web crawler inputs?
-- *Answer:* Character entity encoding.`);
+    setAiError('');
+    setOutputNotes('');
+    try {
+      const { data } = await api.post('/ai-tools/eduverse/notes', {
+        topic: inputText,
+        level: 'senior-secondary',
+        examType: 'General',
+      });
+      setOutputNotes(data.content || '');
+      setAiProvider(data.provider || 'AI provider');
+    } catch (error: any) {
+      setAiError(error?.response?.data?.message || 'Notes generation failed. Check the AI provider configuration.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -108,6 +110,7 @@ export const EduVerseHome: React.FC = () => {
                 </div>
               </form>
 
+              {aiError && <div className="p-3 rounded-lg border border-[#794056] bg-[#321c29] text-[#ffc4d1] text-xs">{aiError}</div>}
               {outputNotes && (
                 <div className="bg-[#111114] border border-[#2a2a2e] p-6 rounded-2xl select-text font-sans">
                   <h4 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-4">Study Output Result</h4>
