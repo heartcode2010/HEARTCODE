@@ -1,26 +1,35 @@
-import React from 'react';
-import { Header } from '../components/Header';
-import { Footer } from '../components/Footer';
-import { ComingSoon } from '../components/Shared/ComingSoon';
+import React,{useEffect,useState} from 'react';
+import {Link} from 'react-router-dom';
+import {Header} from '../components/Header';
+import {Footer} from '../components/Footer';
+import {Link2,Copy,Users,MousePointerClick,Wallet,TrendingUp,RefreshCw,ArrowLeft,AlertCircle,CheckCircle,Gift} from 'lucide-react';
+import useAffiliateStore from '../store/affiliateStore';
+import api from '../services/api';
 
-const AffiliatePage: React.FC = () => {
-  return (
-    <div className="min-h-screen bg-[#0a0a0b] text-white flex flex-col">
-      <Header />
-      <div className="flex-1 flex flex-col items-center justify-center">
-        <ComingSoon 
-          title="AFFILIATE ENGINE" 
-          subtitle="MONETIZATION PROTOCOL" 
-          features={[
-            'Multi-tier referral tracking',
-            'Automated commission distributions',
-            'Live conversion analytics'
-          ]}
-        />
-      </div>
-      <Footer />
-    </div>
-  );
+const AffiliatePage:React.FC=()=>{
+ const {profile,loading,fetchProfile,applyReferral,requestPayout}=useAffiliateStore();
+ const [recent,setRecent]=useState<any[]>([]);
+ const [note,setNote]=useState('');
+ const [code,setCode]=useState('');
+ const [payoutAmount,setPayoutAmount]=useState('');
+ const [busy,setBusy]=useState(false);
+ const [message,setMessage]=useState('');
+ const [error,setError]=useState('');
+ useEffect(()=>{fetchProfile();api.get('/affiliate/me').then(({data})=>{setRecent(data.recentReferrals||[]);setNote(data.commissionNote||'')}).catch(()=>undefined)},[]);
+ const copyLink=async()=>{if(!profile?.referralLink)return;try{await navigator.clipboard.writeText(profile.referralLink);setMessage('Referral link copied.')}catch{setError('Clipboard access is unavailable on this device.')}};
+ const applyCode=async()=>{setBusy(true);setError('');setMessage('');const ok=await applyReferral(code.trim());setBusy(false);if(ok){setMessage('Referral code linked to this account.');setCode('')}else setError('The referral could not be applied. It may be invalid, already used or outside the new-account window.')};
+ const payout=async()=>{setBusy(true);setError('');setMessage('');const ok=await requestPayout(Number(payoutAmount),'Bank transfer — manual review');setBusy(false);if(ok){setMessage('Payout request submitted for administrator review.');setPayoutAmount('')}else setError('Payout request failed. Check your available earnings and minimum payout.')};
+ const money=(n:number)=>'₦'+Number(n||0).toLocaleString('en-NG');
+ return <div className="min-h-screen bg-[#0a0a0b] text-white flex flex-col font-sans"><Header/><main className="flex-1 py-8 px-4"><div className="max-w-5xl mx-auto">
+  <Link to="/os" className="flex items-center gap-2 text-[#7f7a84] hover:text-white text-xs mb-6 font-mono uppercase"><ArrowLeft size={14}/> TECHNOVA OS</Link>
+  <div className="mb-8"><div className="text-[0.62rem] font-mono uppercase tracking-[.15em] text-[#a78bfa]">Community growth programme</div><h1 className="text-3xl font-extrabold mt-2" style={{fontFamily:"'Outfit',sans-serif"}}>TECHNOVA Affiliate Network</h1><p className="text-xs text-[#8a8080] mt-2 max-w-2xl">Share TECHNOVA with your community, track referral visits and link eligible new accounts. Commission payouts are not yet connected to paid purchases.</p></div>
+  {message&&<div className="flex gap-2 items-center p-3 mb-4 rounded-lg bg-[#10271f] border border-[#245d45] text-[#9ce5bf] text-xs"><CheckCircle size={15}/>{message}</div>}{error&&<div className="flex gap-2 items-center p-3 mb-4 rounded-lg bg-[#321c29] border border-[#794056] text-[#ffc4d1] text-xs"><AlertCircle size={15}/>{error}</div>}
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-3 mb-6">{[{label:'Referral visits',value:profile?.totalClicks||0,icon:<MousePointerClick/>},{label:'Registered referrals',value:profile?.registeredReferrals||0,icon:<Users/>},{label:'Available earnings',value:money(profile?.availableBalance||0),icon:<Wallet/>},{label:'Lifetime earnings',value:money(profile?.lifetimeEarnings||0),icon:<TrendingUp/>}].map(s=><div key={s.label} className="bg-[#111114] border border-[#2a2a2e] rounded-xl p-4"><div className="flex items-center gap-2 text-[#a78bfa] mb-3">{s.icon}<span className="text-[0.58rem] uppercase font-mono text-[#8a8080]">{s.label}</span></div><strong className="text-lg">{loading?'…':s.value}</strong></div>)}</div>
+  <section className="bg-[#111114] border border-[#2a2a2e] rounded-2xl p-5 mb-5"><div className="flex items-center gap-2 mb-2"><Link2 size={17} className="text-[#a78bfa]"/><h2 className="font-bold text-sm">Your referral link</h2></div><p className="text-[0.7rem] text-[#8a8080] mb-4">Share this link. Referral visits are counted, and a new account can be attributed once within 24 hours of registration.</p><div className="flex gap-2"><input readOnly value={profile?.referralLink||'Generating referral link…'} className="min-w-0 flex-1 p-3 bg-[#0b0b0e] border border-[#30303a] rounded-lg text-xs text-[#c8c3d4]"/><button onClick={copyLink} className="flex items-center gap-2 px-4 rounded-lg bg-[#8b5cf6] text-xs font-bold"><Copy size={14}/> Copy</button></div><div className="flex flex-wrap gap-4 mt-4 text-[0.68rem] text-[#9c94a8]"><span>Code: <b className="text-white">{profile?.referralCode||'—'}</b></span><span>Default commission rate: <b className="text-white">{Math.round((profile?.commissionRate||0.2)*100)}%</b></span><span>Minimum payout: <b className="text-white">{money(profile?.minimumPayout||1000)}</b></span></div></section>
+  <div className="grid grid-cols-1 md:grid-cols-2 gap-5"><section className="bg-[#111114] border border-[#2a2a2e] rounded-2xl p-5"><h2 className="font-bold text-sm mb-2">Apply a referral code</h2><p className="text-[0.68rem] text-[#8a8080] mb-4">If you joined through a referral, enter the code here. Only accounts created in the last 24 hours can be attributed.</p><input value={code} onChange={e=>setCode(e.target.value)} placeholder="Referral code" className="w-full p-3 bg-[#0b0b0e] border border-[#30303a] rounded-lg text-xs mb-3"/><button onClick={applyCode} disabled={busy||code.trim().length<3} className="w-full py-3 rounded-lg bg-[#26213d] text-[#c4b5fd] font-bold text-xs">Apply referral code</button></section>
+  <section className="bg-[#111114] border border-[#2a2a2e] rounded-2xl p-5"><h2 className="font-bold text-sm mb-2">Request an earnings payout</h2><p className="text-[0.68rem] text-[#8a8080] mb-4">Payout requests are queued for manual administrator review. Automated bank transfers are not enabled.</p><input type="number" min={profile?.minimumPayout||1000} value={payoutAmount} onChange={e=>setPayoutAmount(e.target.value)} placeholder="Amount in naira" className="w-full p-3 bg-[#0b0b0e] border border-[#30303a] rounded-lg text-xs mb-3"/><button onClick={payout} disabled={busy||!payoutAmount||Number(payoutAmount)<=0} className="w-full py-3 rounded-lg bg-gradient-to-r from-[#00d4ff] to-[#8b5cf6] text-white font-bold text-xs">Submit payout request</button></section></div>
+  <section className="bg-[#111114] border border-[#2a2a2e] rounded-2xl p-5 mt-5"><div className="flex justify-between items-center mb-4"><h2 className="font-bold text-sm">Recent referrals</h2><button onClick={()=>{fetchProfile();api.get('/affiliate/me').then(({data})=>setRecent(data.recentReferrals||[]))}} className="flex items-center gap-1.5 text-[0.65rem] text-[#a78bfa]"><RefreshCw size={13}/> Refresh</button></div>{recent.length?recent.map((r,i)=><div key={r._id||i} className="flex justify-between items-center gap-3 py-3 border-b border-[#24242b]"><div><strong className="text-xs">{r.referredUserId?.username||'New TECHNOVA member'}</strong><small className="block text-[0.6rem] text-[#7f7a84] mt-1">{new Date(r.attributedAt).toLocaleDateString()}</small></div><span className="text-[0.6rem] text-[#8be0b5]">ATTRIBUTED</span></div>):<p className="text-xs text-[#85818a]">No attributed referrals yet.</p>}</section>
+  <p className="text-[0.62rem] text-[#6f6b76] mt-5 leading-relaxed">{note||'Referral visits and account attribution are tracked. Commission posting and automated payouts require payment-ledger integration.'}</p>
+ </div></main><Footer/></div>;
 };
-
 export default AffiliatePage;
