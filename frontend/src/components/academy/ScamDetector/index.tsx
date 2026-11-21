@@ -10,6 +10,7 @@ const ScamDetector: React.FC = () => {
   const [inputText, setInputText] = useState('');
   const [result, setResult] = useState<ScamAnalysis | null>(null);
   const [diagnosing, setDiagnosing] = useState(false);
+  const [analysisSource, setAnalysisSource] = useState<'AI-assisted' | 'Local keyword checks (not AI)' | null>(null);
 
   const handleAnalyze = async () => {
     if (!inputText.trim() || scamLoading) return;
@@ -25,6 +26,7 @@ const ScamDetector: React.FC = () => {
       if (response.data?.success && response.data?.data) {
         const analysis: ScamAnalysis = response.data.data;
         setResult(analysis);
+        setAnalysisSource('AI-assisted');
         addScamAnalysis(analysis);
         addXP(20);
         earnBadge('scam-buster');
@@ -32,7 +34,8 @@ const ScamDetector: React.FC = () => {
         throw new Error('Fallback to local engine');
       }
     } catch (err) {
-      console.warn('Scam API offline, running client-side diagnostic logic.');
+      console.warn('Scam analysis API unavailable; using limited local keyword checks.');
+      setAnalysisSource('Local keyword checks (not AI)');
       
       // Client-side rule-based analysis
       const lower = inputText.toLowerCase();
@@ -41,7 +44,7 @@ const ScamDetector: React.FC = () => {
       let category: ScamCategory = 'safe';
       const flags: ScamRedFlag[] = [];
       const recs: string[] = [];
-      let explanation = 'No critical social engineering markers detected.';
+      let explanation = 'These basic local checks did not match a known warning phrase. This is not a safety verdict: manually verify the sender, destination website and any request for money or personal information.';
 
       // Rules
       if (lower.includes('winner') || lower.includes('won') || lower.includes('prize') || lower.includes('draw')) {
@@ -86,7 +89,7 @@ const ScamDetector: React.FC = () => {
       }
 
       const analysis: ScamAnalysis = {
-        inputType: 'email', // default mock
+        inputType: lower.includes('@') ? 'email' : lower.includes('whatsapp') ? 'whatsapp' : lower.includes('http') ? 'website' : 'sms',
         inputContent: inputText,
         confidenceScore: score,
         isLikelyScam: isScam,
@@ -101,10 +104,8 @@ const ScamDetector: React.FC = () => {
       addScamAnalysis(analysis);
       addXP(10);
     } finally {
-      setTimeout(() => {
-        setDiagnosing(false);
-        setScamLoading(false);
-      }, 800);
+      setDiagnosing(false);
+      setScamLoading(false);
     }
   };
 
@@ -115,8 +116,8 @@ const ScamDetector: React.FC = () => {
       </div>
 
       <div className="academy-section-header">
-        <h2 className="academy-section-title">🛡️ AI Scam Analysis Engine</h2>
-        <p className="academy-section-desc">Paste emails, SMS alerts, WhatsApp links, or job pitches. The engine extracts structural markers and alerts you of social engineering cues.</p>
+        <h2 className="academy-section-title">🛡️ Scam message checker</h2>
+        <p className="academy-section-desc">Review suspicious SMS, WhatsApp messages, emails and job offers. AI-assisted analysis is used when available; otherwise the tool clearly labels its limited local checks.</p>
       </div>
 
       <div className="grid grid-cols-1 lg:grid-cols-12 gap-5 items-start">
@@ -152,7 +153,7 @@ const ScamDetector: React.FC = () => {
           ) : result ? (
             <div className="bg-cyber-surface border border-cyber-border rounded overflow-hidden">
               <div className="bg-cyber-bg2 px-4 py-2 border-b border-cyber-border flex justify-between font-mono text-[0.66rem] text-cyber-ash">
-                <span>SCAM DETECTOR RADIAL INQUEST</span>
+                <span>MESSAGE REVIEW · {analysisSource || 'SOURCE UNKNOWN'}</span>
                 <span>ANALYZED: {new Date(result.analyzedAt).toLocaleTimeString()}</span>
               </div>
 
@@ -162,11 +163,11 @@ const ScamDetector: React.FC = () => {
                   <div>
                     <div className="text-[0.6rem] text-cyber-ash3 font-mono">LIKELY SCAM RATING</div>
                     <div className={`text-base font-bold font-display tracking-wider ${result.isLikelyScam ? 'text-cyber-red' : 'text-cyber-green'}`}>
-                      {result.isLikelyScam ? '⚠️ DANGER: HIGH SUSPICION' : '✓ CLEAN: LOW PROBABILITY'}
+                      {result.isLikelyScam ? '⚠️ SUSPICIOUS — REVIEW' : 'NO CLEAR SCAM MATCH — VERIFY'}
                     </div>
                   </div>
                   <div className="text-right">
-                    <div className="text-[0.6rem] text-cyber-ash3 font-mono">CONFIDENCE INDEX</div>
+                    <div className="text-[0.6rem] text-cyber-ash3 font-mono">INDICATOR SCORE · NOT CERTAINTY</div>
                     <div className={`text-lg font-bold font-mono ${result.isLikelyScam ? 'text-cyber-red' : 'text-cyber-green'}`}>
                       {result.confidenceScore}%
                     </div>
