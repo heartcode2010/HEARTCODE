@@ -11,8 +11,9 @@ export class SSLScanner implements ScannerModule {
     
     let hostname: string;
     let port: number;
+    let urlObj: URL;
     try {
-      const urlObj = new URL(target.url.startsWith('http') ? target.url : `https://${target.url}`);
+      urlObj = new URL(target.url.startsWith('http') ? target.url : `https://${target.url}`);
       hostname = urlObj.hostname;
       port = urlObj.port ? parseInt(urlObj.port) : (urlObj.protocol === 'http:' ? 80 : 443);
     } catch (e) {
