@@ -4,6 +4,7 @@ import useSubscriptionStore from '../../store/subscriptionStore';
 import { ArrowLeft, Sparkles, Video, Camera, ShieldCheck, Heart, User, Award, ArrowUpRight, Compass, ShieldAlert } from 'lucide-react';
 import { Header } from '../../components/Header';
 import { Footer } from '../../components/Footer';
+import api from '../../services/api';
 
 export const NexoraHome: React.FC = () => {
   const navigate = useNavigate();
@@ -17,6 +18,8 @@ export const NexoraHome: React.FC = () => {
   const [promptText, setPromptText] = useState('');
   const [aiOutput, setAiOutput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
+  const [aiProvider, setAiProvider] = useState('');
+  const [aiError, setAiError] = useState('');
 
   // Copyright Hunter alert state
   const [alerts, setAlerts] = useState([
@@ -24,27 +27,21 @@ export const NexoraHome: React.FC = () => {
     { id: '2', title: 'Asset Logo Copyright Match', platform: 'Instagram Ads', status: 'Take-down complete', date: '2026-06-28' },
   ]);
 
-  const handleGenerateScript = (e: React.FormEvent) => {
+  const handleGenerateScript = async (e: React.FormEvent) => {
     e.preventDefault();
     if (!promptText.trim()) return;
     setIsLoading(true);
-    setTimeout(() => {
-      setAiOutput(`### AI Generated Script: "${promptText}"
-- **Platform Optimized:** ${platform.toUpperCase()}
-- **Duration Estimate:** 60 seconds
-- **Audio Cue:** High-energy lo-fi intro beat (mix t1)
-
-#### Shot List:
-1. **[0-5s] Wide Shot:** Creator sitting at TechLabs studio workspace.
-   * *Camera Angle:* Eye level, background lighting set to cyan/purple gradient glow.
-   * *Lighting suggestion:* Ambient backlights + key softbox at 45°.
-2. **[5-30s] Screen Record Overlay:** Compiling Javascript in real time.
-3. **[30-60s] Close Up:** Action call-to-action to check out Technova OS subscription plans!
-
-#### Brand Guidelines / Thumbnail Concept:
-- High contrast overlay, overlay text: "VIBE CODING SAFELY". Accent color: #00d4ff.`);
+    setAiError('');
+    setAiOutput('');
+    try {
+      const { data } = await api.post('/ai-tools/nexora/script', { promptText, contentType, platform });
+      setAiOutput(data.content || '');
+      setAiProvider(data.provider || 'AI provider');
+    } catch (error: any) {
+      setAiError(error?.response?.data?.message || 'AI generation failed. Check the backend provider configuration.');
+    } finally {
       setIsLoading(false);
-    }, 1500);
+    }
   };
 
   return (
@@ -119,9 +116,10 @@ export const NexoraHome: React.FC = () => {
               </form>
 
               <div className="md:col-span-2">
+                {aiError && <div className="mb-3 p-3 rounded-lg border border-[#794056] bg-[#321c29] text-[#ffc4d1] text-xs">{aiError}</div>}
                 {aiOutput ? (
                   <div className="bg-[#111114] border border-[#2a2a2e] p-6 rounded-2xl select-text">
-                    <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-4">Director Telemetry Output</h3>
+                    <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-2">AI Director Output · {aiProvider.toUpperCase()}</h3>
                     <pre className="text-xs text-[#b0a8a8] whitespace-pre-wrap leading-relaxed select-text font-sans">
                       {aiOutput}
                     </pre>
