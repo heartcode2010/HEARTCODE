@@ -45,7 +45,7 @@ export const inspectUrl = async (req: AuthenticatedRequest, res: Response, next:
     // 3. Save Scan mapping into MongoDB
     const scan = new Scan({
       url,
-      userId,
+      ...( /^[a-f0-9]{24}$/i.test(userId) ? { userId } : {}),
       htmlSource: html,
       headers: headers,
       ...stats,
