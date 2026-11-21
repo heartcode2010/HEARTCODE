@@ -10,7 +10,7 @@ export class AcademyService {
   /**
    * Generates AI Cyber Tutor responses.
    */
-  static async getTutorResponse(message: string, mode: 'beginner' | 'intermediate' | 'advanced', scanContext?: ScanContext | null): Promise<string> {
+  static async getTutorResponse(message: string, mode: 'beginner' | 'intermediate' | 'advanced', scanContext?: ScanContext | null, history: Array<{ role: 'user' | 'assistant'; content: string }> = []): Promise<string> {
     const geminiKey = process.env.GEMINI_API_KEY;
     const openAIKey = process.env.OPENAI_API_KEY;
     const groqKey = process.env.GROQ_API_KEY;
@@ -30,6 +30,8 @@ User message: "${message}"
 
 Please provide a highly structured, educational response formatted in Markdown. Start directly with explanations and bullet points. Use code snippets or remediation checklists if relevant.`;
 
+    const recentHistory = history.slice(-8).filter(item => item && (item.role === 'user' || item.role === 'assistant') && typeof item.content === 'string').map(item => ({ role: item.role, content: item.content.slice(0, 4000) }));
+
     // Try Groq's OpenAI-compatible chat API first.
     if (groqKey) {
       try {
@@ -39,6 +41,7 @@ Please provide a highly structured, educational response formatted in Markdown. 
             model: 'llama-3.3-70b-versatile',
             messages: [
               { role: 'system', content: `You are HEARTCODE's expert cybersecurity tutor. Teach at the ${mode} level. ${contextString}` },
+              ...recentHistory,
               { role: 'user', content: message }
             ],
             temperature: 0.4,
@@ -58,7 +61,7 @@ Please provide a highly structured, educational response formatted in Markdown. 
       try {
         const response = await axios.post(
           `https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent?key=${geminiKey}`,
-          { contents: [{ parts: [{ text: prompt }] }] },
+          { contents: [...recentHistory.map(item => ({ role: item.role === 'assistant' ? 'model' : 'user', parts: [{ text: item.content }] })), { role: 'user', parts: [{ text: prompt }] }] },
           { headers: { 'Content-Type': 'application/json' }, timeout: 15000 }
         );
         const content = response.data?.candidates?.[0]?.content?.parts?.[0]?.text;
@@ -75,7 +78,7 @@ Please provide a highly structured, educational response formatted in Markdown. 
           'https://api.openai.com/v1/chat/completions',
           {
             model: 'gpt-4o-mini',
-            messages: [{ role: 'user', content: prompt }],
+            messages: [{ role: 'system', content: 'You are HEARTCODE\'s expert cybersecurity tutor. Teach at the ' + mode + ' level. ' + contextString }, ...recentHistory, { role: 'user', content: message }],
             temperature: 0.3
           },
           { headers: { 'Content-Type': 'application/json', Authorization: `Bearer ${openAIKey}` }, timeout: 15000 }
@@ -87,7 +90,10 @@ Please provide a highly structured, educational response formatted in Markdown. 
       }
     }
 
-    throw new Error('No LLM keys or calls succeeded');
+    if (!groqKey && !geminiKey && !openAIKey) {
+      throw new Error('AI_PROVIDER_NOT_CONFIGURED: Add GROQ_API_KEY, GEMINI_API_KEY, or OPENAI_API_KEY to the Netlify site environment and redeploy.');
+    }
+    throw new Error('AI_PROVIDER_UNAVAILABLE: Configured AI providers did not return a response. Check the provider key, quota, and service status.');
   }
 
   /**
