@@ -29,10 +29,8 @@ export const NexoraHome: React.FC = () => {
   const [brandError, setBrandError] = useState('');
 
   // Copyright Hunter alert state
-  const [alerts, setAlerts] = useState([
-    { id: '1', title: 'Unauthorized Video Reupload', platform: 'YouTube', status: 'Flagged / Pending Take-down', date: '2026-07-01' },
-    { id: '2', title: 'Asset Logo Copyright Match', platform: 'Instagram Ads', status: 'Take-down complete', date: '2026-06-28' },
-  ]);
+  const [alerts] = useState<any[]>([]);
+  const [serviceNotice, setServiceNotice] = useState('');
 
   const handleGenerateScript = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -81,7 +79,7 @@ export const NexoraHome: React.FC = () => {
               <h1 className="text-2xl font-extrabold flex items-center gap-2" style={{ fontFamily: "'Outfit', sans-serif" }}>
                 <Sparkles size={24} className="text-[#8b5cf6]" /> NEXORA AI CREATOR OS
               </h1>
-              <p className="text-xs text-[#6e6868] mt-1">Futuristic brand manager, smart studio reservations, equipment rentals, and copyright matching.</p>
+              <p className="text-xs text-[#6e6868] mt-1">AI-assisted script and brand strategy tools. Studio booking, equipment rental and copyright monitoring are not connected yet.</p>
             </div>
             <button
               onClick={() => navigate('/marketplace')}
@@ -90,6 +88,8 @@ export const NexoraHome: React.FC = () => {
               <Camera size={14} /> Creator Marketplace
             </button>
           </div>
+
+          {serviceNotice && <div className="mb-4 p-3 rounded-lg border border-[#794056] bg-[#321c29] text-[#ffc4d1] text-xs">{serviceNotice}</div>}
 
           <div className="flex gap-1 mb-8 bg-[#111114] rounded-xl p-1 border border-[#2a2a2e] w-fit">
             {(['director', 'brand', 'rentals', 'copyright'] as const).map(t => (
@@ -209,7 +209,7 @@ export const NexoraHome: React.FC = () => {
                         <p className="text-[0.62rem] text-[#6e6868]">{studio.specs}</p>
                       </div>
                       <button
-                        onClick={() => alert(`Reserved ${studio.name} successfully!`)}
+                        onClick={() => setServiceNotice('Studio booking is not connected yet. No reservation was made.')}
                         className="px-3 py-1.5 bg-white text-black hover:opacity-90 font-extrabold text-[0.62rem] uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                       >
                         Book {studio.price.split(' ')[0]}
@@ -232,7 +232,7 @@ export const NexoraHome: React.FC = () => {
                         <span className="text-[0.58rem] font-mono uppercase bg-white/5 px-2 py-0.5 rounded text-gray-500">{eq.cat}</span>
                       </div>
                       <button
-                        onClick={() => alert(`Rented ${eq.name} successfully!`)}
+                        onClick={() => setServiceNotice('Equipment rental is not connected yet. No rental was created.')}
                         className="px-3 py-1.5 bg-white/5 border border-[#2a2a2e] text-white hover:bg-white/10 font-extrabold text-[0.62rem] uppercase tracking-wider rounded-lg transition-all cursor-pointer"
                       >
                         Rent
@@ -250,9 +250,10 @@ export const NexoraHome: React.FC = () => {
                 <ShieldCheck size={14} className="text-[#a78bfa]" /> Copyright Hunter Alerts
               </h3>
               <p className="text-xs text-[#b0a8a8] leading-relaxed">
-                Monitors web directories, YouTube channels, and crawlers for unauthorized matches of your creative content.
+                Live web monitoring, rights matching and takedown integrations are not connected yet. No automated monitoring is being performed.
               </p>
               <div className="space-y-3">
+                {alerts.length === 0 && <p className="text-xs text-[#8a8080] p-4 bg-[#0c0c0e] border border-[#2a2a2e] rounded-xl">No live copyright alerts. Connect a rights-monitoring provider before relying on this feature.</p>}
                 {alerts.map(alert => (
                   <div key={alert.id} className="p-4 bg-[#0c0c0e] rounded-xl border border-[#1a1a20] flex justify-between items-center">
                     <div>
