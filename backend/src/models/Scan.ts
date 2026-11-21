@@ -2,7 +2,7 @@ import { Schema, model, Document, Types } from 'mongoose';
 
 export interface IScan extends Document {
   url: string;
-  userId: Types.ObjectId;
+  userId?: Types.ObjectId;
   htmlSource: string;
   size: string;
   lines: number;
@@ -24,7 +24,7 @@ const ScanSchema = new Schema<IScan>(
     userId: {
       type: Schema.Types.ObjectId,
       ref: 'User',
-      required: true,
+      required: false,
     },
     htmlSource: {
       type: String,
