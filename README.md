@@ -1,257 +1,188 @@
-/**
- * routes/index.tsx
- * Route definitions using React Router v6.
- * Direct access with no login required.
- */
-import React, { lazy, Suspense } from 'react';
-import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
-import MusicPlayer from '../components/Shared/MusicPlayer';
+# 🛡️ HEARTCODE Full-Stack Cyber-Intelligence OS & Cyber Academy
 
-const Dashboard = lazy(() => import('../pages/Dashboard'));
+Welcome to **HEARTCODE**, an enterprise-grade, hybrid Cyber Intelligence Suite and Cyber Academy platform. Built using a robust full-stack TypeScript architecture, HEARTCODE provides deep security scanning, vulnerability detection, and a comprehensive, AI-powered cybersecurity education ecosystem.
 
-// ── Academy Pages ──
-const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
+---
 
-// ── Megastructure Module Pages ──
-const SubscriptionPlans = lazy(() => import('../pages/SubscriptionPlans'));
-const HallmarkPage = lazy(() => import('../pages/HallmarkPage'));
-const MessagingPage = lazy(() => import('../pages/MessagingPage'));
-const AIChatPage = lazy(() => import('../pages/AIChatPage'));
-const BotMarketplace = lazy(() => import('../pages/BotMarketplace'));
-const BotCreator = lazy(() => import('../pages/BotCreator'));
-const NewsFeedPage = lazy(() => import('../pages/NewsFeedPage'));
-const LearningDashboard = lazy(() => import('../pages/LearningDashboard'));
-const CoursePage = lazy(() => import('../pages/CoursePage'));
-const FocusMode = lazy(() => import('../pages/FocusMode'));
-const WalletPage = lazy(() => import('../pages/WalletPage'));
-const AffiliatePage = lazy(() => import('../pages/AffiliatePage'));
-const QuizVersePage = lazy(() => import('../pages/QuizVersePage'));
-const MarketplacePage = lazy(() => import('../pages/MarketplacePage'));
-const OpportunitiesPage = lazy(() => import('../pages/OpportunitiesPage'));
-const AdminDashboard = lazy(() => import('../pages/AdminDashboard'));
+## 🏗️ Architecture & Core Technology Stack
 
-// ── Verse Sub-Homes ──
-const BlockchainHome = lazy(() => import('../pages/blockchainverse/BlockchainHome'));
-const NexoraHome = lazy(() => import('../pages/nexora/NexoraHome'));
-const TechVerseHome = lazy(() => import('../pages/techverse/TechVerseHome'));
-const EduVerseHome = lazy(() => import('../pages/eduverse/EduVerseHome'));
-const TechLabsHome = lazy(() => import('../pages/techlabs/TechLabsHome'));
+HEARTCODE is structured as a decoupled monorepo containing a React client and an Express/Node.js server.
 
-// ── Fallback while lazy chunk loads ──────────────────────────────────────────
-const PageLoader: React.FC = () => (
-  <div className="min-h-screen bg-[#0a0a0b] flex items-center justify-center">
-    <div className="font-mono text-[#6e6868] text-sm animate-pulse">Loading workspace…</div>
-  </div>
-);
+```
+HEARTCODE/
+├── backend/                 # Express, Node.js & TypeScript Server
+│   ├── src/
+│   │   ├── config/          # DB connections and third-party setups
+│   │   ├── controllers/     # API request routers
+│   │   ├── middleware/      # Auth guards, errors, validators, and logger
+│   │   ├── models/          # Mongoose database schemas
+│   │   ├── routes/          # Express route definitions
+│   │   ├── services/        # Scan analysis, LLM tutor, and report generation
+│   │   └── server.ts        # App bootstrapper
+│   ├── package.json
+│   └── tsconfig.json
+├── frontend/                # Vite, React & TypeScript Client
+│   ├── src/
+│   │   ├── components/      # UI Panels, scan visualizers, Academy pages
+│   │   ├── store/           # Zustand global state (auth, scan, academy)
+│   │   ├── services/        # Axios interceptors and API integrations
+│   │   ├── index.css        # Cyberpunk design system styles
+│   │   └── main.tsx
+│   ├── package.json
+│   ├── tsconfig.json
+│   └── vite.config.ts
+├── vercel.json              # Frontend routing & Vercel deployment setup
+├── railway.json             # Backend build & Railway deployment setup
+└── package.json             # Root scripts orchestrator
+```
 
-// ── Direct Route Access (No Login Requirement) ──────────────────────────────
-interface ProtectedRouteProps {
-  children: React.ReactNode;
-}
+### 💻 Frontend Tech Stack (`/frontend`)
+*   **Framework:** React 19, TypeScript, Vite
+*   **Styling:** CSS variables integrated with Tailwind CSS (v4) for deep cyberpunk aesthetics, scanlines, micro-animations, and glow effects.
+*   **State Management:** Zustand (decoupled stores with `localStorage` persistence for authentication and academy progress).
+*   **Routing:** React Router v6 (lazy-loaded modules with React `Suspense`).
+*   **Network Client:** Axios with dynamic request/response interceptors to handle automated JWT token rotation.
 
-const ProtectedRoute: React.FC<ProtectedRouteProps> = ({ children }) => {
-  return <>{children}</>;
-};
+### ⚙️ Backend Tech Stack (`/backend`)
+*   **Runtime & Server:** Node.js, Express, TypeScript
+*   **Database:** MongoDB via Mongoose object modeling
+*   **Security Headers:** Helmet.js
+*   **Protection Layer:** CORS origin validation & Express Rate Limit (DDoS prevention)
+*   **Payload Support:** Express JSON parser configured with a `15mb` ceiling to support deep source-code scans
+*   **Authentication:** JWT Access Token (15m expiry) + Refresh Token (7d expiry) with Role-Based Access Control (RBAC)
 
-// ── App Router ────────────────────────────────────────────────────────────────
-const AppRouter: React.FC = () => (
-  <BrowserRouter>
-    <Suspense fallback={<PageLoader />}>
-      <Routes>
-        {/* Redirect login directly to dashboard */}
-        <Route path="/login" element={<Navigate to="/" replace />} />
+---
 
-        {/* Core routes */}
-        <Route path="/" element={<Dashboard />} />
+## 🗺️ Monolithic Refactoring Map
 
-        {/* Megastructure routes */}
-        <Route
-          path="/subscription-plans"
-          element={
-            <ProtectedRoute>
-              <SubscriptionPlans />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/hallmark"
-          element={
-            <ProtectedRoute>
-              <HallmarkPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/messages"
-          element={
-            <ProtectedRoute>
-              <MessagingPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/ai-chat"
-          element={
-            <ProtectedRoute>
-              <AIChatPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/bot-marketplace"
-          element={
-            <ProtectedRoute>
-              <BotMarketplace />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/bot-creator"
-          element={
-            <ProtectedRoute>
-              <BotCreator />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/feed"
-          element={
-            <ProtectedRoute>
-              <NewsFeedPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/learning"
-          element={
-            <ProtectedRoute>
-              <LearningDashboard />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/course/:id"
-          element={
-            <ProtectedRoute>
-              <CoursePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/focus-mode"
-          element={
-            <ProtectedRoute>
-              <FocusMode />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/wallet"
-          element={
-            <ProtectedRoute>
-              <WalletPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/affiliate"
-          element={
-            <ProtectedRoute>
-              <AffiliatePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/quizverse"
-          element={
-            <ProtectedRoute>
-              <QuizVersePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/marketplace"
-          element={
-            <ProtectedRoute>
-              <MarketplacePage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/opportunities"
-          element={
-            <ProtectedRoute>
-              <OpportunitiesPage />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/admin"
-          element={
-            <ProtectedRoute>
-              <AdminDashboard />
-            </ProtectedRoute>
-          }
-        />
+HEARTCODE has been modularized from its original monolithic prototype (`HEARTCODE.html`) into a structured, maintainable architecture:
 
-        {/* Verse-specific routes */}
-        <Route
-          path="/blockchainverse"
-          element={
-            <ProtectedRoute>
-              <BlockchainHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/nexora"
-          element={
-            <ProtectedRoute>
-              <NexoraHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/techverse"
-          element={
-            <ProtectedRoute>
-              <TechVerseHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/eduverse"
-          element={
-            <ProtectedRoute>
-              <EduVerseHome />
-            </ProtectedRoute>
-          }
-        />
-        <Route
-          path="/techlabs"
-          element={
-            <ProtectedRoute>
-              <TechLabsHome />
-            </ProtectedRoute>
-          }
-        />
+| Monolithic Logic | Modern Refactored Destination | Architectural Purpose |
+| :--- | :--- | :--- |
+| **CSS Variables & Custom Reset** | [`frontend/src/index.css`](file:///c:/Users/user/Desktop/HEARTCODE/frontend/src/index.css) | Core variables (`--color-cyber-*`) and keyframe animations preserved for the CRT styling. |
+| **Splash Screen (`#splash`)** | [`frontend/src/components/SplashScreen`](file:///c:/Users/user/Desktop/HEARTCODE/frontend/src/components/SplashScreen) | Separated into a clean CSS/React splash screen module. |
+| **Security Scanning Rules** | [`backend/src/services/ScanService.ts`](file:///c:/Users/user/Desktop/HEARTCODE/backend/src/services/ScanService.ts) | Scanning patterns moved to server-side rules to protect proprietary heuristics. |
+| **AI Evaluation Algorithms** | [`backend/src/services/AIService.ts`](file:///c:/Users/user/Desktop/HEARTCODE/backend/src/services/AIService.ts) | Safe processing of source layouts and LLM boilerplate patterns. |
+| **Reports Exporter** | [`backend/src/controllers/report.controller.ts`](file:///c:/Users/user/Desktop/HEARTCODE/backend/src/controllers/report.controller.ts) | Relocated to the backend to natively render PDF, HTML, MD, JSON, and CSV. |
 
-        {/* Academy routes */}
-        <Route
-          path="/academy/*"
-          element={<AcademyLanding />}
-        />
+---
 
-        {/* Catch-all */}
-        <Route path="*" element={<Navigate to="/" replace />} />
-      </Routes>
-      {/* Mounted globally for continuous play across navigation loops */}
-      <MusicPlayer />
-    </Suspense>
-  </BrowserRouter>
-);
+## 🚀 Local Development Setup
 
-export default AppRouter;
+### 1. Prerequisites
+*   [Node.js](https://nodejs.org/) (v18 or higher)
+*   [MongoDB](https://www.mongodb.com/try/download/community) running locally (default: `mongodb://localhost:27017/heartcode`) or Docker.
+
+### 2. Startup using Docker (Optional)
+To run a MongoDB database container instantly:
+```bash
+docker-compose up -d
+```
+
+### 3. Install Workspace Dependencies
+Install dependencies concurrently for the root, frontend, and backend packages:
+```bash
+npm run install:all
+```
+
+### 4. Configure Local Environment
+Copy `.env.example` to `.env` in the root:
+```bash
+cp .env.example .env
+```
+
+Ensure the values in `.env` match your local setup:
+```env
+# ── Server Configuration ──
+PORT=5000
+MONGODB_URI=mongodb://127.0.0.1:27017/heartcode
+
+# ── JWT Security Credentials ──
+JWT_SECRET=your_jwt_access_secret_key_here
+JWT_REFRESH_SECRET=your_jwt_refresh_secret_key_here
+
+# ── LLM Integration (AI Cyber Tutor, Scam Detector) ──
+GEMINI_API_KEY=your_google_gemini_api_key_here
+ACADEMY_AI_MODEL=gemini-1.5-flash
+
+# ── Academy Cryptographic Verification ──
+CERTIFICATE_SECRET=heartcode_academy_cryptographic_verification_key_hash_salt
+ACADEMY_STORAGE_PATH=./data/academy
+
+# ── Frontend Configuration ──
+VITE_URL=http://localhost:5173
+```
+
+### 5. Launch Local Dev Servers
+Start the client and server concurrently:
+```bash
+cd frontend
+npm run dev
+```
+*   **Frontend Client:** `http://localhost:3000` (Vite dev server)
+*   **Backend Server:** `http://localhost:5000` (Express JSON REST API)
+
+---
+
+## 🎓 Cyber Academy Modules Reference
+
+The Cyber Academy is a dedicated module offering 17 interactive security training panels:
+
+1.  **Training Center:** Curated learning paths for Individuals, Businesses, and Schools.
+2.  **AI Cyber Tutor:** Terminal-based chatbot explaining cybersecurity concepts based on learner level.
+3.  **Phishing Lab:** Simulated email/SMS inspection exercises with scorecard feedback.
+4.  **Learning Labs:** Hands-on sandboxes for XSS concepts, Cookie privacy, and Port mapping.
+5.  **Cyber Challenges:** Gamified quizzes with customizable questions, badges, and XP trackers.
+6.  **Certification Center:** Generate and verify signed completion credentials for academy pathways.
+7.  **Scam Detector:** Input messages to evaluate social engineering triggers and validation cues.
+8.  **Safety Scorecard:** Answer threat-modeling questions to generate an SVG Security Radar Chart.
+9.  **SME Toolkit:** SME checklists, risk calculators, and customizable template policy generators.
+10. **Incident Response:** Walkthrough recovery playbooks for accounts, leaks, and devices.
+11. **Career Pathways:** Roles, certificates, and home lab project blueprints.
+12. **Curriculum Generator:** Build structured cybersecurity lesson plans for school settings.
+13. **Knowledge Center:** Combined community wiki and fraud pattern registry.
+14. **Campaign Builder:** Generate copy, banners, and social posts for public safety marketing.
+15. **Threat Feed:** live security ticker displaying global and local Nigerian threat alerts.
+16. **Organization Dashboard:** Admin tools to track employee completion rates and risk scorecards.
+
+---
+
+## 🌐 Production Deployment Guide
+
+HEARTCODE is pre-configured to be deployed instantly: the frontend to **Vercel** and the backend to **Railway**.
+
+### Step 1: Deploy Backend on Railway
+
+1.  Sign in to [Railway](https://railway.app) and create a new project.
+2.  Select **Deploy from GitHub repository** and select your cloned HEARTCODE repository.
+3.  Add a **MongoDB database** service to your Railway project.
+4.  In the Railway service settings for your backend application, define the following variables:
+    *   `PORT`: `5000` (Railway automatically provides and maps this value)
+    *   `MONGODB_URI`: Link it to your Railway MongoDB instance URL (e.g. `${{MongoDB.MONGODB_URL}}` or raw string connection URL)
+    *   `JWT_SECRET`: Generate a strong secret string.
+    *   `JWT_REFRESH_SECRET`: Generate a second strong secret string.
+    *   `GEMINI_API_KEY`: Your Google AI API key.
+    *   `ACADEMY_AI_MODEL`: `gemini-1.5-flash`
+    *   `CERTIFICATE_SECRET`: Generate a cryptographic salt.
+5.  Railway will detect the root-level `railway.json` configuration, trigger typescript compilation (`tsc`), and deploy the app successfully.
+6.  Once deployed, copy your Railway service public domain URL (e.g., `https://heartcode-backend.up.railway.app`).
+
+### Step 2: Configure & Deploy Frontend on Vercel
+
+1.  Open the root-level [`vercel.json`](file:///c:/Users/user/Desktop/HEARTCODE/vercel.json) file.
+2.  Locate the `/api/:path*` rewrite mapping:
+    ```json
+    {
+      "source": "/api/:path*",
+      "destination": "https://heartcode-backend.up.railway.app/api/:path*"
+    }
+    ```
+3.  Replace `https://heartcode-backend.up.railway.app` with the actual public URL of your backend on Railway (make sure you preserve the `/api/:path*` ending).
+4.  Commit and push the change to your GitHub repository.
+5.  Sign in to [Vercel](https://vercel.com) and click **Add New Project**.
+6.  Import the repository.
+7.  Vercel automatically reads the `vercel.json` file in the root directory. It will install frontend dependencies (`npm install --prefix frontend --legacy-peer-deps`), trigger Vite's production build (`npm run build --prefix frontend`), and deploy the build outputs.
+8.  Open your deployed Vercel URL (e.g. `https://your-project.vercel.app`) to start utilizing the full platform in production!
 
 
 ## TECHNOVA foundation
