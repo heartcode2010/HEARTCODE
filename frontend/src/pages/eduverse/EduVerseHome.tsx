@@ -54,7 +54,7 @@ export const EduVerseHome: React.FC = () => {
               <p className="text-xs text-[#6e6868] mt-1">AI-assisted revision notes for Nigerian learners. Official WAEC/JAMB question banks are not yet integrated.</p>
             </div>
             <button
-              onClick={() => navigate('/learning-dashboard')}
+              onClick={() => navigate('/learning')}
               className="px-4 py-2 bg-gradient-to-r from-[#10b981] to-[#34d399] text-white hover:opacity-90 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center gap-1"
             >
               <Award size={14} /> My Certificates
