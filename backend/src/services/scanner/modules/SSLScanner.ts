@@ -36,6 +36,11 @@ export class SSLScanner implements ScannerModule {
       return findings; // Can't do TLS checks on plain HTTP
     }
 
+    if (!target.ip) {
+      // Older scan records may not contain a validated destination IP; avoid a fresh, unpinned connection.
+      return findings;
+    }
+
     try {
       const certData = await this.getTlsInfo(hostname, port, target.ip);
       
