@@ -177,3 +177,5 @@ HEARTCODE is pre-configured to be deployed instantly: the frontend to **Vercel**
 
 
 <!-- Netlify production redeploy trigger: MongoDB connection refreshed. -->
+
+<!-- Netlify production redeploy: MongoDB authSource, guest scan persistence, and live AI tutor updates. -->
