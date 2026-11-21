@@ -60,118 +60,121 @@ const TRAINING_MODULES: LearningModule[] = [
   ], completed: false, progress: 0 },
 ];
 
+
+type LessonGuide = { why:string; steps:string[]; scenario:string; question:string; options:string[]; answer:number; explanation:string };
+const LESSON_GUIDES: Record<string, LessonGuide> = {
+  'pw-1': {why:'A password is an identity check. If someone gets it, they may read private messages, impersonate you, reset other accounts and access money or work files.',steps:['Use a unique password for every important account.','Protect your primary email first because it can reset other accounts.','Turn on multi-factor authentication and save recovery codes safely.'],scenario:'You reuse the same password for Instagram and your email. A fake Instagram login page captures it. The attacker now tries that password on your email and other services.',question:'Why is password reuse dangerous?',options:['It makes passwords easier to remember','One stolen password can unlock several accounts','It makes two-factor authentication unnecessary'],answer:1,explanation:'Credential stuffing uses passwords exposed in one breach to attempt logins elsewhere. Unique passwords limit the damage.'},
+  'pw-2': {why:'Length and uniqueness matter more than clever substitutions. A long passphrase made from unrelated words is often easier to remember and harder to guess than a short predictable pattern.',steps:['Aim for 14+ characters where the service allows it.','Use a password manager to generate random, unique passwords.','Never include public details such as your birthday, school or phone number.'],scenario:'A classmate guesses that your password is your name plus your birth year because both are visible on your social profile.',question:'Which is the strongest everyday approach?',options:['Your name plus birth year','One long unique passphrase for every account','The same complex password everywhere'],answer:1,explanation:'A long unique passphrase is harder to guess. A password manager makes unique passwords practical.'},
+  'pw-3': {why:'A password manager stores encrypted credentials and can create a different strong password for every service. It reduces the temptation to reuse or write passwords in exposed places.',steps:['Choose a reputable manager and download it from its official source.','Create a long, unique master passphrase and enable MFA.','Store recovery information securely and never share your vault.'],scenario:'You have 18 online accounts and keep their passwords in a note titled “My passwords” on your phone.',question:'What is the safest improvement?',options:['Move the note to a public cloud folder','Use a trusted password manager with a strong master passphrase','Use one password for all 18 accounts'],answer:1,explanation:'A password manager protects a vault and helps create unique passwords. Secure the master account carefully.'},
+  'ph-1': {why:'Phishing is deception designed to make you reveal information, send money, open a harmful file or approve an action. It can arrive through email, SMS, WhatsApp, social media or a phone call.',steps:['Pause before acting on unexpected requests.','Verify the sender using a contact method you already trust.','Open the organisation’s official app or type its known address yourself.'],scenario:'A WhatsApp message claims to be from your bank and says your account will be blocked unless you verify your PIN through a link.',question:'What should you do first?',options:['Open the link quickly','Reply with your PIN','Contact the bank through its official app or known number'],answer:2,explanation:'Verify through an independent, trusted channel. Never disclose your PIN or one-time code.'},
+  'ph-2': {why:'Phishing often combines several clues. A single spelling mistake does not prove fraud, and a polished message can still be malicious. Check the whole request and destination.',steps:['Inspect the full sender address, not just the display name.','Check the actual domain before opening a link; beware lookalike characters and extra words.','Treat unexpected attachments, urgency, secrecy and requests for codes as warning signs.'],scenario:'A delivery SMS asks for a small fee and sends you to a domain that is not the delivery company’s official website.',question:'Which clue deserves the most attention?',options:['The message uses a logo','The destination domain is not the company’s official domain','The message arrived in the morning'],answer:1,explanation:'A logo is easy to copy. The real destination and the unexpected payment request matter more.'},
+  'mob-1': {why:'Your phone holds email, banking, identity documents, photos and account recovery tools. An unsafe app or excessive permission can expose more than you expect.',steps:['Install apps from official stores and check the developer name.','Review permissions; deny access that is not needed for the app’s function.','Update the operating system and apps, remove unused apps and use a screen lock.'],scenario:'A simple wallpaper app asks for contacts, microphone, SMS and accessibility access.',question:'What is the best response?',options:['Grant everything so it works','Deny unnecessary access and look for a safer app','Share your banking OTP with the developer'],answer:1,explanation:'Permissions should match the app’s purpose. Excessive access is a reason to stop and investigate.'},
+  'acc-1': {why:'Multi-factor authentication adds a second proof of identity. It can stop an attacker who knows your password, but you must still protect approval prompts and recovery codes.',steps:['Enable MFA on email, banking, social and work accounts.','Prefer passkeys or an authenticator app/security key when available.','Never approve a sign-in you did not initiate; store backup codes offline.'],scenario:'You receive an authenticator approval prompt while you are not trying to sign in.',question:'What should you do?',options:['Approve it to make the notification disappear','Deny it, change your password if needed and review account activity','Send the code to the person who called'],answer:1,explanation:'An unexpected prompt may mean someone has your password. Deny it and investigate immediately.'},
+  'se-1': {why:'Social engineering targets people rather than software. Attackers use authority, fear, curiosity, urgency, scarcity or a desire to help.',steps:['Be cautious when someone asks for secrecy, money, passwords or access.','Verify unusual requests with a second channel or a supervisor.','Follow the organisation’s approval process even when the requester sounds senior.'],scenario:'A caller claims to be technical support and asks you to install a remote-access app to “fix” your account.',question:'Which behaviour is safest?',options:['Install it because the caller sounds confident','End the call and contact your organisation’s verified support channel','Give the caller your login code'],answer:1,explanation:'A confident voice is not proof of identity. Verify the request independently.'},
+  'bec-1': {why:'Business email compromise (BEC) uses impersonation or compromised mailboxes to divert payments, payroll or sensitive information. It can look like a normal business conversation.',steps:['Confirm bank-detail changes using a previously verified phone number.','Require a second approval for unusual or high-value payments.','Report suspicious messages to IT/security without replying or forwarding sensitive data.'],scenario:'A supplier emails new bank details just before an invoice deadline and asks you not to call because they are busy.',question:'What control best prevents payment diversion?',options:['Pay immediately to avoid delay','Verify the change through a known contact and follow dual approval','Trust the email signature'],answer:1,explanation:'Out-of-band verification and dual approval make fraudulent changes harder to complete.'},
+  'rw-1': {why:'Ransomware can encrypt files, disrupt operations and threaten to publish stolen data. Paying does not guarantee recovery or deletion of stolen information.',steps:['Keep tested backups with at least one copy isolated from everyday devices.','Patch systems and restrict administrator privileges.','If an infection is suspected, isolate affected devices from networks and contact incident responders.'],scenario:'Several office files suddenly have unfamiliar extensions and a note demands payment.',question:'What is the safest immediate response?',options:['Connect every backup drive to see if it works','Disconnect the affected device from networks and alert the response team','Pay using the link in the note'],answer:1,explanation:'Isolation can limit spread. Preserve evidence and use a planned incident response process.'},
+  'it-1': {why:'Insider risk can be intentional, accidental or caused by an attacker using a trusted person’s account. Controls should reduce opportunity without assuming every employee is malicious.',steps:['Give each person only the access needed for their role.','Remove access promptly when roles change or people leave.','Provide safe reporting routes and review unusual access patterns.'],scenario:'A staff member exports a customer list to a personal email account to finish work at home.',question:'Which principle should guide access?',options:['Everyone gets administrator access','Least privilege: only the access required for the task','Share one team password'],answer:1,explanation:'Least privilege reduces the amount of data or systems any one account can expose.'},
+  'dh-1': {why:'Good data handling starts by knowing what information you have, who should use it and how it should be protected through storage, sharing and disposal.',steps:['Classify information according to its sensitivity and business impact.','Use approved storage and encrypted channels for sensitive data.','Share only with authorised recipients and securely dispose of unneeded copies.'],scenario:'A spreadsheet containing customer phone numbers and account details is attached to a public group chat.',question:'What should happen before sharing sensitive data?',options:['Check the recipient, purpose and approved secure channel','Post it publicly for convenience','Remove the file name only'],answer:0,explanation:'Check authorisation, minimise the data shared and use an approved protected channel.'},
+  'ex-1': {why:'Cyber risk is an organisational risk involving service continuity, customer trust, legal duties and financial exposure—not only an IT issue.',steps:['Identify critical services, data and dependencies.','Assign accountable owners and review risk treatment plans.','Test incident, backup and communication plans with leadership.'],scenario:'A school or small company relies on one cloud account controlled by a former staff member.',question:'What should leadership prioritise?',options:['Ignore it because the service still works','Restore organisational ownership, MFA and documented recovery access','Share the former staff member’s password'],answer:1,explanation:'Account ownership and recoverability are core governance controls.'},
+  'is-1': {why:'Safe browsing is about checking where a link leads, understanding what a site asks you to do and limiting exposure to malicious downloads or fake forms.',steps:['Check the exact domain before entering passwords or payment details.','Avoid unexpected downloads and browser notifications from unknown sites.','Use updated browsers and report suspicious pages.'],scenario:'A search result advertises a free textbook but redirects through several unrelated pages and asks you to install an APK.',question:'What is the safest choice?',options:['Install the APK','Close the page and find the resource through a trusted source','Disable phone security warnings'],answer:1,explanation:'Unexpected redirects and APK requests are strong reasons to stop.'},
+  'dc-1': {why:'Digital citizenship combines safety, respect, privacy, consent, critical thinking and accountability in online spaces.',steps:['Think about the audience and permanence before posting.','Ask permission before sharing another person’s photo or details.','Challenge misinformation respectfully and report abuse through proper channels.'],scenario:'A classmate shares a screenshot of a private conversation to embarrass someone.',question:'What is the responsible response?',options:['Forward it to more groups','Do not spread it; support the person and report harmful behaviour','Add more insults'],answer:1,explanation:'Do not amplify harm. Preserve evidence if needed and use a trusted reporting route.'},
+  'cb-1': {why:'Cyberbullying includes repeated or serious online harassment, threats, humiliation or exclusion. Targets may need support, evidence preservation and a safe reporting route.',steps:['Do not retaliate or circulate the harmful content.','Save relevant evidence, including dates, usernames and links.','Block/report the account and tell a trusted adult, school lead or appropriate authority.'],scenario:'A student receives threatening messages in a class group and is afraid to attend school.',question:'What is the most helpful first response?',options:['Tell them to handle it alone','Support them, preserve evidence and report it to a trusted responsible adult','Post the messages publicly'],answer:1,explanation:'Safety and support come first. Preserve evidence and use an accountable reporting process.'},
+  'pp-1': {why:'Personal data can identify or expose you directly or indirectly. Photos, location, contact details and school or work information can be combined to target you.',steps:['Share the minimum information needed on public profiles.','Review app permissions, location sharing and account privacy settings.','Be careful with identity documents, verification codes and recovery questions.'],scenario:'A public post shows your school badge, house number and your daily routine.',question:'What is the best privacy improvement?',options:['Keep posting the same details','Remove identifying details and limit who can view personal posts','Add your phone number too'],answer:1,explanation:'Reducing exposed details makes profiling and targeted scams harder.'},
+  'ai-1': {why:'AI systems can produce convincing but false information, reflect bias and generate synthetic images, audio or text. A fluent answer is not proof.',steps:['Verify important claims with reliable primary sources.','Do not upload confidential, personal or school data into tools without permission.','Disclose AI assistance where required and keep your own judgement in the loop.'],scenario:'An AI tool invents a quotation and a student includes it in an assignment as a real source.',question:'What should the student do?',options:['Submit it because it sounds credible','Verify the quotation from the original source and correct or remove it','Ask the AI to insist it is true'],answer:1,explanation:'AI output needs verification. Check the original source before presenting claims as facts.'}
+};
+
 const TRACK_CONFIG: Record<TrainingTrack, { label: string; icon: string; color: string; description: string }> = {
-  individuals: { label: 'Individuals', icon: '👤', color: '#00f5ff', description: 'Personal cybersecurity awareness and protection' },
-  businesses: { label: 'Businesses', icon: '🏢', color: '#a855f7', description: 'Organizational security training and compliance' },
-  schools: { label: 'Schools', icon: '🎒', color: '#10b981', description: 'Digital safety education for students and educators' },
+  individuals: { label: 'Individuals', icon: '01', color: '#e02840', description: 'Protect your accounts, devices, money and digital identity.' },
+  businesses: { label: 'Businesses', icon: '02', color: '#e02840', description: 'Build safer processes for staff, customers and business data.' },
+  schools: { label: 'Schools', icon: '03', color: '#e02840', description: 'Help learners and educators make safer decisions online.' },
 };
 
 const TrainingCenter: React.FC = () => {
   const [activeTrack, setActiveTrack] = useState<TrainingTrack>('individuals');
-  const [expandedModule, setExpandedModule] = useState<string | null>(null);
-  const [expandedTopic, setExpandedTopic] = useState<string | null>(null);
+  const [expandedModule, setExpandedModule] = useState<string | null>('ind-password');
+  const [expandedTopic, setExpandedTopic] = useState<string | null>('pw-1');
+  const [answers, setAnswers] = useState<Record<string, number>>({});
+  const [checked, setChecked] = useState<Record<string, boolean>>({});
   const { completedTopics, completeTopic } = useAcademyStore();
   const navigate = useNavigate();
-
   const trackModules = TRAINING_MODULES.filter(m => m.track === activeTrack);
   const trackConfig = TRACK_CONFIG[activeTrack];
+  const totalTopics = trackModules.reduce((sum, module) => sum + module.topics.length, 0);
+  const completedCount = trackModules.reduce((sum, module) => sum + module.topics.filter(topic => completedTopics.includes(topic.id)).length, 0);
+  const percent = totalTopics ? Math.round(completedCount / totalTopics * 100) : 0;
 
   const handleCompleteTopic = (moduleId: string, topicId: string, moduleTopicIds: string[]) => {
     completeTopic(moduleId, topicId, moduleTopicIds);
   };
 
   return (
-    <div className="academy-section">
+    <div className="academy-section academy-training">
       <button className="academy-back-btn" onClick={() => navigate('/academy')}>← Back to Academy</button>
-      <div className="academy-section-header">
-        <h2 className="academy-section-title">📚 Security Awareness Training Center</h2>
-        <p className="academy-section-desc">Comprehensive cybersecurity training paths for every audience</p>
-      </div>
+      <header className="academy-training-hero">
+        <div className="academy-training-kicker">HEARTCODE CYBER ACADEMY · FIELD SCHOOL</div>
+        <h1>Learn it. <span>Practise it.</span> Use it.</h1>
+        <p>Short, practical lessons built around situations you can meet at home, in school, at work and on your phone.</p>
+        <div className="academy-training-stats">
+          <div><strong>{completedCount}/{totalTopics}</strong><span>lessons completed</span></div>
+          <div><strong>{percent}%</strong><span>track progress</span></div>
+          <div><strong>{trackModules.length}</strong><span>learning modules</span></div>
+        </div>
+        <div className="academy-training-progress"><span style={{width:percent+'%'}} /></div>
+      </header>
 
-      {/* Track Selector */}
-      <div className="academy-track-selector">
+      <nav className="academy-track-selector" aria-label="Choose a learning path">
         {(Object.keys(TRACK_CONFIG) as TrainingTrack[]).map(track => (
-          <button
-            key={track}
-            className={`academy-track-btn ${activeTrack === track ? 'active' : ''}`}
-            onClick={() => { setActiveTrack(track); setExpandedModule(null); }}
-            style={{ '--track-color': TRACK_CONFIG[track].color } as React.CSSProperties}
-          >
-            <span className="academy-track-icon">{TRACK_CONFIG[track].icon}</span>
-            <span>{TRACK_CONFIG[track].label}</span>
+          <button key={track} className={'academy-track-btn '+(activeTrack===track?'active':'')} onClick={() => {setActiveTrack(track);setExpandedModule(null);setExpandedTopic(null);}} style={{'--track-color':TRACK_CONFIG[track].color} as React.CSSProperties}>
+            <span className="academy-track-icon">{TRACK_CONFIG[track].icon}</span><span>{TRACK_CONFIG[track].label}</span>
           </button>
         ))}
-      </div>
+      </nav>
+      <p className="academy-track-description">{trackConfig.description}</p>
 
-      <p className="academy-track-description" style={{ color: trackConfig.color }}>
-        {trackConfig.icon} {trackConfig.description}
-      </p>
-
-      {/* Modules List */}
-      <div className="academy-modules-list">
-        {trackModules.map(mod => (
-          <div key={mod.id} className="academy-module-card" style={{ '--card-accent': trackConfig.color } as React.CSSProperties}>
-            <button
-              className="academy-module-header"
-              onClick={() => setExpandedModule(expandedModule === mod.id ? null : mod.id)}
-            >
-              <span className="academy-module-icon">{mod.icon}</span>
-              <div className="academy-module-info">
-                <h3>{mod.title}</h3>
-                <p>{mod.description}</p>
-                <div className="academy-module-meta">
-                  <span>⏱ {mod.duration}</span>
-                  <span className={`academy-difficulty-badge ${mod.difficulty}`}>{mod.difficulty}</span>
-                  <span>{mod.topics.length} topic{mod.topics.length !== 1 ? 's' : ''}</span>
+      <div className="academy-learning-layout">
+        <aside className="academy-module-rail">
+          <div className="academy-rail-heading"><span>YOUR CURRICULUM</span><small>{trackModules.length} modules</small></div>
+          {trackModules.map((mod,index) => {
+            const done=mod.topics.filter(topic=>completedTopics.includes(topic.id)).length;
+            return <button key={mod.id} className={'academy-rail-module '+(expandedModule===mod.id?'active':'')} onClick={()=>{setExpandedModule(mod.id);setExpandedTopic(mod.topics[0]?.id||null);}}>
+              <span className="academy-rail-number">{String(index+1).padStart(2,'0')}</span><span className="academy-rail-copy"><strong>{mod.title}</strong><small>{done}/{mod.topics.length} lessons · {mod.duration}</small></span><span className="academy-rail-status">{done===mod.topics.length?'✓':'›'}</span>
+            </button>;
+          })}
+        </aside>
+        <section className="academy-lesson-stage">
+          {trackModules.filter(m=>m.id===expandedModule).map(mod=><div key={mod.id} className="academy-current-module">
+            <div className="academy-current-module-top"><span>{mod.icon} MODULE</span><span className={'academy-difficulty-badge '+mod.difficulty}>{mod.difficulty}</span></div>
+            <h2>{mod.title}</h2><p>{mod.description}</p>
+            <div className="academy-topic-tabs">{mod.topics.map((topic,index)=><button key={topic.id} className={expandedTopic===topic.id?'active':''} onClick={()=>{setExpandedTopic(topic.id);}}><span>{String(index+1).padStart(2,'0')}</span>{topic.title}{completedTopics.includes(topic.id)&&<b>✓</b>}</button>)}</div>
+            {mod.topics.filter(topic=>topic.id===expandedTopic).map(topic=>{
+              const guide=LESSON_GUIDES[topic.id];
+              const isChecked=!!checked[topic.id];
+              const selected=answers[topic.id];
+              return <article key={topic.id} className="academy-lesson-card">
+                <div className="academy-lesson-overline">LESSON {String(mod.topics.findIndex(t=>t.id===topic.id)+1).padStart(2,'0')} · {mod.duration.toUpperCase()}</div>
+                <h3>{topic.title}</h3>
+                <p className="academy-lesson-intro">{guide?.why||topic.content}</p>
+                <div className="academy-lesson-callout"><span>REAL-WORLD SITUATION</span><p>{guide?.scenario||topic.examples[0]}</p></div>
+                <div className="academy-lesson-section"><h4>What to do</h4><ol>{(guide?.steps||topic.keyPoints).map((step,i)=><li key={i}>{step}</li>)}</ol></div>
+                <div className="academy-lesson-section"><h4>Remember this</h4><ul>{topic.keyPoints.map((point,i)=><li key={i}>{point}</li>)}</ul></div>
+                {guide&&<div className="academy-knowledge-check">
+                  <div className="academy-check-label">KNOWLEDGE CHECK · ONE QUESTION</div>
+                  <h4>{guide.question}</h4>
+                  <div className="academy-answer-options">{guide.options.map((option,index)=><button key={index} disabled={isChecked} className={isChecked?(index===guide.answer?'correct':selected===index?'incorrect':''):selected===index?'selected':''} onClick={()=>setAnswers(prev=>({...prev,[topic.id]:index}))}><span>{String.fromCharCode(65+index)}</span>{option}</button>)}</div>
+                  {!isChecked?<button className="academy-check-answer" disabled={selected===undefined} onClick={()=>setChecked(prev=>({...prev,[topic.id]:true}))}>Check my answer</button>:<div className={'academy-answer-feedback '+(selected===guide.answer?'correct':'incorrect')}><strong>{selected===guide.answer?'That’s right.':'Not quite. Review the principle.'}</strong><p>{guide.explanation}</p></div>}
+                </div>}
+                <div className="academy-lesson-footer">
+                  <span>{completedTopics.includes(topic.id)?'Lesson saved to your progress':'Finish the lesson to record your progress'}</span>
+                  <button className="academy-complete-btn" disabled={completedTopics.includes(topic.id)} onClick={()=>handleCompleteTopic(mod.id,topic.id,mod.topics.map(item=>item.id))}>{completedTopics.includes(topic.id)?'✓ Completed':'Complete lesson · +25 XP'}</button>
                 </div>
-              </div>
-              <span className="academy-module-chevron">{expandedModule === mod.id ? '▲' : '▼'}</span>
-            </button>
-
-            {expandedModule === mod.id && (
-              <div className="academy-module-topics">
-                {mod.topics.map(topic => (
-                  <div key={topic.id} className="academy-topic">
-                    <button
-                      className="academy-topic-header"
-                      onClick={() => setExpandedTopic(expandedTopic === topic.id ? null : topic.id)}
-                    >
-                      <span>{completedTopics.includes(topic.id) ? '✓' : '○'} {topic.title}</span>
-                      <span>{expandedTopic === topic.id ? '−' : '+'}</span>
-                    </button>
-
-                    {expandedTopic === topic.id && (
-                      <div className="academy-topic-content">
-                        <p className="academy-topic-text">{topic.content}</p>
-
-                        <div className="academy-topic-section">
-                          <h4>🔑 Key Points</h4>
-                          <ul>{topic.keyPoints.map((kp, i) => <li key={i}>{kp}</li>)}</ul>
-                        </div>
-
-                        <div className="academy-topic-section">
-                          <h4>💡 Examples</h4>
-                          <ul>{topic.examples.map((ex, i) => <li key={i}>{ex}</li>)}</ul>
-                        </div>
-
-                        <button
-                          className="academy-complete-btn"
-                          disabled={completedTopics.includes(topic.id)}
-                          onClick={() => handleCompleteTopic(mod.id, topic.id, mod.topics.map(item => item.id))}
-                        >
-                          {completedTopics.includes(topic.id) ? '✓ Lesson completed' : 'Mark lesson complete · +25 XP'}
-                        </button>
-                      </div>
-                    )}
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
-        ))}
+              </article>;
+            })}
+          </div>)}
+          {!expandedModule&&<div className="academy-empty-lesson"><span>SELECT A MODULE</span><h2>Your next skill starts here.</h2><p>Choose a module from the curriculum list to open its lessons and knowledge checks.</p></div>}
+        </section>
       </div>
+      <p className="academy-training-footnote">Learning content is for awareness and defensive practice. Always follow your organisation’s security and reporting procedures.</p>
     </div>
   );
 };
-
 export default TrainingCenter;

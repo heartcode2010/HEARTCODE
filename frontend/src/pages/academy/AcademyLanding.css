@@ -81,3 +81,87 @@
 .academy-section .shadow-\\[0_0_12px_rgba\\(0\\,245\\,255\\,0\\.1\\)\\]{box-shadow:0 0 12px var(--red-glow)!important}
 .academy-section .academy-section-title{color:#f3eded}
 .academy-section .academy-section-desc{color:var(--ash)}
+
+
+/* Academy typography and learning experience refresh — scoped to Academy only. */
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700;800&family=IBM+Plex+Mono:wght@400;500;600&display=swap');
+.academy-home,.academy-section{font-family:'DM Sans',sans-serif!important;letter-spacing:normal}
+.academy-home :is(h1,h2,h3,h4,strong),.academy-section :is(h1,h2,h3,h4,strong){font-family:'DM Sans',sans-serif!important;letter-spacing:-.025em}
+.academy-home :is(code,pre),.academy-section :is(code,pre),.academy-eyebrow,.academy-section-kicker{font-family:'IBM Plex Mono',monospace!important}
+.academy-training{width:min(1240px,100%);margin:0 auto;padding:28px 24px 64px;color:var(--t1)}
+.academy-training-hero{position:relative;overflow:hidden;padding:clamp(24px,5vw,48px);border:1px solid var(--border-red);border-radius:16px;background:radial-gradient(ellipse at 90% 0%,rgba(224,40,64,.2),transparent 42%),linear-gradient(135deg,#171315,#101012 70%);box-shadow:0 24px 65px rgba(0,0,0,.28)}
+.academy-training-hero:after{content:'HC';position:absolute;right:3%;top:-35%;font-size:clamp(150px,24vw,290px);font-weight:800;color:rgba(255,255,255,.025);pointer-events:none}
+.academy-training-kicker,.academy-rail-heading,.academy-lesson-overline,.academy-check-label{font:600 .65rem 'IBM Plex Mono',monospace;letter-spacing:.13em;color:var(--red-hi)}
+.academy-training-hero h1{position:relative;z-index:1;margin:16px 0 10px;font-size:clamp(2.2rem,5.5vw,4.6rem);line-height:1.04;font-weight:800;letter-spacing:-.06em}
+.academy-training-hero h1 span{color:var(--red-hi)}
+.academy-training-hero>p{position:relative;z-index:1;max-width:650px;color:var(--ash);font-size:1rem;line-height:1.75}
+.academy-training-stats{display:flex;gap:clamp(22px,5vw,58px);margin-top:30px}
+.academy-training-stats div{display:flex;flex-direction:column;gap:4px}
+.academy-training-stats strong{font-size:1.5rem;color:#fff;font-weight:750}
+.academy-training-stats span{font-size:.72rem;color:var(--ash2)}
+.academy-training-progress{height:5px;margin-top:20px;background:#2b2527;border-radius:10px;overflow:hidden}
+.academy-training-progress span{display:block;height:100%;background:var(--red);border-radius:10px;transition:width .25s}
+.academy-training .academy-track-selector{display:flex;gap:10px;margin:22px 0 8px}
+.academy-training .academy-track-btn{display:flex;align-items:center;gap:10px;padding:12px 16px;border:1px solid var(--border);border-radius:9px;background:var(--surface);color:var(--ash);font:600 .8rem 'DM Sans',sans-serif;cursor:pointer}
+.academy-training .academy-track-btn.active{border-color:var(--red);background:var(--red-dim);color:#fff}
+.academy-training .academy-track-icon{display:grid;place-items:center;width:27px;height:27px;border-radius:7px;background:rgba(224,40,64,.14);color:var(--red-hi);font:600 .68rem 'IBM Plex Mono',monospace}
+.academy-training .academy-track-description{margin:10px 0 22px;color:var(--ash);font-size:.84rem}
+.academy-learning-layout{display:grid;grid-template-columns:minmax(245px,.34fr) minmax(0,1fr);gap:18px;align-items:start}
+.academy-module-rail,.academy-lesson-stage{min-width:0;border:1px solid var(--border);border-radius:12px;background:rgba(20,20,22,.88)}
+.academy-module-rail{padding:15px;position:sticky;top:16px}
+.academy-rail-heading{display:flex;justify-content:space-between;align-items:center;padding:5px 5px 13px;border-bottom:1px solid var(--border)}
+.academy-rail-heading small{color:var(--ash2);font-size:.62rem}
+.academy-rail-module{display:flex;align-items:center;gap:10px;width:100%;padding:12px 8px;border:0;border-bottom:1px solid rgba(255,255,255,.045);background:transparent;color:var(--t1);text-align:left;cursor:pointer;border-radius:7px}
+.academy-rail-module.active{background:var(--red-dim)}
+.academy-rail-number{display:grid;place-items:center;width:30px;height:30px;flex:0 0 30px;border:1px solid var(--border);border-radius:7px;color:var(--red-hi);font:500 .66rem 'IBM Plex Mono',monospace}
+.academy-rail-copy{display:flex;flex-direction:column;gap:4px;min-width:0}
+.academy-rail-copy strong{font-size:.76rem;line-height:1.3}
+.academy-rail-copy small{color:var(--ash2);font-size:.65rem}
+.academy-rail-status{margin-left:auto;color:var(--red-hi)}
+.academy-lesson-stage{padding:clamp(16px,3vw,28px);min-height:480px}
+.academy-current-module-top{display:flex;justify-content:space-between;align-items:center;color:var(--red-hi);font:600 .65rem 'IBM Plex Mono',monospace;letter-spacing:.1em}
+.academy-current-module>h2{margin:13px 0 6px;font-size:clamp(1.45rem,3vw,2rem);font-weight:800}
+.academy-current-module>p{color:var(--ash);font-size:.85rem;line-height:1.7}
+.academy-topic-tabs{display:flex;gap:7px;overflow-x:auto;padding:18px 0 14px;border-bottom:1px solid var(--border)}
+.academy-topic-tabs button{display:flex;align-items:center;gap:8px;white-space:nowrap;padding:9px 12px;border:1px solid var(--border);border-radius:7px;background:var(--surface);color:var(--ash);font-size:.72rem;cursor:pointer}
+.academy-topic-tabs button.active{border-color:var(--red);background:var(--red-dim);color:#fff}
+.academy-topic-tabs button span{color:var(--red-hi);font:500 .62rem 'IBM Plex Mono',monospace}
+.academy-topic-tabs button b{color:#5fc78d}
+.academy-lesson-card{padding-top:20px}
+.academy-lesson-overline{font-size:.6rem}
+.academy-lesson-card>h3{margin:9px 0;font-size:1.45rem;font-weight:800}
+.academy-lesson-intro{max-width:850px;color:#d0c8c8;font-size:.92rem;line-height:1.85}
+.academy-lesson-callout{margin:19px 0;padding:16px 18px;border:1px solid rgba(224,40,64,.32);border-left:3px solid var(--red);border-radius:8px;background:linear-gradient(100deg,rgba(224,40,64,.09),rgba(20,20,22,.8))}
+.academy-lesson-callout span{color:var(--red-hi);font:600 .61rem 'IBM Plex Mono',monospace;letter-spacing:.12em}
+.academy-lesson-callout p{margin-top:8px;color:#e4dede;font-size:.84rem;line-height:1.75}
+.academy-lesson-section{margin:20px 0}
+.academy-lesson-section h4{margin-bottom:10px;color:#fff;font-size:.94rem}
+.academy-lesson-section ol,.academy-lesson-section ul{display:grid;gap:8px;padding-left:22px;color:var(--ash);font-size:.82rem;line-height:1.7}
+.academy-lesson-section li::marker{color:var(--red-hi)}
+.academy-knowledge-check{margin-top:25px;padding:18px;border:1px solid var(--border);border-radius:10px;background:#101012}
+.academy-check-label{font-size:.6rem}
+.academy-knowledge-check h4{margin:10px 0 14px;font-size:.95rem;color:#fff}
+.academy-answer-options{display:grid;gap:8px}
+.academy-answer-options button{display:flex;align-items:center;gap:11px;padding:11px 12px;border:1px solid var(--border);border-radius:7px;background:#18181b;color:var(--ash);font-size:.78rem;line-height:1.5;text-align:left;cursor:pointer}
+.academy-answer-options button.selected{border-color:var(--red);color:#fff;background:var(--red-dim)}
+.academy-answer-options button.correct{border-color:#2e9d67;background:rgba(46,157,103,.1);color:#c9f4dc}
+.academy-answer-options button.incorrect{border-color:#a63b48;background:rgba(166,59,72,.1);color:#f2c7cc}
+.academy-answer-options button:disabled{cursor:default}
+.academy-answer-options button span{display:grid;place-items:center;width:24px;height:24px;flex:0 0 24px;border:1px solid var(--border);border-radius:5px;font:600 .65rem 'IBM Plex Mono',monospace}
+.academy-check-answer{margin-top:13px;padding:10px 15px;border:1px solid var(--red);border-radius:7px;background:var(--red);color:#fff;font:600 .75rem 'DM Sans',sans-serif;cursor:pointer}
+.academy-check-answer:disabled{opacity:.4;cursor:not-allowed}
+.academy-answer-feedback{margin-top:13px;padding:13px;border-radius:7px;font-size:.78rem;line-height:1.65}
+.academy-answer-feedback.correct{background:rgba(46,157,103,.1);border:1px solid rgba(46,157,103,.4);color:#c9f4dc}
+.academy-answer-feedback.incorrect{background:rgba(224,40,64,.09);border:1px solid rgba(224,40,64,.35);color:#f1d4d7}
+.academy-answer-feedback p{margin-top:5px}
+.academy-lesson-footer{display:flex;justify-content:space-between;align-items:center;gap:14px;margin-top:22px;padding-top:16px;border-top:1px solid var(--border)}
+.academy-lesson-footer>span{color:var(--ash2);font-size:.7rem}
+.academy-training .academy-complete-btn{padding:11px 15px;border:1px solid var(--red);border-radius:7px;background:var(--red);color:white;font:600 .75rem 'DM Sans',sans-serif;cursor:pointer}
+.academy-training .academy-complete-btn:disabled{border-color:var(--border);background:var(--surface2);color:#7e7777;cursor:default}
+.academy-empty-lesson{display:grid;place-items:center;min-height:380px;text-align:center}
+.academy-empty-lesson span{font:600 .62rem 'IBM Plex Mono',monospace;color:var(--red-hi);letter-spacing:.15em}
+.academy-empty-lesson h2{margin:12px 0;font-size:1.5rem}
+.academy-empty-lesson p{max-width:420px;color:var(--ash);font-size:.83rem;line-height:1.7}
+.academy-training-footnote{margin-top:20px;color:var(--ash2);font-size:.68rem;line-height:1.6}
+.academy-training .academy-back-btn{margin-bottom:18px;font-family:'DM Sans',sans-serif}
+@media(max-width:760px){.academy-training{padding:18px 14px 40px}.academy-learning-layout{grid-template-columns:1fr}.academy-module-rail{position:static}.academy-module-rail{display:grid;grid-template-columns:1fr}.academy-training-stats{gap:20px}.academy-training-stats strong{font-size:1.25rem}.academy-lesson-stage{padding:16px}.academy-lesson-footer{align-items:flex-start;flex-direction:column}.academy-lesson-footer .academy-complete-btn{width:100%}}
