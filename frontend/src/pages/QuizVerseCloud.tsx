@@ -2,14 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Plus, Play, Clock3, Trophy, RefreshCw, BookOpenCheck, Cloud, AlertCircle } from 'lucide-react';
 import './QuizVerseCloud.css';
+import api from '../services/api';
 
 type Question = { prompt: string; options: string[]; correctIndex: number; explanation?: string };
 type Quiz = { _id: string; title: string; subject: string; durationMinutes: number; questions: Question[] };
 type Attempt = { _id: string; score: number; total: number; submittedAt: string; quizId?: { title?: string; subject?: string } };
-const API = '/api/v1/platform';
 
 export default function QuizVerseCloud() {
-  const token = localStorage.getItem('hc_access_token') || '';
   const [quizzes, setQuizzes] = useState<Quiz[]>([]);
   const [attempts, setAttempts] = useState<Attempt[]>([]);
   const [busy, setBusy] = useState(true);
@@ -28,11 +27,12 @@ export default function QuizVerseCloud() {
   const [result, setResult] = useState<{score:number;total:number;percentage:number}|null>(null);
 
   async function request(path:string, init:RequestInit={}) {
-    if (!token) throw new Error('Sign in to your TECHNOVA account to use cloud QuizVerse.');
-    const response = await fetch(API+path, { ...init, headers: { 'Content-Type':'application/json', Authorization:'Bearer '+token, ...(init.headers||{}) } });
-    const body = await response.json().catch(()=>({}));
-    if (!response.ok) throw new Error(body.message || 'The request could not be completed.');
-    return body;
+    try {
+      const response = await api.request({ url: '/v1/platform'+path, method: init.method || 'GET', data: init.body ? JSON.parse(String(init.body)) : undefined });
+      return response.data;
+    } catch (error: any) {
+      throw new Error(error?.response?.data?.message || error?.message || 'The request could not be completed.');
+    }
   }
   async function refresh() {
     setBusy(true); setError('');
