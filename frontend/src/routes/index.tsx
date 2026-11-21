@@ -8,6 +8,7 @@ import { BrowserRouter, Routes, Route, Navigate } from 'react-router-dom';
 import MusicPlayer from '../components/Shared/MusicPlayer';
 
 const Dashboard = lazy(() => import('../pages/Dashboard'));
+const TechnovaOSHome = lazy(() => import('../pages/TechnovaOSHome'));
 
 // ── Academy Pages ──
 const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
@@ -63,6 +64,7 @@ const AppRouter: React.FC = () => (
 
         {/* Core routes */}
         <Route path="/" element={<Dashboard />} />
+        <Route path="/os" element={<TechnovaOSHome />} />
 
         {/* Megastructure routes */}
         <Route
