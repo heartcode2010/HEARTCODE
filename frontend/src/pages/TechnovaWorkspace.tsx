@@ -1,4 +1,5 @@
 import React from 'react';
+import './TechnovaWorkspace.css';
 import { Link } from 'react-router-dom';
 import {
   ArrowUpRight, ShieldCheck, GraduationCap, Blocks, Palette, Code2,
