@@ -12,6 +12,7 @@ const Dashboard = lazy(() => import('../pages/Dashboard'));
 const TechnovaWorkspace = lazy(() => import('../pages/TechnovaWorkspace'));
 const QuizVerse = lazy(() => import('../pages/QuizVerseCloud'));
 const QuizVerseLocal = lazy(() => import('../pages/QuizVerse'));
+const VerseWorkspace = lazy(() => import('../pages/VerseWorkspace'));
 
 // ── Academy Pages (lazy-loaded) ──
 const AcademyLanding = lazy(() => import('../pages/academy/AcademyLanding'));
@@ -53,6 +54,11 @@ const AppRouter: React.FC = () => (
         <Route path="/workspace" element={<Navigate to="/os" replace />} />
         <Route path="/quizverse" element={<QuizVerse />} />
         <Route path="/quizverse/local" element={<QuizVerseLocal />} />
+        <Route path="/blockchainverse" element={<VerseWorkspace />} />
+        <Route path="/nexora" element={<VerseWorkspace />} />
+        <Route path="/techverse" element={<VerseWorkspace />} />
+        <Route path="/eduverse" element={<VerseWorkspace />} />
+        <Route path="/techlabs" element={<VerseWorkspace />} />
 
         {/* Academy routes */}
         <Route
