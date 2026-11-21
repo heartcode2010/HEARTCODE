@@ -1,17 +1,18 @@
 import { Router } from 'express';
 import { inspectUrl, getScanHistory, clearScanHistory, loadScanSource, runVulnerabilityScan, runAiDetect, runTechStackScan, } from '../controllers/scan.controller';
-import { authenticateToken } from '../middleware/auth.middleware';
+import { authenticateToken, optionalAuth } from '../middleware/auth.middleware';
 
 const router = Router();
 
-router.use(authenticateToken);
+// Allow authenticated users and guest analysts to run scans.
+router.post('/inspect', optionalAuth, inspectUrl);
+router.post('/vulnerability', optionalAuth, runVulnerabilityScan);
+router.post('/ai-detect', optionalAuth, runAiDetect);
+router.post('/tech-stack', optionalAuth, runTechStackScan);
 
-router.post('/inspect', inspectUrl);
-router.post('/vulnerability', runVulnerabilityScan);
-router.post('/ai-detect', runAiDetect);
-router.post('/tech-stack', runTechStackScan);
-router.get('/history', getScanHistory);
-router.delete('/history', clearScanHistory);
-router.get('/:scanId/source', loadScanSource);
+// Keep personal history and source retrieval behind normal authentication.
+router.get('/history', authenticateToken, getScanHistory);
+router.delete('/history', authenticateToken, clearScanHistory);
+router.get('/:scanId/source', authenticateToken, loadScanSource);
 
 export default router;
