@@ -8,8 +8,8 @@ router.use(authenticateToken);
 
 router.post('/inspect', inspectUrl);
 router.post('/vulnerability', runVulnerabilityScan);
-router.get('/ai-detect', runAiDetect);
-router.get('/tech-stack', runTechStackScan);
+router.post('/ai-detect', runAiDetect);
+router.post('/tech-stack', runTechStackScan);
 router.get('/history', getScanHistory);
 router.delete('/history', clearScanHistory);
 router.get('/:scanId/source', loadScanSource);
