@@ -70,3 +70,14 @@
 @keyframes academy-spin{to{transform:rotate(360deg)}}
 @media(max-width:900px){.academy-welcome{grid-template-columns:1fr}.academy-progress-panel{max-width:none}.academy-resource-grid{grid-template-columns:repeat(2,minmax(0,1fr))}}
 @media(max-width:640px){.academy-home{padding:20px 14px 36px}.academy-welcome{padding:22px 18px;gap:20px}.academy-welcome h1{font-size:2.25rem}.academy-welcome-copy>p{font-size:.88rem}.academy-quick-grid{grid-template-columns:1fr}.academy-catalog-heading{align-items:stretch;flex-direction:column}.academy-search{width:100%}.academy-resource-grid{grid-template-columns:1fr}.academy-resource-card{min-height:112px}.academy-group-heading{display:block}.academy-group-heading p{margin-top:4px}}
+
+/* Keep legacy Academy module accents aligned with HEARTCODE's red-and-charcoal identity.
+   Scoped to Academy content so the vulnerability scanner and the rest of the site are untouched. */
+.academy-section .text-cyber-cyan{color:var(--red-hi)!important}
+.academy-section .border-cyber-cyan{border-color:var(--red)!important}
+.academy-section .bg-cyber-cyan-dim{background:var(--red-dim)!important}
+.academy-section .hover\\:border-cyber-cyan:hover{border-color:var(--red)!important}
+.academy-section .hover\\:bg-cyber-cyan-dim:hover{background:var(--red-dim)!important}
+.academy-section .shadow-\\[0_0_12px_rgba\\(0\\,245\\,255\\,0\\.1\\)\\]{box-shadow:0 0 12px var(--red-glow)!important}
+.academy-section .academy-section-title{color:#f3eded}
+.academy-section .academy-section-desc{color:var(--ash)}
