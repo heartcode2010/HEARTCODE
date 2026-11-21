@@ -195,7 +195,7 @@ export const getScanHistory = async (req: AuthenticatedRequest, res: Response, n
 
 export const clearScanHistory = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
   try {
-    const userId = req.user?.id || 'guest_user';
+    const userId = getScanOwnerId(req);
 
     await Scan.deleteMany({ userId });
     
