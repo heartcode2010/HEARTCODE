@@ -33,7 +33,7 @@ export const TechVerseHome: React.FC = () => {
               <p className="text-xs text-[#6e6868] mt-1">Structured developer paths covering frontend, backend systems, cybersecurity, and machine learning models.</p>
             </div>
             <button
-              onClick={() => navigate('/learning-dashboard')}
+              onClick={() => navigate('/learning')}
               className="px-4 py-2 bg-gradient-to-r from-[#00d4ff] to-[#8b5cf6] text-white hover:opacity-90 font-extrabold text-xs uppercase tracking-wider rounded-xl transition-all cursor-pointer flex items-center gap-1"
             >
               <BookOpen size={14} /> Learn & Earn Syllabus
@@ -67,7 +67,7 @@ export const TechVerseHome: React.FC = () => {
                 <h3 className="font-extrabold text-sm text-white capitalize">{selectedTrack} Pathway Chapters</h3>
               </div>
               <button
-                onClick={() => navigate('/learning-dashboard')}
+                onClick={() => navigate('/learning')}
                 className="px-3.5 py-1.5 bg-white text-black hover:opacity-90 font-extrabold text-[0.62rem] uppercase tracking-wider rounded-lg transition-all cursor-pointer"
               >
                 Enroll Path
@@ -93,7 +93,7 @@ export const TechVerseHome: React.FC = () => {
                       +{chap.xp} XP
                     </span>
                     <button
-                      onClick={() => navigate('/learning-dashboard')}
+                      onClick={() => navigate('/learning')}
                       className="px-3 py-1.5 bg-white/5 border border-[#2a2a2e] rounded-lg text-[0.62rem] font-bold uppercase hover:bg-white/10 text-white cursor-pointer"
                     >
                       Start
