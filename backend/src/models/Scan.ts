@@ -11,6 +11,7 @@ export interface IScan extends Document {
   stylesCount: number;
   imagesCount: number;
   headers: Record<string, string>;
+  resolvedIp?: string;
   createdAt: Date;
 }
 
@@ -59,6 +60,7 @@ const ScanSchema = new Schema<IScan>(
       of: String,
       default: {},
     },
+    resolvedIp: { type: String },
   },
   {
     timestamps: { createdAt: true, updatedAt: false },
