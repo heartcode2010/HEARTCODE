@@ -52,7 +52,7 @@ const verses: Verse[] = [
 ];
 
 const sharedServices = [
-  { title: 'QuizVerse', description: 'Create, publish and take assessments across the ecosystem.', icon: Layers3 },
+  { title: 'QuizVerse', description: 'Create and take timed assessments with instant scoring.', icon: Layers3, to: '/quizverse' },
   { title: 'AI Credits', description: 'A unified usage and billing system for premium AI tools.', icon: Sparkles },
   { title: 'Wallet & Payments', description: 'Purchases, balances and transaction history.', icon: Wallet },
   { title: 'Affiliate Network', description: 'Referrals, commissions and payout management.', icon: Users },
@@ -137,7 +137,7 @@ export default function TechnovaWorkspace() {
             return <article className="tech-os-service-card" key={service.title}>
               <Icon size={19} />
               <div><h3>{service.title}</h3><p>{service.description}</p></div>
-              <span>PLANNED</span>
+              {service.to ? <Link className="tech-os-service-open" to={service.to}>OPEN <ArrowUpRight size={12}/></Link> : <span>PLANNED</span>}
             </article>;
           })}
         </div>
