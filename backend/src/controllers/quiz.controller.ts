@@ -27,6 +27,9 @@ const quizSchema = z.object({
   tags: z.array(z.string().trim().min(1).max(40)).max(12).optional().default([]),
   questions: z.array(questionSchema).min(1).max(100),
   isPublished: z.boolean().optional().default(true),
+}).refine((quiz) => !quiz.questions || new Set(quiz.questions.map((question) => question.id)).size === quiz.questions.length, {
+  message: 'Every quiz question must have a unique ID.',
+  path: ['questions'],
 });
 
 export const createQuiz = async (req: AuthenticatedRequest, res: Response, next: NextFunction) => {
@@ -87,6 +90,7 @@ export const submitQuizAttempt = async (req: AuthenticatedRequest, res: Response
     if (!mongoose.isValidObjectId(req.params.id)) return res.status(400).json({ success: false, message: 'Invalid quiz ID.' });
     const quiz = await Quiz.findById(req.params.id);
     if (!quiz || ((!quiz.isPublished || quiz.accessMode !== 'free') && quiz.creatorId.toString() !== req.user.id)) return res.status(404).json({ success: false, message: 'Published free quiz not found.' });
+    if (!quiz.questions.length || new Set(quiz.questions.map((question: any) => question.id)).size !== quiz.questions.length) return res.status(409).json({ success: false, message: 'This quiz has invalid question data and cannot be attempted.' });
     const answerSchema = z.array(z.object({ questionId: z.string().min(1), selectedIndex: z.number().int().min(0).max(5) })).length(quiz.questions.length);
     const parsed = answerSchema.safeParse(req.body.answers);
     if (!parsed.success) return res.status(400).json({ success: false, message: 'Submit one valid answer for every question.', issues: parsed.error.issues });
