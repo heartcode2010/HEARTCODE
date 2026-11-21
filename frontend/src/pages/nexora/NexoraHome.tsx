@@ -20,6 +20,13 @@ export const NexoraHome: React.FC = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [aiProvider, setAiProvider] = useState('');
   const [aiError, setAiError] = useState('');
+  const [brandName, setBrandName] = useState('');
+  const [brandIndustry, setBrandIndustry] = useState('');
+  const [brandAudience, setBrandAudience] = useState('');
+  const [brandTone, setBrandTone] = useState('Confident and modern');
+  const [brandOutput, setBrandOutput] = useState('');
+  const [brandLoading, setBrandLoading] = useState(false);
+  const [brandError, setBrandError] = useState('');
 
   // Copyright Hunter alert state
   const [alerts, setAlerts] = useState([
@@ -41,6 +48,23 @@ export const NexoraHome: React.FC = () => {
       setAiError(error?.response?.data?.message || 'AI generation failed. Check the backend provider configuration.');
     } finally {
       setIsLoading(false);
+    }
+  };
+
+  const handleGenerateBrandBrief = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setBrandLoading(true);
+    setBrandError('');
+    setBrandOutput('');
+    try {
+      const { data } = await api.post('/ai-tools/nexora/brand-brief', {
+        brandName, industry: brandIndustry, audience: brandAudience, tone: brandTone,
+      });
+      setBrandOutput(data.content || '');
+    } catch (error: any) {
+      setBrandError(error?.response?.data?.message || 'Brand brief generation failed. Check the AI provider configuration.');
+    } finally {
+      setBrandLoading(false);
     }
   };
 
@@ -135,11 +159,23 @@ export const NexoraHome: React.FC = () => {
 
           {tab === 'brand' && (
             <div className="bg-[#111114] border border-[#2a2a2e] p-6 rounded-2xl space-y-6">
+              <form onSubmit={handleGenerateBrandBrief} className="space-y-4">
+                <div>
+                  <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-2">Nexora AI Brand Strategist</h3>
+                  <p className="text-xs text-[#b0a8a8] leading-relaxed">Generate a practical brand strategy brief using a configured AI provider. This creates a text brief, not a finished logo or visual identity.</p>
+                </div>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                  <input value={brandName} onChange={e=>setBrandName(e.target.value)} placeholder="Brand or business name" className="bg-[#0c0c0e] border border-[#2a2a2e] text-xs p-3 rounded-xl text-white" required />
+                  <input value={brandIndustry} onChange={e=>setBrandIndustry(e.target.value)} placeholder="Industry" className="bg-[#0c0c0e] border border-[#2a2a2e] text-xs p-3 rounded-xl text-white" required />
+                  <input value={brandAudience} onChange={e=>setBrandAudience(e.target.value)} placeholder="Target audience" className="bg-[#0c0c0e] border border-[#2a2a2e] text-xs p-3 rounded-xl text-white" required />
+                  <select value={brandTone} onChange={e=>setBrandTone(e.target.value)} className="bg-[#0c0c0e] border border-[#2a2a2e] text-xs p-3 rounded-xl text-white"><option>Confident and modern</option><option>Friendly and approachable</option><option>Premium and elegant</option><option>Bold and energetic</option><option>Simple and trustworthy</option></select>
+                </div>
+                <button disabled={brandLoading} className="px-4 py-3 rounded-xl bg-gradient-to-r from-[#00d4ff] to-[#8b5cf6] text-xs font-extrabold text-white disabled:opacity-50">{brandLoading?'Generating…':'Generate brand strategy brief'}</button>
+              </form>
+              {brandError&&<p className="text-xs text-[#ffc4d1]">{brandError}</p>}
+              {brandOutput&&<pre className="whitespace-pre-wrap bg-[#0c0c0e] border border-[#2a2a2e] rounded-xl p-5 text-xs leading-relaxed text-[#c8c3d4]">{brandOutput}</pre>}
               <div>
-                <h3 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-2">Technova Brand Guidelines Builder</h3>
-                <p className="text-xs text-[#b0a8a8] leading-relaxed mb-4">
-                  Generates colors, logos, and typography structures for content templates.
-                </p>
+                <h4 className="text-[0.62rem] font-mono text-[#6e6868] uppercase tracking-wider mb-3">TECHNOVA sample palette reference</h4>
                 <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
                   {[
                     { name: 'Primary Accent', color: '#00d4ff' },
