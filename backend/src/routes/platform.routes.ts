@@ -30,7 +30,7 @@ const Quiz = mongoose.models.TNQuiz || mongoose.model('TNQuiz', new Schema({
 }, { timestamps: true }));
 
 const Attempt = mongoose.models.TNQuizAttempt || mongoose.model('TNQuizAttempt', new Schema({
-  quizId: { type: Schema.Types.ObjectId, required: true, index: true },
+  quizId: { type: Schema.Types.ObjectId, ref: 'TNQuiz', required: true, index: true },
   userId: { type: Schema.Types.ObjectId, required: true, index: true },
   score: { type: Number, required: true },
   total: { type: Number, required: true },
@@ -72,7 +72,7 @@ const quizInput = z.object({
     options: z.array(z.string().trim().min(1).max(500)).min(2).max(6),
     correctIndex: z.number().int().min(0).max(5),
     explanation: z.string().max(2000).optional(),
-  })).min(1).max(100),
+  }).refine((question) => question.correctIndex < question.options.length, { message: 'Correct option must exist in the question options.', path: ['correctIndex'] })).min(1).max(100),
 });
 
 async function audit(actorId: string, action: string, resourceType?: string, resourceId?: string) {
