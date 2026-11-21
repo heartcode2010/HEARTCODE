@@ -113,7 +113,7 @@ export const EduVerseHome: React.FC = () => {
               {aiError && <div className="p-3 rounded-lg border border-[#794056] bg-[#321c29] text-[#ffc4d1] text-xs">{aiError}</div>}
               {outputNotes && (
                 <div className="bg-[#111114] border border-[#2a2a2e] p-6 rounded-2xl select-text font-sans">
-                  <h4 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-4">Study Output Result</h4>
+                  <h4 className="text-xs font-mono text-[#6e6868] uppercase tracking-wider mb-4">AI Study Notes · {aiProvider.toUpperCase()}</h4>
                   <pre className="text-xs text-[#b0a8a8] whitespace-pre-wrap leading-relaxed select-text font-sans">
                     {outputNotes}
                   </pre>
