@@ -28,27 +28,27 @@ const verses: Verse[] = [
   {
     number: '02', name: 'BlockchainVerse', tagline: 'Web3 learning & simulation',
     description: 'A planned learning and simulation environment for blockchain concepts, Solidity and decentralised applications.',
-    icon: Blocks, status: 'planned',
+    icon: Blocks, status: 'building', links: [{ label: 'Open learning lab', to: '/blockchainverse' }],
   },
   {
     number: '03', name: 'Nexora', tagline: 'AI creator studio',
     description: 'A planned workspace for creative direction, brand systems and responsible creator workflows.',
-    icon: Palette, status: 'planned',
+    icon: Palette, status: 'building', links: [{ label: 'Open creator studio', to: '/nexora' }],
   },
   {
     number: '04', name: 'TechVerse', tagline: 'Developer learning & careers',
     description: 'Structured programming paths, project-based learning and skills progression.',
-    icon: Code2, status: 'planned',
+    icon: Code2, status: 'building', links: [{ label: 'Explore learning path', to: '/techverse' }],
   },
   {
     number: '05', name: 'EduVerse', tagline: 'Learning & exam preparation',
     description: 'A planned academic companion for CBT practice, revision notes and learning resources.',
-    icon: BookOpenCheck, status: 'planned',
+    icon: BookOpenCheck, status: 'building', links: [{ label: 'Start practice', to: '/eduverse' }],
   },
   {
     number: '06', name: 'TechLabs', tagline: 'Build, test & experiment',
     description: 'A planned browser-based coding workspace with isolated previews and project export.',
-    icon: TerminalSquare, status: 'planned',
+    icon: TerminalSquare, status: 'building', links: [{ label: 'Open code lab', to: '/techlabs' }],
   },
 ];
 
@@ -61,7 +61,7 @@ const sharedServices = [
 
 const statusCopy = {
   available: { label: 'Available now', icon: CircleCheck, className: 'status-live' },
-  building: { label: 'In development', icon: Clock3, className: 'status-building' },
+  building: { label: 'Interactive preview', icon: Clock3, className: 'status-building' },
   planned: { label: 'Planned', icon: LockKeyhole, className: 'status-planned' },
 };
 
