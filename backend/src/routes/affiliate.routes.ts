@@ -1,12 +1,10 @@
 import { Router } from 'express';
-import { authenticateToken } from '../middleware/auth.middleware';
+import { requireVerifiedUser } from '../middleware/platformAuth.middleware';
 import { getAffiliateProfile, trackReferral, applyReferralToUser, requestPayout } from '../controllers/affiliate.controller';
 
 const router = Router();
-
-router.get('/me', authenticateToken, getAffiliateProfile);
+router.get('/me', requireVerifiedUser, getAffiliateProfile);
 router.get('/track/:code', trackReferral);
-router.post('/apply', authenticateToken, applyReferralToUser);
-router.post('/payout', authenticateToken, requestPayout);
-
+router.post('/apply', requireVerifiedUser, applyReferralToUser);
+router.post('/payout', requireVerifiedUser, requestPayout);
 export default router;
