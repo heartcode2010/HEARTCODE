@@ -17,7 +17,7 @@ export default function VerseWorkspace(){
   const key=useLocation().pathname.replace(/^\//,'') as VerseKey;
   const current=info[key] || info.techverse;
   const storageKey='technova.verse.'+key;
-  const [completed,setCompleted]=useState<string[]>([]);
+  const [completed,setCompleted]=useState<string[]>(()=>{try{return JSON.parse(localStorage.getItem(storageKey)||'[]')}catch{return []}});
   const [brandName,setBrandName]=useState('');
   const [industry,setIndustry]=useState('');
   const [audience,setAudience]=useState('');
@@ -28,7 +28,6 @@ export default function VerseWorkspace(){
   const [html,setHtml]=useState('<main class="card">\n  <h1>Hello, TECHNOVA!</h1>\n  <p>Build something useful.</p>\n  <button onclick="document.querySelector(\'p\').textContent=\'It works!\'">Try me</button>\n</main>');
   const [css,setCss]=useState('body { font-family: sans-serif; background: #101525; color: white; padding: 2rem; }\n.card { max-width: 560px; margin: 3rem auto; padding: 2rem; border: 1px solid #6e62c9; border-radius: 16px; }\nbutton { padding: .7rem 1rem; border: 0; border-radius: 8px; }');
   const [js,setJs]=useState('// Add your JavaScript here');
-  useEffect(()=>{try{setCompleted(JSON.parse(localStorage.getItem(storageKey)||'[]'))}catch{setCompleted([])}},[storageKey]);
   useEffect(()=>{localStorage.setItem(storageKey,JSON.stringify(completed))},[completed,storageKey]);
   const done=useMemo(()=>completed.length,[completed]);
   const preview=useMemo(()=>`<!doctype html><html><head><meta name="viewport" content="width=device-width,initial-scale=1"><style>${css}</style></head><body>${html}<script>${js.replace(/<\/script/gi,'<\\/script')}</script></body></html>`,[html,css,js]);
