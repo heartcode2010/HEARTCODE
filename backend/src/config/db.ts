@@ -1,5 +1,7 @@
 import mongoose from 'mongoose';
 
+export { mongoose };
+
 export const connectDB = async (): Promise<void> => {
   try {
     const connStr = process.env.MONGODB_URI || 'mongodb://localhost:27017/heartcode';
