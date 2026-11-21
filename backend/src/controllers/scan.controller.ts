@@ -37,17 +37,18 @@ export const inspectUrl = async (req: AuthenticatedRequest, res: Response, next:
     console.log(`[ScanController] Inspecting URL: ${url} (User: ${username})`);
     
     // 1. Fetch source code and headers
-    const { html, headers } = await ScanService.fetchTargetData(url);
+    const { url: finalUrl, html, headers, ip } = await ScanService.fetchTargetData(url);
 
     // 2. Compile page elements statistics
     const stats = ScanService.calculateStats(html);
 
     // 3. Save Scan mapping into MongoDB
     const scan = new Scan({
-      url,
+      url: finalUrl,
       userId,
       htmlSource: html,
       headers: headers,
+      resolvedIp: ip,
       ...stats,
     });
     await scan.save();
@@ -89,7 +90,7 @@ export const runScan = async (req: AuthenticatedRequest, res: Response, next: Ne
     console.log(`[ScanController] Running advanced security engine on ScanId: ${scanId}`);
 
     // 1. Run advanced modular scanning engine
-    const report = await ScanService.runAdvancedScan(scan.url, scan.htmlSource, scan.headers ? Object.fromEntries(scan.headers as any) : {});
+    const report = await ScanService.runAdvancedScan(scan.url, scan.htmlSource, scan.headers ? Object.fromEntries(scan.headers as any) : {}, scan.resolvedIp);
 
     // 2. Wipe older findings if any and insert fresh findings
     await Vulnerability.deleteMany({ scanId });
